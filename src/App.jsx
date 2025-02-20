@@ -28,7 +28,6 @@ function App() {
         </Routes> */}
       {/* </BrowserRouter> */}
       <ArrowDownToLine />
-      <div>12334</div>
       </div>
     </>
   );
