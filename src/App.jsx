@@ -4,6 +4,8 @@ import LayoutCustomer from './layout/LayoutCustomer';
 import HomePageCus from './pages/customer/HomePage';
 import HomePage from './pages/guest/HomePage';
 import LayoutGuest from './layout/LayoutGuest';
+import LayoutDoctor from './layout/LayoutDoctor';
+import RequestAdvisory from './pages/doctor/RequestAdvisory';
 // import AdvisoryHistory from './pages/customer/AdvisoryHistory';
 // import ResultAdvisory from './pages/customer/ResultAdvisory';
 // import ChildRecords from './pages/customer/ChildRecords';
@@ -36,6 +38,19 @@ function App() {
             <Route path='addNewChild' element={<AddNewChild />} />
             <Route path='bookingDoctor' element={<BookingDoctor />} />
             <Route path='bookingHistory' element={<BookingHistory />} /> */}
+          </Route>
+
+          <Route path='/doctor' element={<LayoutDoctor />}>
+            <Route index element={<RequestAdvisory />} />
+            {/* <Route
+              path='response-success'
+              element={<ResponseAdvisorySuccess />}
+            />
+            <Route path='all-appointments' element={<AllAppointments />} />
+            <Route path='set-calendar' element={<SetCalendar />} />
+            <Route path='request-form' element={<FormRequestAdvisory />} />
+            <Route path='result-advisory' element={<ResultAdvisory />} />
+            <Route path='chart' element={<ChartOfChild />} /> */}
           </Route>
         </Routes>
       </BrowserRouter>
