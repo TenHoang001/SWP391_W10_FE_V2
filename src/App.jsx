@@ -13,6 +13,7 @@ import AddNewChild from './pages/customer/AddNewChild';
 import CustomerConsultationHistory from './pages/customer/CustomerConsultationHistory';
 import CustomerChildRecord from './pages/customer/CustomerChildRecord';
 import CustomerChartOfChild from './pages/customer/CustomerChartOfChild';
+import CustomerAddNewChildIndex from './pages/customer/CustomerAddNewChildIndex';
 // import AddRecords from './pages/customer/AddRecords';
 // import ChartOfChild from './pages/customer/ChartOfChild';
 // import BookingDoctor from './pages/customer/BookingDoctor';
@@ -34,18 +35,13 @@ function App() {
             <Route index element={<HomePageCus />} />
             <Route path='addNewChild' element={<AddNewChild />} />
             <Route
-              path='consultation-history'
+              path='consultationHistory'
               element={<CustomerConsultationHistory />}
             />
-            <Route
-              path='child-records'
-              element={<CustomerChildRecord />}
-            />
-            <Route
-              path='chart-of-child'
-              element={<CustomerChartOfChild />}
-            />
-       
+            <Route path='childRecords' element={<CustomerChildRecord />} />
+            <Route path='chartOfChild' element={<CustomerChartOfChild />} />
+            <Route path='addChildIndex' element={<CustomerAddNewChildIndex />} />
+
             {/*<Route path='advisory' element={<AdvisoryHistory />} />
             <Route path='result-advisory' element={<ResultAdvisory />} />
             <Route path='child-records' element={<ChildRecords />} />
