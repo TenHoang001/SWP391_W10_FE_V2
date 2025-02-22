@@ -10,13 +10,13 @@ import RequestAdvisory from './pages/doctor/RequestAdvisory';
 // import ResultAdvisory from './pages/customer/ResultAdvisory';
 // import ChildRecords from './pages/customer/ChildRecords';
 import AddNewChild from './pages/customer/AddNewChild';
+import CustomerConsultationHistory from './pages/customer/CustomerConsultationHistory';
 // import AddRecords from './pages/customer/AddRecords';
 // import ChartOfChild from './pages/customer/ChartOfChild';
 // import BookingDoctor from './pages/customer/BookingDoctor';
 // import BookingHistory from './pages/customer/BookingHistory';
 
 // import { Aperture } from 'module';
-
 
 function App() {
   return (
@@ -31,6 +31,10 @@ function App() {
           <Route path='/customer' element={<LayoutCustomer />}>
             <Route index element={<HomePageCus />} />
             <Route path='addNewChild' element={<AddNewChild />} />
+            <Route
+              path='consultation-history'
+              element={<CustomerConsultationHistory />}
+            />
             {/*<Route path='advisory' element={<AdvisoryHistory />} />
             <Route path='result-advisory' element={<ResultAdvisory />} />
             <Route path='child-records' element={<ChildRecords />} />

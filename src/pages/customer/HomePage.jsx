@@ -88,12 +88,12 @@ const HomePageCus = () => {
       {/* Advisory Section */}
       <div className='p-10 text-center'>
         <div className='flex flex-col items-center justify-center gap-6 pb-6 md:flex-row'>
-          <h2 className='text-2xl font-bold'>Yêu cầu tư vấn</h2>
+          <h2 className='text-2xl font-bold'>Yêu cầu tham vấn</h2>
           <Link
-            to='/customer/advisory'
+            to='/customer/consultation-history'
             className='flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600'
           >
-            <RefreshCcw /> Lịch sử tư vấn
+            <RefreshCcw /> Lịch sử tham vấn
           </Link>
         </div>
         <div className='mx-auto max-w-lg rounded-lg bg-white p-6 shadow-lg'>
