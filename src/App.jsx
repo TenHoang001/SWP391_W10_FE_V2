@@ -11,6 +11,7 @@ import RequestAdvisory from './pages/doctor/RequestAdvisory';
 // import ChildRecords from './pages/customer/ChildRecords';
 import AddNewChild from './pages/customer/AddNewChild';
 import CustomerConsultationHistory from './pages/customer/CustomerConsultationHistory';
+import CustomerConsultationResult from './pages/customer/CustomerChildRecord';
 // import AddRecords from './pages/customer/AddRecords';
 // import ChartOfChild from './pages/customer/ChartOfChild';
 // import BookingDoctor from './pages/customer/BookingDoctor';
@@ -34,6 +35,10 @@ function App() {
             <Route
               path='consultation-history'
               element={<CustomerConsultationHistory />}
+            />
+            <Route
+              path='child-records'
+              element={<CustomerConsultationResult />}
             />
             {/*<Route path='advisory' element={<AdvisoryHistory />} />
             <Route path='result-advisory' element={<ResultAdvisory />} />
