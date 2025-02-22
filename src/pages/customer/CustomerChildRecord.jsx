@@ -29,7 +29,7 @@ const CustomerChildRecord = () => {
                 Thêm chỉ số
               </button>
             </Link>
-            <Link to='/customer/chart'>
+            <Link to='/customer/chart-of-child'>
               <button className='flex items-center gap-2 rounded bg-blue-500 px-3 py-1 text-white'>
                 <BarChart3 className='h-4 w-4' />
                 Biểu đồ
