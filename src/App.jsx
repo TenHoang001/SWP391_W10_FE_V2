@@ -48,7 +48,7 @@ function App() {
             <Route path='child-records' element={<ChildRecords />} />
             <Route path='add-records' element={<AddRecords />} />
             <Route path='chart' element={<ChartOfChild />} />
-             
+
             */}
           </Route>
 
