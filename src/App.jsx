@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
-import { ArrowDownToLine } from 'lucide-react';
 import LayoutCustomer from './layout/LayoutCustomer';
 import HomePageCus from './pages/customer/HomePage';
 import HomePage from './pages/guest/HomePage';
@@ -11,13 +10,16 @@ import RequestAdvisory from './pages/doctor/RequestAdvisory';
 // import ChildRecords from './pages/customer/ChildRecords';
 import AddNewChild from './pages/customer/AddNewChild';
 import BookingDoctor from './pages/customer/BookingDoctor';
+import CustomerConsultationHistory from './pages/customer/CustomerConsultationHistory';
+import CustomerChildRecord from './pages/customer/CustomerChildRecord';
+import CustomerChartOfChild from './pages/customer/CustomerChartOfChild';
+
 // import AddRecords from './pages/customer/AddRecords';
 // import ChartOfChild from './pages/customer/ChartOfChild';
 
 // import BookingHistory from './pages/customer/BookingHistory';
 
 // import { Aperture } from 'module';
-
 
 function App() {
   return (
@@ -33,6 +35,13 @@ function App() {
             <Route index element={<HomePageCus />} />
             <Route path='addNewChild' element={<AddNewChild />} />
             <Route path='bookingDoctor' element={<BookingDoctor />} />
+            <Route
+              path='consultation-history'
+              element={<CustomerConsultationHistory />}
+            />
+            <Route path='child-records' element={<CustomerChildRecord />} />
+            <Route path='chart-of-child' element={<CustomerChartOfChild />} />
+
             {/*<Route path='advisory' element={<AdvisoryHistory />} />
             <Route path='result-advisory' element={<ResultAdvisory />} />
             <Route path='child-records' element={<ChildRecords />} />
