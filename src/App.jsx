@@ -18,7 +18,6 @@ import CustomerChartOfChild from './pages/customer/CustomerChartOfChild';
 // import AddRecords from './pages/customer/AddRecords';
 // import ChartOfChild from './pages/customer/ChartOfChild';
 
-
 // import { Aperture } from 'module';
 
 function App() {
