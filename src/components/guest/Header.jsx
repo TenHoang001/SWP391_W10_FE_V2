@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Logo from '../../assets/logo.png';
-// import { FiMenu, FiX } from 'react-icons/fi'; // Import icon từ react-icons
 import { X, Menu } from 'lucide-react';
 import { Link } from 'react-router';
 
@@ -35,12 +34,16 @@ const Header = () => {
 
         {/* Buttons */}
         <div className='hidden gap-4 md:flex'>
-          <button className='rounded-lg border border-blue-500 px-4 py-2 text-blue-500 transition hover:bg-blue-100'>
-            Đăng nhập
-          </button>
-          <button className='rounded-lg bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600'>
-            Đăng ký
-          </button>
+          <Link to={'/login'}>
+            <button className='rounded-lg border border-blue-500 px-4 py-2 text-blue-500 transition hover:bg-blue-100'>
+              Đăng nhập
+            </button>
+          </Link>
+          <Link to={'/register'}>
+            <button className='rounded-lg bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600'>
+              Đăng ký
+            </button>
+          </Link>
         </div>
 
         {/* Hamburger Button */}
