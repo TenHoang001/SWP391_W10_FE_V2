@@ -57,7 +57,7 @@ const GuestRegister = () => {
                 className='mt-1 w-full rounded border px-3 py-2'
               />
             </div>
-
+ 
             <button className='mt-4 w-full rounded-lg bg-blue-600 py-2 text-white transition hover:bg-blue-700'>
               Đăng ký
             </button>
