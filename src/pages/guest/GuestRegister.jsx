@@ -61,6 +61,7 @@ const GuestRegister = () => {
               Đăng ký
             </button>
 
+
             <p className='mt-4 text-center text-sm text-gray-700'>
               Đã có tài khoản?{' '}
               <Link to={'/login'} className='text-blue-500'>
