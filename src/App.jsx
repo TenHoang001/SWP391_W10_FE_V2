@@ -16,11 +16,10 @@ import CustomerChartOfChild from './pages/customer/CustomerChartOfChild';
 import CustomerAddNewChildIndex from './pages/customer/CustomerAddNewChildIndex';
 import GuestLogin from './pages/guest/GuestLogin';
 import GuestRegister from './pages/guest/GuestRegister';
+import BookingHistory from './pages/customer/BookingHistory';
 
 // import AddRecords from './pages/customer/AddRecords';
 // import ChartOfChild from './pages/customer/ChartOfChild';
-
-// import BookingHistory from './pages/customer/BookingHistory';
 
 // import { Aperture } from 'module';
 
@@ -40,8 +39,9 @@ function App() {
             <Route index element={<HomePageCus />} />
             <Route path='addNewChild' element={<AddNewChild />} />
             <Route path='bookingDoctor' element={<BookingDoctor />} />
+            <Route path='bookingHistory' element={<BookingHistory />} />
             <Route
-              path='consultationHistory'
+              path='consultation-history'
               element={<CustomerConsultationHistory />}
             />
             <Route path='childRecords' element={<CustomerChildRecord />} />
@@ -50,12 +50,14 @@ function App() {
             <Route path='child-records' element={<CustomerChildRecord />} />
             <Route path='chart-of-child' element={<CustomerChartOfChild />} />
 
-            {/*<Route path='advisory' element={<AdvisoryHistory />} />
+            {/*
+            <Route path='advisory' element={<AdvisoryHistory />} />
             <Route path='result-advisory' element={<ResultAdvisory />} />
             <Route path='child-records' element={<ChildRecords />} />
             <Route path='add-records' element={<AddRecords />} />
             <Route path='chart' element={<ChartOfChild />} />
-            <Route path='bookingHistory' element={<BookingHistory />} /> */}
+
+            */}
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>
