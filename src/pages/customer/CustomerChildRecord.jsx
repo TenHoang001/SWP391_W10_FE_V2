@@ -23,13 +23,13 @@ const CustomerChildRecord = () => {
               <Filter className='h-4 w-4' />
               Filter
             </button>
-            <Link to='/customer/add-records'>
+            <Link to='/customer/addChildIndex'>
               <button className='flex items-center gap-2 rounded bg-blue-500 px-3 py-1 text-white'>
                 <Plus className='h-4 w-4' />
                 Thêm chỉ số
               </button>
             </Link>
-            <Link to='/customer/chart-of-child'>
+            <Link to='/customer/chartOfChild'>
               <button className='flex items-center gap-2 rounded bg-blue-500 px-3 py-1 text-white'>
                 <BarChart3 className='h-4 w-4' />
                 Biểu đồ

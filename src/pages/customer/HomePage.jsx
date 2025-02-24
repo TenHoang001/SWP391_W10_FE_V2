@@ -71,7 +71,7 @@ const HomePageCus = () => {
               </div>
               <div className='flex justify-between pt-3'>
                 <Link
-                  to='/customer/child-records'
+                  to='/customer/childRecords'
                   className='flex items-center gap-2 text-blue-500 hover:underline'
                 >
                   <Eye /> Xem chi tiết
@@ -90,7 +90,7 @@ const HomePageCus = () => {
         <div className='flex flex-col items-center justify-center gap-6 pb-6 md:flex-row'>
           <h2 className='text-2xl font-bold'>Yêu cầu tham vấn</h2>
           <Link
-            to='/customer/consultation-history'
+            to='/customer/consultationHistory'
             className='flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600'
           >
             <RefreshCcw /> Lịch sử tham vấn
