@@ -27,7 +27,7 @@ const BookingDoctor = () => {
 
   return (
     <>
-      <div className='flex h-screen flex-col bg-gray-100'>
+      <div className='flex m-2 min-h-screen flex-col  bg-gray-100'>
         <div className='mx-4 mt-10 flex h-[10%] w-full items-center bg-white'>
           <p className='ml-[10%] text-2xl font-semibold'>
             Đặt lịch khám bác sĩ trực tuyến
