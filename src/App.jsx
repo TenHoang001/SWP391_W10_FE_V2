@@ -5,7 +5,10 @@ import HomePage from './pages/guest/HomePage';
 import LayoutGuest from './layout/LayoutGuest';
 import LayoutDoctor from './layout/LayoutDoctor';
 import RequestAdvisory from './pages/doctor/RequestAdvisory';
-// import AdvisoryHistory from './pages/customer/AdvisoryHistory';
+import AllAppointments from './pages/doctor/AllAppointments';
+import FormRequestAdvisory from './pages/doctor/FormRequestAdvisory';
+import SetCalendar from './pages/doctor/SetCalendar';
+import ResponseAdvisorySuccess from './pages/doctor/ResponseAdvisorySuccess';
 // import ResultAdvisory from './pages/customer/ResultAdvisory';
 // import ChildRecords from './pages/customer/ChildRecords';
 import AddNewChild from './pages/customer/AddNewChild';
@@ -61,14 +64,10 @@ function App() {
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>
-            <Route index element={<RequestAdvisory />} />
-            {/* <Route
-              path='response-success'
-              element={<ResponseAdvisorySuccess />}
-            />
-            <Route path='all-appointments' element={<AllAppointments />} />
-            <Route path='set-calendar' element={<SetCalendar />} />
-            <Route path='request-form' element={<FormRequestAdvisory />} />
+            
+            {/* 
+            
+            
             <Route path='result-advisory' element={<ResultAdvisory />} />
             <Route path='chart' element={<ChartOfChild />} /> */}
           </Route>
