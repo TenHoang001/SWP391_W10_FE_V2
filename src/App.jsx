@@ -64,7 +64,11 @@ function App() {
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>
-            
+          <Route index element={<RequestAdvisory />} />
+            <Route path='all-appointments' element={<AllAppointments />} />
+            <Route path='request-form' element={<FormRequestAdvisory />} />
+            <Route path='set-calendar' element={<SetCalendar />} />
+            <Route path='response-success' element={<ResponseAdvisorySuccess />} />
             {/* 
             
             
