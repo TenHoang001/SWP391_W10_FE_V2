@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Logo from '../../assets/logo.png';
 // import { FaUserAstronaut } from 'react-icons/fa';
-import { UserRound } from "lucide-react";
+import { UserRound } from 'lucide-react';
 // import { FiMenu, FiX } from 'react-icons/fi';
 import { X, Menu } from 'lucide-react';
 import { Link } from 'react-router';
