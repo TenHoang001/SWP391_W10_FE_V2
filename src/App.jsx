@@ -17,6 +17,7 @@ import CustomerAddNewChildIndex from './pages/customer/CustomerAddNewChildIndex'
 import GuestLogin from './pages/guest/GuestLogin';
 import GuestRegister from './pages/guest/GuestRegister';
 import BookingHistory from './pages/customer/BookingHistory';
+import UpdateChild from './pages/customer/UpdateChild';
 
 // import AddRecords from './pages/customer/AddRecords';
 // import ChartOfChild from './pages/customer/ChartOfChild';
@@ -38,10 +39,11 @@ function App() {
           <Route path='/customer' element={<LayoutCustomer />}>
             <Route index element={<HomePageCus />} />
             <Route path='addNewChild' element={<AddNewChild />} />
+            <Route path="/customer/children/edit/:childId" element={<UpdateChild />} />
             <Route path='bookingDoctor' element={<BookingDoctor />} />
             <Route path='bookingHistory' element={<BookingHistory />} />
             <Route
-              path='consultation-history'
+              path='consultationHistory'
               element={<CustomerConsultationHistory />}
             />
             <Route path='childRecords' element={<CustomerChildRecord />} />

@@ -33,8 +33,9 @@ const GuestLogin = () => {
     const response = await LoginAPI(data);
     console.log(response);
 
-    if (response?.status === '200') {
+    if (response?.status) {
       localStorage.setItem('user', JSON.stringify(response.data));
+      localStorage.setItem('userId', JSON.stringify(response.data.userId));
       navigate('/customer', { replace: true });
     } else {
       setNotification(true);
