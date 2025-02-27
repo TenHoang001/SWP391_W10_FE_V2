@@ -42,10 +42,12 @@ const CustomerConsultationHistory = () => {
               <p className='text-sm text-gray-600'>Ngày gửi</p>
               <p className='font-semibold'>15/3/2025</p>
             </div>
-            <button className='flex w-40 items-center gap-2 rounded-full bg-yellow-200 px-3 py-1'>
-              <Clock className='h-4 w-4' />
-              Đang phản hồi
-            </button>
+            <Link to='/customer/consultationChat'>
+              <button className='flex w-40 items-center gap-2 rounded-full bg-yellow-200 px-3 py-1'>
+                <Clock className='h-4 w-4' />
+                Đang phản hồi
+              </button>
+            </Link>
             <div className='relative'>
               {/* Nút hủy */}
               <button
@@ -77,7 +79,7 @@ const CustomerConsultationHistory = () => {
               <p className='text-sm text-gray-600'>Ngày phản hồi</p>
               <p className='font-semibold'>15/3/2025</p>
             </div>
-            <Link to='/customer/result-advisory'>
+            <Link to='/customer/consultationChat' state={{ status: 'completed' }}>
               <button className='flex w-40 items-center gap-2 rounded-full bg-green-300 px-3 py-1'>
                 <Clock className='h-4 w-4' />
                 Đã phản hồi

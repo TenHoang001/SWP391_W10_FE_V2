@@ -1,14 +1,32 @@
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-// import { FaArrowRight, FaEye, FaPlus } from 'react-icons/fa';
-// import { SlNote } from 'react-icons/sl';
-// import { CiSearch } from 'react-icons/ci';
-// import { GrUpdate } from 'react-icons/gr';
+import { useNavigate, Link } from 'react-router-dom';
 import { Eye, Plus, NotebookPen, Search, RefreshCcw } from 'lucide-react';
 import hinh4 from '../../assets/hinh4.png';
+import { useEffect, useState } from 'react';
+import { GetChildrenByUserIdAPI } from '../../api/ChildrenAPI';
 
 const HomePageCus = () => {
+  const [children, setChildren] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchChildren();
+  }, []);
+
+  const fetchChildren = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const response = await GetChildrenByUserIdAPI(userId);
+      if (response?.status) {
+        setChildren(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching children:', error);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return dateString.split('T')[0];
+  };
 
   const handleAddNewChild = () => navigate('/customer/addNewChild');
 
@@ -53,32 +71,37 @@ const HomePageCus = () => {
         </div>
 
         <div className='grid grid-cols-1 gap-6 pt-10 sm:grid-cols-2 lg:grid-cols-3'>
-          {[1, 2, 3].map((child) => (
+          {children.map((child) => (
             <div
-              key={child}
+              key={child.childId}
               className='rounded-lg border border-gray-300 p-4 shadow-md'
             >
               <div className='flex items-center gap-4'>
                 <img
                   className='h-16 w-16 rounded-full'
                   src='https://images.unsplash.com/photo-1738071545459-e19435ae37e0?q=80&w=200&h=200&fit=crop'
-                  alt='child'
+                  alt={child.fullName}
                 />
                 <div>
-                  <p className='font-bold'>Nguyễn Thị A</p>
-                  <p>9 tháng tuổi</p>
+                  <p className='font-bold'>{child.fullName}</p>
+                  <p>Ngày sinh: {formatDate(child.birthDate)}</p>
+                  <p>Giới tính: {child.gender === 'Male' ? 'Nam' : 'Nữ'}</p>
+                  <p>Nhóm máu: {child.bloodType}</p>
                 </div>
               </div>
               <div className='flex justify-between pt-3'>
                 <Link
-                  to='/customer/childRecords'
+                  to={`/customer/children/${child.childId}`}
                   className='flex items-center gap-2 text-blue-500 hover:underline'
                 >
                   <Eye /> Xem chi tiết
                 </Link>
-                <button className='flex items-center gap-2 text-gray-700 hover:text-gray-900'>
+                <Link
+                  to={`/customer/children/edit/${child.childId}`}
+                  className='flex items-center gap-2 text-gray-700 hover:text-gray-900'
+                >
                   <NotebookPen /> Chỉnh sửa
-                </button>
+                </Link>
               </div>
             </div>
           ))}
