@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import hinh5 from '../../assets/hinh5.png';
-import { Link } from 'react-router-dom'; // 🔴 Sửa lỗi import Link
+import { Link } from 'react-router-dom';
 import { LoginAPI } from '../../api/AuthAPI';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Alert } from '@material-tailwind/react';
@@ -17,29 +17,57 @@ const GuestLogin = () => {
     if (location.state?.msg) {
       setMsg(location.state.msg);
       setTimeout(() => setMsg(''), 2000);
-      window.history.replaceState({}, ''); //clear parameter, không hiển thị popup khi reload
+      window.history.replaceState({}, '');
     }
   }, [location.state?.msg]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(`${email} và ${password}`);
 
     const data = {
       usernameOrEmail: email,
       password: password,
     };
 
-    const response = await LoginAPI(data);
-    console.log(response);
+    try {
+      const response = await LoginAPI(data);
+      console.log(response);
 
-    if (response?.status) {
-      localStorage.setItem('user', JSON.stringify(response.data));
-      localStorage.setItem('userId', JSON.stringify(response.data.userId));
-      navigate('/customer', { replace: true });
-    } else {
+      if (response?.status) {
+        localStorage.setItem('user', JSON.stringify(response.data));
+        localStorage.setItem('userId', JSON.stringify(response.data.userId));
+
+        // Phân quyền điều hướng dựa vào role
+        switch (response.data.role) {
+          case 'Doctor':
+            navigate('/doctor', { replace: true });
+            break;
+          case 'Admin':
+            navigate('/admin', { replace: true });
+            break;
+          case 'Customer':
+            navigate('/customer', { replace: true });
+            break;
+          default:
+            setNotification(true);
+            setMsg('Không có quyền truy cập');
+            setTimeout(() => {
+              setNotification(false);
+              setMsg('');
+            }, 2000);
+        }
+      } else {
+        setNotification(true);
+        setTimeout(() => setNotification(false), 2000);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       setNotification(true);
-      setTimeout(() => setNotification(false), 2000);
+      setMsg('Đã có lỗi xảy ra khi đăng nhập');
+      setTimeout(() => {
+        setNotification(false);
+        setMsg('');
+      }, 2000);
     }
   };
 
@@ -47,17 +75,17 @@ const GuestLogin = () => {
     <div>
       {notification && (
         <Alert className='w-auto absolute right-1 top-20' color='red'>
-          Email hoặc mật khẩu không hợp lệ
+          {msg || 'Email hoặc mật khẩu không hợp lệ'}
         </Alert>
       )}
-      {msg && (
+      {msg && !notification && (
         <Alert className='w-auto absolute right-1 top-20' color='blue'>
           {msg}
         </Alert>
       )}
       <div className='flex min-h-screen items-center justify-center bg-gray-100'>
         <div className='grid w-full max-w-4xl grid-cols-1 rounded-lg bg-white shadow-lg md:grid-cols-2'>
-          {/* Cột bên trái - Form đăng nhập */}
+          {/* Form đăng nhập */}
           <div className='p-8'>
             <h2 className='text-center text-2xl font-semibold'>Đăng nhập</h2>
             <p className='mb-6 text-center text-gray-500'>
@@ -70,11 +98,11 @@ const GuestLogin = () => {
                   Email
                 </label>
                 <input
-                  type='email'
                   placeholder='your@email.com'
                   value={email}
                   className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
                   onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </div>
 
@@ -88,6 +116,7 @@ const GuestLogin = () => {
                   value={password}
                   className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
                   onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </div>
 
@@ -114,7 +143,7 @@ const GuestLogin = () => {
             </p>
           </div>
 
-          {/* Cột bên phải - Chỉ nền màu hồng */}
+          {/* Ảnh bên phải */}
           <div className='hidden bg-pink-200 md:block'>
             <img src={hinh5} alt='' />
           </div>

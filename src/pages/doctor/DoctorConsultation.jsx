@@ -1,23 +1,28 @@
 import React, { useState } from 'react';
 import { Input, Button } from '@material-tailwind/react';
 import { Send } from 'lucide-react';
-
+import { useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 const DoctorConsultation = () => {
   const [message, setMessage] = useState('');
+  const location = useLocation();
+  const isCompleted = location.state?.status === 'completed';
   const [chatHistory, setChatHistory] = useState([
     {
       sender: 'doctor',
       name: 'Bs. Nguyễn Văn A',
       message: 'Xin chào! Tôi có thể giúp gì cho bạn?',
       time: '09:00',
-      avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=2070&auto=format&fit=crop',
+      avatar:
+        'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=2070&auto=format&fit=crop',
     },
     {
       sender: 'user',
       name: 'Chị Lan',
       message: 'Chào bác sĩ, tôi muốn hỏi về vấn đề dinh dưỡng của con.',
       time: '09:01',
-      avatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=2080&auto=format&fit=crop',
+      avatar:
+        'https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=2080&auto=format&fit=crop',
     },
   ]);
 
@@ -27,8 +32,12 @@ const DoctorConsultation = () => {
         sender: 'doctor',
         name: 'Bs. Nguyễn Văn A',
         message: message,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=2070&auto=format&fit=crop',
+        time: new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        avatar:
+          'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=2070&auto=format&fit=crop',
       };
       setChatHistory([...chatHistory, newMessage]);
       setMessage('');
@@ -50,12 +59,7 @@ const DoctorConsultation = () => {
                 />
                 <div>
                   <h3 className='font-semibold'>Chị Lan</h3>
-                  <p className='text-sm text-gray-500'>Mẹ của bé Na</p>
                 </div>
-              </div>
-              <div className='text-right'>
-                <p className='text-sm text-gray-500'>Thời gian tham vấn</p>
-                <p className='font-semibold text-green-500'>00:15:30</p>
               </div>
             </div>
           </div>
@@ -112,27 +116,47 @@ const DoctorConsultation = () => {
           {/* Chat Input with Quick Responses */}
           <div className='border-t p-4'>
             <div className='mb-3 flex gap-2'>
-              <Button 
-                variant="outlined" 
-                size="sm"
-                onClick={() => setMessage('Cảm ơn bạn đã chia sẻ. Tôi sẽ tư vấn chi tiết về vấn đề này.')}
+              <Button
+                variant='outlined'
+                size='sm'
+                onClick={() =>
+                  setMessage(
+                    'Cảm ơn bạn đã chia sẻ. Tôi sẽ tư vấn chi tiết về vấn đề này.'
+                  )
+                }
+                disabled={isCompleted}
               >
                 Phản hồi nhanh
               </Button>
-              <Button 
-                variant="outlined" 
-                size="sm"
-                onClick={() => setMessage('Bạn có thể mô tả chi tiết hơn về triệu chứng không?')}
+              <Button
+                variant='outlined'
+                size='sm'
+                onClick={() =>
+                  setMessage(
+                    'Bạn có thể mô tả chi tiết hơn về triệu chứng không?'
+                  )
+                }
+                disabled={isCompleted}
               >
                 Yêu cầu chi tiết
               </Button>
-              <Button 
-                variant="outlined" 
-                size="sm"
-                onClick={() => setMessage('Tôi sẽ gửi cho bạn một số tài liệu tham khảo về vấn đề này.')}
+              <Button
+                variant='outlined'
+                size='sm'
+                onClick={() =>
+                  setMessage(
+                    'Tôi sẽ gửi cho bạn một số tài liệu tham khảo về vấn đề này.'
+                  )
+                }
+                disabled={isCompleted}
               >
                 Gửi tài liệu
               </Button>
+              <Link to={'/doctor/chartOfChild'} disabled={isCompleted}>
+                <Button variant='outlined' size='sm' disabled={isCompleted}>
+                  Chart của bé
+                </Button>
+              </Link>
             </div>
             <div className='flex gap-2'>
               <Input
@@ -140,11 +164,15 @@ const DoctorConsultation = () => {
                 placeholder='Nhập tin nhắn...'
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                disabled={isCompleted}
+                onKeyPress={(e) =>
+                  !isCompleted && e.key === 'Enter' && handleSendMessage()
+                }
                 className='flex-1'
               />
               <Button
                 className='flex items-center gap-2'
+                d
                 onClick={handleSendMessage}
               >
                 <Send className='h-4 w-4' /> Gửi
@@ -157,4 +185,4 @@ const DoctorConsultation = () => {
   );
 };
 
-export default DoctorConsultation; 
+export default DoctorConsultation;

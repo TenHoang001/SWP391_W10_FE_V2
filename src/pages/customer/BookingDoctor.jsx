@@ -10,6 +10,7 @@ import {
 } from '@material-tailwind/react';
 import React from 'react';
 import { Link } from 'react-router';
+import { CreateAppointmentAPI } from '../../api/AppointmentAPI';
 
 const BookingDoctor = () => {
   const [pickDate, setPickDate] = React.useState(null);
@@ -24,19 +25,55 @@ const BookingDoctor = () => {
   const handleOpen = () => {
     setIsOpen(!isOpen);
   };
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
+
+  const handleBooking = async () => {
+    if (!pickDate || !pickTime) {
+      setError('Vui lòng chọn ngày và giờ khám');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const userId = localStorage.getItem('userId');
+      const appointmentData = {
+        scheduleId: 0, // Cần thêm scheduleId từ việc chọn bác sĩ
+        userId: parseInt(userId),
+        childId: 0, // Cần thêm childId từ context hoặc props
+        slotTime: {
+          hour: parseInt(pickTime.split(':')[0]),
+          minute: parseInt(pickTime.split(':')[1])
+        },
+        description: "Đặt lịch tư vấn trực tuyến"
+      };
+
+      const response = await CreateAppointmentAPI(appointmentData);
+      if (response?.status) {
+        handleOpen(); // Mở dialog thành công
+      } else {
+        setError('Có lỗi xảy ra khi đặt lịch');
+      }
+    } catch (error) {
+      console.error('Booking error:', error);
+      setError('Có lỗi xảy ra khi đặt lịch');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
       <div className='flex m-2 min-h-screen flex-col  bg-gray-100'>
         <div className='mx-4 mt-10 flex h-[10%] w-full items-center bg-white'>
           <p className='ml-[10%] text-2xl font-semibold'>
-            Đặt lịch khám bác sĩ trực tuyến
+            Đặt lịch tư vấn trực tuyến
           </p>
         </div>
         <div className='ml-[70%] mt-[3%] h-[8%] w-[20%]'>
           <Link to={'../bookingHistory'}>
             <Button className='size-full' color='light-green'>
-              Lịch sử khám bệnh
+              Lịch sử tư vấn
             </Button>
           </Link>
         </div>
@@ -45,7 +82,7 @@ const BookingDoctor = () => {
             <p className=''>Chọn bác sĩ</p>
             <div className='mt-[2%] w-[80%]'>
               <Select label='Select Version'>
-                <Option>Nguyeenx Van A</Option>
+                <Option>Nguyễn Van A</Option>
                 <Option>Tran Van B</Option>
                 <Option>Dinh Thi C</Option>
                 <Option>Tran Minh D</Option>
@@ -100,9 +137,10 @@ const BookingDoctor = () => {
             <div className='mt-16 flex w-[100%] justify-center'>
               <Button
                 className='h-[20%] w-[40%] bg-light-blue-600 text-xl'
-                onClick={handleOpen}
+                onClick={handleBooking}
+                disabled={loading}
               >
-                Xác nhận đặt lịch
+                {loading ? 'Đang xử lý...' : 'Xác nhận đặt lịch'}
               </Button>
               <Dialog
                 open={isOpen}

@@ -63,7 +63,7 @@ const RequestAdvisory = () => {
             </div>
             {req.status === 'Đang xử lý' ? (
               <div>
-                <Link to={'/doctor/result-advisory'}>
+                <Link to={'/doctor/consultationChat' }>
                   <span className='rounded-md bg-yellow-200 px-5 py-1 text-sm font-semibold text-gray-700'>
                     {req.status}
                   </span>
@@ -87,7 +87,7 @@ const RequestAdvisory = () => {
                 )}
               </div>
             ) : (
-              <Link to={'/doctor/request-form'}>
+              <Link to={'/doctor/consultationChat'} state={{ status: 'completed' }}>
                 <span className='rounded-md bg-gray-200 px-7 mr-6 py-1 text-sm font-semibold text-gray-700'>
                   {req.status}
                 </span>

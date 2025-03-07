@@ -1,91 +1,69 @@
 import Logo from '../../assets/logo.png';
-import { useState } from 'react';
-// import { FaUserAstronaut } from 'react-icons/fa';
-// import { FiMenu, FiX } from 'react-icons/fi';
-import { Link } from 'react-router';
-import { UserRound, X, Menu,  } from 'lucide-react';
+import { Link, useLocation } from 'react-router';
+import { UserRound, ClipboardList, Calendar, BookOpen } from 'lucide-react';
 
 const HeaderDoctor = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  const isActiveLink = (path) => {
+    return location.pathname === path ? 'bg-blue-50 text-blue-600 font-medium' : '';
+  };
 
   return (
-    <header className='border-b border-gray-400/25 px-6 py-2 md:px-10'>
-      <div className='flex items-center justify-between'>
-        {/* Logo */}
-        <div className='flex items-center gap-3'>
-          <Link to={'/doctor'}>
-            <figure className='w-16'>
-              <img src={Logo} alt='Logo' />
-            </figure>
-          </Link>
-          <p className='text-xl font-bold'>GrowthTrack</p>
-        </div>
-
-        {/* Menu Desktop */}
-        <nav className='hidden gap-6 text-lg md:flex'>
-          <Link to={'/doctor/'} className='transition hover:text-blue-500'>
-            Danh sách tư vấn
-          </Link>
-          <Link
-            to={'/doctor/all-appointments'}
-            className='transition hover:text-blue-500'
-          >
-            Danh sách Khám bệnh
-          </Link>
-          <Link to={'/doctor'} className='transition hover:text-blue-500'>
-            Blog{' '}
-          </Link>
-        </nav>
-
-        {/* User Icon */}
-        <div className='hidden md:flex'>
-          <Link to={'/customer'}>
-            <button className='rounded-full border border-blue-500 p-2 text-blue-500 hover:bg-blue-100'>
-              <UserRound className='h-6 w-6' />
-            </button>
-          </Link>
-        </div>
-
-        {/* Hamburger Menu Button */}
-        <button
-          className='text-2xl md:hidden'
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X /> : <Menu />}
-        </button>
+    <div className='h-full py-6 bg-white'>
+      {/* Logo */}
+      <div className='flex flex-col items-center gap-3 px-6 mb-12'>
+        <Link to={'/doctor'}>
+          <figure className='w-20 h-20 flex items-center justify-center'>
+            <img 
+              src={Logo} 
+              alt='Logo'
+              className='w-full h-full object-contain' 
+            />
+          </figure>
+        </Link>
+        <p className='text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent'>
+          GrowthTrack
+        </p>
       </div>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className='mt-3 space-y-3 text-lg md:hidden'>
-          <Link
-            to={'/doctor'}
-            className='block rounded-md p-2 hover:bg-gray-100'
-          >
-            Danh sách tư vấn
-          </Link>
-          <Link
-            to={'/doctor/all-appointments'}
-            className='block rounded-md p-2 hover:bg-gray-100'
-          >
-            Danh sách khám bệnh
-          </Link>
-          <Link
-            to={'/doctor'}
-            className='block rounded-md p-2 hover:bg-gray-100'
-          >
-            Blog
-          </Link>
-          <div className='mt-3 flex justify-center'>
-            <Link to={'/customer'}>
-              <button className='rounded-full border border-blue-500 p-2 text-blue-500 hover:bg-blue-100'>
-                <UserRound className='h-6 w-6' />
-              </button>
-            </Link>
-          </div>
-        </div>
-      )}
-    </header>
+      {/* Menu */}
+      <nav className='flex flex-col gap-2 px-4 mb-12'>
+        <Link 
+          to={'/doctor/'} 
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-blue-50 hover:text-blue-600 ${isActiveLink('/doctor/')}`}
+        >
+          <ClipboardList className='h-5 w-5' />
+          Danh sách tham vấn
+        </Link>
+        <Link
+          to={'/doctor/schedule'}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-blue-50 hover:text-blue-600 ${isActiveLink('/doctor/all-appointments')}`}
+        >
+          <Calendar className='h-5 w-5' />
+          Danh sách tư vấn
+        </Link>
+        <Link 
+          to={'/doctor/blog'} 
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-blue-50 hover:text-blue-600 ${isActiveLink('/doctor/blog')}`}
+        >
+          <BookOpen className='h-5 w-5' />
+          Blog
+        </Link>
+      </nav>
+
+      {/* User Icon */}
+      <div className='px-4'>
+        <Link to={'/customer'}>
+          <button className='flex items-center gap-3 w-full px-4 py-3 rounded-lg transition-all hover:bg-blue-50 text-gray-700 hover:text-blue-600'>
+            <div className='h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center'>
+              <UserRound className='h-5 w-5 text-blue-600' />
+            </div>
+            <span>Hồ sơ</span>
+          </button>
+        </Link>
+      </div>
+    </div>
   );
 };
 
