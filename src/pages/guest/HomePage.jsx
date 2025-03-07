@@ -1,15 +1,7 @@
+import { useEffect, useState } from 'react';
 import hinh1 from '../../assets/hinh1.png';
 import hinh2 from '../../assets/hinh2.png';
-// import {
-//   FaArrowRight,
-//   FaChartBar,
-//   FaChartLine,
-//   FaShareAlt,
-// } from 'react-icons/fa';
-// import { MdGroups3 } from 'react-icons/md';
-// import { FaUserDoctor } from 'react-icons/fa6';
-// import { PiBellSimpleZFill } from 'react-icons/pi';
-// import { TiTick } from 'react-icons/ti';
+
 import {
   ArrowRight,
   ChartArea,
@@ -20,7 +12,33 @@ import {
   Bell,
   Check,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 const HomePage = () => {
+  const [user, setUser] = useState([]);
+  const userInfo = localStorage.getItem('user');
+  const useObject = JSON.parse(userInfo);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setUser(useObject);
+  }, {});
+  const userRole = useObject?.role;
+  useEffect(() => {
+    switch (userRole) {
+      case 'Doctor':
+        navigate('/doctor', { replace: true });
+        break;
+      case 'Admin':
+        navigate('/admin', { replace: true });
+        break;
+      case 'Customer':
+        navigate('/customer', { replace: true });
+        break;
+      default:
+    }
+  }, {});
+
   return (
     <div className='mt-2'>
       <div className='bg-blue-100/50 px-[4em] py-[1.5em]'>

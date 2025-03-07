@@ -1,13 +1,10 @@
-import { BrowserRouter, Route, Routes } from 'react-router';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import LayoutCustomer from './layout/LayoutCustomer';
 import HomePageCus from './pages/customer/HomePage';
 import HomePage from './pages/guest/HomePage';
 import LayoutGuest from './layout/LayoutGuest';
 import LayoutDoctor from './layout/LayoutDoctor';
 import RequestAdvisory from './pages/doctor/RequestAdvisory';
-// import AdvisoryHistory from './pages/customer/AdvisoryHistory';
-// import ResultAdvisory from './pages/customer/ResultAdvisory';
-// import ChildRecords from './pages/customer/ChildRecords';
 import AddNewChild from './pages/customer/AddNewChild';
 import BookingDoctor from './pages/customer/BookingDoctor';
 import CustomerConsultationHistory from './pages/customer/CustomerConsultationHistory';
@@ -20,16 +17,17 @@ import BookingHistory from './pages/customer/BookingHistory';
 import UpdateChild from './pages/customer/UpdateChild';
 import ConsultationChat from './pages/customer/CustomerConsultationResult';
 import DoctorConsultation from './pages/doctor/DoctorConsultation';
+import DoctorChartOfChild from './pages/doctor/DoctorChartOfChild';
+import LayoutAdmin from './layout/LayoutAdmin';
+import DoctorManagement from './pages/admin/DoctorManagement';
+import DoctorScheduleManager from './pages/doctor/DoctorScheduleManager';
+import DoctorScheduleAdmin from './pages/admin/DoctorScheduleAdmin';
 
-// import AddRecords from './pages/customer/AddRecords';
-// import ChartOfChild from './pages/customer/ChartOfChild';
 
-// import { Aperture } from 'module';
 
 function App() {
   return (
     <>
-      {/* <div className='flex flex-row'> */}
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<LayoutGuest />}>
@@ -37,6 +35,7 @@ function App() {
             <Route path='/login' element={<GuestLogin />} />
             <Route path='/register' element={<GuestRegister />} />
           </Route>
+
 
           <Route path='/customer' element={<LayoutCustomer />}>
             <Route index element={<HomePageCus />} />
@@ -63,38 +62,34 @@ function App() {
             />
             <Route path='child-records' element={<CustomerChildRecord />} />
             <Route path='chart-of-child' element={<CustomerChartOfChild />} />
-
-            {/*
-            <Route path='advisory' element={<AdvisoryHistory />} />
-            <Route path='result-advisory' element={<ResultAdvisory />} />
-            <Route path='child-records' element={<ChildRecords />} />
-            <Route path='add-records' element={<AddRecords />} />
-            <Route path='chart' element={<ChartOfChild />} />
-
-            */}
           </Route>
+
 
           <Route path='/doctor' element={<LayoutDoctor />}>
             <Route index element={<RequestAdvisory />} />
             <Route
-              path='/doctor/consultation'
+              path='/doctor/consultationChat'
               element={<DoctorConsultation />}
             />
-            {/* <Route
-              path='response-success'
-              element={<ResponseAdvisorySuccess />}
+            <Route
+              path='/doctor/chartOfChild'
+              element={<DoctorChartOfChild />}
             />
-            <Route path='all-appointments' element={<AllAppointments />} />
-            <Route path='set-calendar' element={<SetCalendar />} />
-            <Route path='request-form' element={<FormRequestAdvisory />} />
-            <Route path='result-advisory' element={<ResultAdvisory />} />
-            <Route path='chart' element={<ChartOfChild />} /> */}
+            <Route
+              path='/doctor/schedule'
+              element={<DoctorScheduleManager />}
+            />
+          </Route>
+
+          
+
+          <Route path="/admin" element={<LayoutAdmin />}>
+            <Route index element={<Navigate to="/admin/doctors" replace />} />
+            <Route path="doctors" element={<DoctorManagement />} />
+            <Route path="doctor-schedules" element={<DoctorScheduleAdmin />} />
           </Route>
         </Routes>
       </BrowserRouter>
-      {/* <ArrowDownToLine />
-        <div>123</div> */}
-      {/* </div> */}
     </>
   );
 }

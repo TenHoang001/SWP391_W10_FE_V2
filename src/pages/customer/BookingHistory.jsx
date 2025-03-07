@@ -1,5 +1,7 @@
 import { Card, Typography, Button } from '@material-tailwind/react';
 import { Link } from 'react-router';
+import { GetUserAppointmentsAPI } from '../../api/AppointmentAPI';
+import { useEffect, useState } from 'react';
 
 const TABLE_HEAD = [
   'Bác sĩ',
@@ -54,47 +56,68 @@ const TABLE_ROWS = [
 ];
 
 const BookingHistory = () => {
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const fetchAppointments = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const response = await GetUserAppointmentsAPI(userId);
+      if (response?.status) {
+        setAppointments(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <div className='flex h-screen justify-center bg-gray-100'>
         <div className='mt-10 flex h-fit w-[80%] items-center'>
           <Card className='h-full w-full overflow-scroll rounded-xl'>
-            <table className='w-full min-w-max table-auto text-left'>
-              <thead>
-                <tr>
-                  {TABLE_HEAD.map((head) => (
-                    <th
-                      key={head}
-                      className='border-b border-blue-gray-100 bg-blue-gray-50 p-4'
-                    >
-                      <Typography
-                        variant='small'
-                        color='blue-gray'
-                        className='font-normal leading-none opacity-70'
+            {loading ? (
+              <div className="p-4 text-center">Đang tải...</div>
+            ) : (
+              <table className='w-full min-w-max table-auto text-left'>
+                <thead>
+                  <tr>
+                    {TABLE_HEAD.map((head) => (
+                      <th
+                        key={head}
+                        className='border-b border-blue-gray-100 bg-blue-gray-50 p-4'
                       >
-                        {head}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {TABLE_ROWS.map(
-                  ({ name, meet, pin, date, time, admin }, index) => {
-                    const isLast = index === TABLE_ROWS.length - 1;
-                    const classes = isLast
-                      ? 'p-4'
-                      : 'p-4 border-b border-blue-gray-50';
+                        <Typography
+                          variant='small'
+                          color='blue-gray'
+                          className='font-normal leading-none opacity-70'
+                        >
+                          {head}
+                        </Typography>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {appointments.map((appointment, index) => {
+                    const isLast = index === appointments.length - 1;
+                    const classes = isLast ? 'p-4' : 'p-4 border-b border-blue-gray-50';
 
                     return (
-                      <tr key={name}>
+                      <tr key={appointment.appointmentId}>
                         <td className={classes}>
                           <Typography
                             variant='small'
                             color='blue-gray'
                             className='font-normal'
                           >
-                            {name}
+                            {appointment.doctorName}
                           </Typography>
                         </td>
                         <td className={classes}>
@@ -103,7 +126,7 @@ const BookingHistory = () => {
                             color='blue-gray'
                             className='font-normal'
                           >
-                            {date}
+                            {appointment.date}
                           </Typography>
                         </td>
                         <td className={classes}>
@@ -112,7 +135,7 @@ const BookingHistory = () => {
                             color='blue-gray'
                             className='font-normal'
                           >
-                            {time}
+                            {appointment.time}
                           </Typography>
                         </td>
                         <td className={classes}>
@@ -121,7 +144,7 @@ const BookingHistory = () => {
                             color='blue-gray'
                             className='font-normal'
                           >
-                            {meet}
+                            {appointment.meet}
                           </Typography>
                         </td>
                         <td className={classes}>
@@ -130,25 +153,25 @@ const BookingHistory = () => {
                             color='blue-gray'
                             className='font-normal'
                           >
-                            {pin}
+                            {appointment.pin}
                           </Typography>
                         </td>
                         <td className={classes}>
                           <Button
                             className={
-                              admin
+                              appointment.status === 'Completed'
                                 ? 'w-[60%] bg-blue-500'
                                 : 'w-[60%] bg-gray-600'
                             }
-                            disabled={!admin}
+                            disabled={appointment.status !== 'Completed'}
                           >
                             <Typography
                               variant='small'
                               color='blue-gray'
                               className='font-normal text-white'
                             >
-                              {admin ? (
-                                <Link to={'/customer/booking-result'}>
+                              {appointment.status === 'Completed' ? (
+                                <Link to={`/customer/booking-result/${appointment.appointmentId}`}>
                                   Xem kết quả
                                 </Link>
                               ) : (
@@ -159,10 +182,10 @@ const BookingHistory = () => {
                         </td>
                       </tr>
                     );
-                  }
-                )}
-              </tbody>
-            </table>
+                  })}
+                </tbody>
+              </table>
+            )}
           </Card>
         </div>
       </div>

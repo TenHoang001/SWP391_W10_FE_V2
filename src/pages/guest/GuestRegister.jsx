@@ -14,6 +14,7 @@ const GuestRegister = () => {
     fullName: '',
     phone: '',
     address: '',
+    role: "Customer",
   });
 
   const handleChange = (e) => {

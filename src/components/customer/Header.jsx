@@ -31,7 +31,7 @@ const Header = () => {
             Danh sách bác sĩ
           </Link>
           <Link to={'bookingDoctor'} className='transition hover:text-blue-500'>
-            Đặt Lịch khám
+            Đặt Lịch tư vấn
           </Link>
         </nav>
 
