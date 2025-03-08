@@ -1,12 +1,52 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Filter, Trash2, BarChart3, NotebookPen } from 'lucide-react'; // Import Lucide icons
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import {
+  GetGrowthRecordsByChildIdAPI,
+  DeleteGrowthRecordAPI,
+} from '../../api/GrowthRecordAPI';
 
 const CustomerChildRecord = () => {
-  const records = [
-    { date: '2025-01-15', weight: 75.5, height: 175, bmi: 24.7 },
-    { date: '2025-01-14', weight: 76.0, height: 175, bmi: 24.9 },
-  ];
+  const [records, setRecords] = useState([]);
+  const { childId } = useParams();
+  const [notification, setNotification] = useState({
+    show: false,
+    message: '',
+    type: 'success',
+  });
+
+  useEffect(() => {
+    loadGrowthRecords();
+  }, [childId]);
+
+  const loadGrowthRecords = async () => {
+    try {
+      const response = await GetGrowthRecordsByChildIdAPI(childId);
+      setRecords(response.data);
+    } catch (error) {
+      showNotification('Lỗi khi tải dữ liệu', 'error');
+    }
+  };
+
+  const handleDelete = async (recordId) => {
+    if (window.confirm('Bạn có chắc muốn xóa chỉ số này?')) {
+      try {
+        await DeleteGrowthRecordAPI(recordId);
+        showNotification('Xóa chỉ số thành công');
+        loadGrowthRecords();
+      } catch (error) {
+        showNotification('Lỗi khi xóa chỉ số', 'error');
+      }
+    }
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(
+      () => setNotification({ show: false, message: '', type: 'success' }),
+      3000
+    );
+  };
 
   return (
     <div className='min-h-screen bg-gray-200 px-4 py-6'>
@@ -23,7 +63,7 @@ const CustomerChildRecord = () => {
               <Filter className='h-4 w-4' />
               Filter
             </button>
-            <Link to='/customer/addChildIndex'>
+            <Link to={`/customer/addChildIndex/${childId}`}>
               <button className='flex items-center gap-2 rounded bg-blue-500 px-3 py-1 text-white'>
                 <Plus className='h-4 w-4' />
                 Thêm chỉ số
@@ -47,25 +87,36 @@ const CustomerChildRecord = () => {
                 <th className='px-4 py-3'>Weight (kg)</th>
                 <th className='px-4 py-3'>Height (cm)</th>
                 <th className='px-4 py-3'>BMI</th>
+                <th className='px-4 py-3'>Note</th>
                 <th className='px-4 py-3'>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {records.map((record, index) => (
+              {records.map((record) => (
                 <tr
-                  key={index}
+                  key={record.id}
                   className='border-b border-gray-200 odd:bg-white even:bg-gray-50'
                 >
-                  <td className='px-4 py-3'>{record.date}</td>
+                  <td className='px-4 py-3'>
+                    {record.createdAt.split('T')[0]}
+                  </td>
                   <td className='px-4 py-3'>{record.weight}</td>
                   <td className='px-4 py-3'>{record.height}</td>
                   <td className='px-4 py-3'>{record.bmi}</td>
+                  <td className='px-4 py-3'>{record.note || '-'}</td>
                   <td className='flex items-center gap-2 px-4 py-3'>
-                    <button className='flex items-center gap-1 text-blue-600 hover:underline'>
-                      <NotebookPen className='h-4 w-4' />
-                      Edit
-                    </button>
-                    <button className='flex items-center gap-1 text-red-600 hover:underline'>
+                    <Link
+                      to={`/customer/editChildIndex/${childId}/${record.recordId}`}
+                    >
+                      <button className='flex items-center gap-1 text-blue-600 hover:underline'>
+                        <NotebookPen className='h-4 w-4' />
+                        Edit
+                      </button>
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(record.childId)}
+                      className='flex items-center gap-1 text-red-600 hover:underline'
+                    >
                       <Trash2 className='h-4 w-4' />
                       Delete
                     </button>
