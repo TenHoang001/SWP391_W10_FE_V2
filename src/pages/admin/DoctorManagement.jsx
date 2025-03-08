@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import {
   GetAllDoctorsAPI,
   CreateDoctorAPI,
@@ -164,7 +165,14 @@ const DoctorManagement = () => {
                 <td className='px-6 py-4'>{doctor.email}</td>
                 <td className='px-6 py-4'>{doctor.phoneNumber}</td>
                 <td className='px-6 py-4'>{doctor.specialization}</td>
-                <td className='px-6 py-4 text-right'>
+                <td className='px-6 py-4 text-right flex items-center justify-end'>
+                  <Link
+                    to={`/admin/doctors/${doctor.userId}/schedule`}
+                    state={{ doctorName: doctor.fullName }}
+                    className='text-green-600 hover:text-green-900 mr-4'
+                  >
+                    <Calendar className='h-5 w-5' />
+                  </Link>
                   <button
                     onClick={() => {
                       setSelectedDoctor(doctor);

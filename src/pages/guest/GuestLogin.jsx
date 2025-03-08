@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import hinh5 from '../../assets/hinh5.png';
 import { Link } from 'react-router-dom';
 import { LoginAPI } from '../../api/AuthAPI';
@@ -31,7 +31,7 @@ const GuestLogin = () => {
 
     try {
       const response = await LoginAPI(data);
-      console.log(response);
+      console.log(response.data.role);
 
       if (response?.status) {
         localStorage.setItem('user', JSON.stringify(response.data));
@@ -45,7 +45,7 @@ const GuestLogin = () => {
           case 'Admin':
             navigate('/admin', { replace: true });
             break;
-          case 'Customer':
+          case 'User':
             navigate('/customer', { replace: true });
             break;
           default:

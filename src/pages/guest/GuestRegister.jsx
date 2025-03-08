@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import hinh6 from '../../assets/hinh6.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { RegisterAPI } from '../../api/AuthAPI';

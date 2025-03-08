@@ -20,10 +20,9 @@ import DoctorConsultation from './pages/doctor/DoctorConsultation';
 import DoctorChartOfChild from './pages/doctor/DoctorChartOfChild';
 import LayoutAdmin from './layout/LayoutAdmin';
 import DoctorManagement from './pages/admin/DoctorManagement';
-import DoctorScheduleManager from './pages/doctor/DoctorScheduleManager';
-import DoctorScheduleAdmin from './pages/admin/DoctorScheduleAdmin';
-
-
+import CustomerEditChildIndex from './pages/customer/CustomerEditChildIndex';
+import DoctorSchedule from './pages/doctor/DoctorSchedule';
+import DoctorScheduleManagement from './pages/admin/DoctorScheduleManagement';
 
 function App() {
   return (
@@ -35,7 +34,6 @@ function App() {
             <Route path='/login' element={<GuestLogin />} />
             <Route path='/register' element={<GuestRegister />} />
           </Route>
-
 
           <Route path='/customer' element={<LayoutCustomer />}>
             <Route index element={<HomePageCus />} />
@@ -57,13 +55,16 @@ function App() {
             />
             <Route path='chartOfChild' element={<CustomerChartOfChild />} />
             <Route
-              path='addChildIndex'
+              path='addChildIndex/:childId'
               element={<CustomerAddNewChildIndex />}
             />
             <Route path='child-records' element={<CustomerChildRecord />} />
             <Route path='chart-of-child' element={<CustomerChartOfChild />} />
+            <Route
+              path='/customer/editChildIndex/:childId/:recordId'
+              element={<CustomerEditChildIndex />}
+            />
           </Route>
-
 
           <Route path='/doctor' element={<LayoutDoctor />}>
             <Route index element={<RequestAdvisory />} />
@@ -77,16 +78,14 @@ function App() {
             />
             <Route
               path='/doctor/schedule'
-              element={<DoctorScheduleManager />}
+              element={<DoctorSchedule />}
             />
           </Route>
 
-          
-
-          <Route path="/admin" element={<LayoutAdmin />}>
-            <Route index element={<Navigate to="/admin/doctors" replace />} />
-            <Route path="doctors" element={<DoctorManagement />} />
-            <Route path="doctor-schedules" element={<DoctorScheduleAdmin />} />
+          <Route path='/admin' element={<LayoutAdmin />}>
+            <Route index element={<Navigate to='/admin/doctors' replace />} />
+            <Route path='doctors' element={<DoctorManagement />} />
+            <Route path='doctors/:doctorId/schedule' element={<DoctorScheduleManagement />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -5,7 +5,9 @@ const END_POINT = {
 };
 
 export const GetAllDoctorsAPI = async () => {
-  const response = await AxiosAPI.get(END_POINT.DOCTORS);
+  const response = await AxiosAPI.get(
+    `${END_POINT.DOCTORS}/${`Get all doctors`}`
+  );
   return response;
 };
 
@@ -27,4 +29,4 @@ export const UpdateDoctorAPI = async (doctorId, data) => {
 export const DeleteDoctorAPI = async (doctorId) => {
   const response = await AxiosAPI.delete(`${END_POINT.DOCTORS}/${doctorId}`);
   return response;
-}; 
+};
