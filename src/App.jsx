@@ -14,6 +14,7 @@ import CustomerAddNewChildIndex from './pages/customer/CustomerAddNewChildIndex'
 import GuestLogin from './pages/guest/GuestLogin';
 import GuestRegister from './pages/guest/GuestRegister';
 import BookingHistory from './pages/customer/BookingHistory';
+import ListDoctor from "./pages/customer/ListDoctor";
 import UpdateChild from './pages/customer/UpdateChild';
 import ConsultationChat from './pages/customer/CustomerConsultationResult';
 import DoctorConsultation from './pages/doctor/DoctorConsultation';
@@ -44,6 +45,7 @@ function App() {
             />
             <Route path='bookingDoctor' element={<BookingDoctor />} />
             <Route path='bookingHistory' element={<BookingHistory />} />
+            <Route path='listDoctor' element={<ListDoctor />} />
             <Route path='consultationChat' element={<ConsultationChat />} />
             <Route
               path='consultationHistory'
