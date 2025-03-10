@@ -1,185 +1,152 @@
-import React, { useState } from 'react';
-import { Input, Button } from '@material-tailwind/react';
-import { Send } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Input, Button, Alert } from '@material-tailwind/react';
+import { Send, Search, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
-const DoctorConsultation = () => {
-  const [message, setMessage] = useState('');
-  const location = useLocation();
-  const isCompleted = location.state?.status === 'completed';
-  const [chatHistory, setChatHistory] = useState([
-    {
-      sender: 'doctor',
-      name: 'Bs. Nguyễn Văn A',
-      message: 'Xin chào! Tôi có thể giúp gì cho bạn?',
-      time: '09:00',
-      avatar:
-        'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=2070&auto=format&fit=crop',
-    },
-    {
-      sender: 'user',
-      name: 'Chị Lan',
-      message: 'Chào bác sĩ, tôi muốn hỏi về vấn đề dinh dưỡng của con.',
-      time: '09:01',
-      avatar:
-        'https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=2080&auto=format&fit=crop',
-    },
-  ]);
+import { GetDoctorConsultationsAPI } from '../../api/ConsultationAPI';
+import { format } from 'date-fns';
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      const newMessage = {
-        sender: 'doctor',
-        name: 'Bs. Nguyễn Văn A',
-        message: message,
-        time: new Date().toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-        avatar:
-          'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=2070&auto=format&fit=crop',
-      };
-      setChatHistory([...chatHistory, newMessage]);
-      setMessage('');
+const DoctorConsultation = () => {
+  const [consultations, setConsultations] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [status, setStatus] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const userId = localStorage.getItem('userId');
+
+  useEffect(() => {
+    fetchConsultations();
+  }, []);
+
+  const fetchConsultations = async () => {
+    try {
+      setLoading(true);
+      const response = await GetDoctorConsultationsAPI();
+      if (response.status === 200) {
+        setConsultations(response.data);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setError('Không thể tải danh sách yêu cầu tham vấn');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Pending':
+        return 'bg-yellow-200';
+      case 'Assigned':
+        return 'bg-blue-200';
+      case 'Completed':
+        return 'bg-green-300';
+      default:
+        return 'bg-gray-200';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'Pending':
+        return 'Đang chờ';
+      case 'Assigned':
+        return 'Đã phân công';
+      case 'Completed':
+        return 'Đã hoàn thành';
+      default:
+        return 'Không xác định';
+    }
+  };
+
+  const filteredConsultations = consultations.filter(consultation => {
+    const matchSearch = consultation.child?.fullName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchStatus = status === 'all' || consultation.status === status;
+    const matchDoctor = consultation.assignedDoctorId.toString() === userId;
+    return matchSearch && matchStatus && matchDoctor;
+  });
+
+  if (loading) {
+    return <div className="text-center py-4">Đang tải...</div>;
+  }
+
+  if (error) {
+    return (
+      <Alert color="red" className="mx-4 my-4">
+        {error}
+      </Alert>
+    );
+  }
+
   return (
-    <div className='mx-auto min-w-screen px-4 py-8'>
-      <div className='flex h-[calc(100vh-200px)] gap-4'>
-        <div className='flex w-full flex-col rounded-xl border bg-white shadow-md'>
-          {/* Chat Header */}
-          <div className='border-b p-4'>
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center gap-3'>
-                <img
-                  src='https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=2080&auto=format&fit=crop'
-                  alt='Patient'
-                  className='h-12 w-12 rounded-full object-cover'
-                />
-                <div>
-                  <h3 className='font-semibold'>Chị Lan</h3>
-                </div>
+    <div className='min-h-screen bg-gray-100 px-6 py-5'>
+      <div className='pb-5'>
+        <p className='text-lg font-bold'>Danh sách yêu cầu tham vấn</p>
+      </div>
+
+      <div className='flex items-center rounded bg-white p-2 shadow'>
+        <div className='relative flex-grow'>
+          <input
+            type='text'
+            placeholder='Tìm kiếm theo tên trẻ'
+            className='w-full rounded border border-gray-300 p-2 pl-8'
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Search className='absolute left-2 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500' />
+        </div>
+        <select 
+          className='ml-4 rounded border border-gray-300 p-2'
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        >
+          <option value='all'>Tất cả trạng thái</option>
+          <option value='Pending'>Đang chờ</option>
+          <option value='Assigned'>Đã phân công</option>
+          <option value='Completed'>Đã hoàn thành</option>
+        </select>
+      </div>
+
+      <div className='space-y-3 pt-5'>
+        {filteredConsultations.map((consultation) => (
+          <div key={consultation.requestId} className='flex justify-between rounded bg-white p-3 shadow'>
+            <div className='flex items-center gap-4'>
+              <img
+                src='https://images.unsplash.com/photo-1739382122846-74e722a6eea4?w=600&auto=format&fit=crop&q=60'
+                alt=''
+                className='h-12 w-12 rounded-full'
+              />
+              <div>
+                <p className='font-semibold'>Trẻ: {consultation.child?.fullName}</p>
+                <p className='text-sm text-gray-600'>ID Phụ huynh: {consultation.userId}</p>
+                <p className='text-sm text-gray-600'>Mô tả: {consultation.description}</p>
+                <p className='text-sm text-gray-600'>
+                  Phản hồi gần nhất: {consultation.consultationResponses[consultation.consultationResponses.length - 1]?.response}
+                </p>
               </div>
             </div>
-          </div>
-
-          {/* Chat Messages */}
-          <div className='flex-1 overflow-y-auto p-4'>
-            <div className='space-y-4'>
-              {chatHistory.map((chat, index) => (
-                <div
-                  key={index}
-                  className={`flex ${
-                    chat.sender === 'doctor' ? 'justify-end' : 'justify-start'
-                  }`}
-                >
-                  <div
-                    className={`flex max-w-[70%] items-end gap-2 ${
-                      chat.sender === 'doctor' ? 'flex-row-reverse' : 'flex-row'
-                    }`}
-                  >
-                    <img
-                      src={chat.avatar}
-                      alt={chat.sender}
-                      className='h-8 w-8 rounded-full object-cover'
-                    />
-                    <div
-                      className={`rounded-lg p-3 ${
-                        chat.sender === 'doctor'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100'
-                      }`}
-                    >
-                      {chat.sender === 'user' && (
-                        <p className='mb-1 text-sm font-semibold text-blue-600'>
-                          {chat.name}
-                        </p>
-                      )}
-                      <p>{chat.message}</p>
-                      <p
-                        className={`text-right text-xs ${
-                          chat.sender === 'doctor'
-                            ? 'text-blue-100'
-                            : 'text-gray-500'
-                        }`}
-                      >
-                        {chat.time}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Chat Input with Quick Responses */}
-          <div className='border-t p-4'>
-            <div className='mb-3 flex gap-2'>
-              <Button
-                variant='outlined'
-                size='sm'
-                onClick={() =>
-                  setMessage(
-                    'Cảm ơn bạn đã chia sẻ. Tôi sẽ tư vấn chi tiết về vấn đề này.'
-                  )
-                }
-                disabled={isCompleted}
-              >
-                Phản hồi nhanh
-              </Button>
-              <Button
-                variant='outlined'
-                size='sm'
-                onClick={() =>
-                  setMessage(
-                    'Bạn có thể mô tả chi tiết hơn về triệu chứng không?'
-                  )
-                }
-                disabled={isCompleted}
-              >
-                Yêu cầu chi tiết
-              </Button>
-              <Button
-                variant='outlined'
-                size='sm'
-                onClick={() =>
-                  setMessage(
-                    'Tôi sẽ gửi cho bạn một số tài liệu tham khảo về vấn đề này.'
-                  )
-                }
-                disabled={isCompleted}
-              >
-                Gửi tài liệu
-              </Button>
-              <Link to={'/doctor/chartOfChild'} disabled={isCompleted}>
-                <Button variant='outlined' size='sm' disabled={isCompleted}>
-                  Chart của bé
-                </Button>
+            <div className='flex items-center gap-4'>
+              <div>
+                <p className='text-sm text-gray-600'>Ngày gửi</p>
+                <p className='font-semibold'>{format(new Date(consultation.createdAt), 'dd/MM/yyyy')}</p>
+                <p className='text-xs text-gray-500'>
+                  Cập nhật: {format(new Date(consultation.lastActivityAt), 'HH:mm')}
+                </p>
+              </div>
+              <Link to={`/doctor/consultation/${consultation.requestId}`}>
+                <button className={`flex w-40 items-center gap-2 rounded-full ${getStatusColor(consultation.status)} px-3 py-1`}>
+                  <Clock className='h-4 w-4' />
+                  {getStatusText(consultation.status)}
+                </button>
               </Link>
             </div>
-            <div className='flex gap-2'>
-              <Input
-                type='text'
-                placeholder='Nhập tin nhắn...'
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                disabled={isCompleted}
-                onKeyPress={(e) =>
-                  !isCompleted && e.key === 'Enter' && handleSendMessage()
-                }
-                className='flex-1'
-              />
-              <Button
-                className='flex items-center gap-2'
-                d
-                onClick={handleSendMessage}
-              >
-                <Send className='h-4 w-4' /> Gửi
-              </Button>
-            </div>
           </div>
-        </div>
+        ))}
+
+        {filteredConsultations.length === 0 && (
+          <div className='text-center py-4 text-gray-500'>
+            Không tìm thấy yêu cầu tham vấn nào
+          </div>
+        )}
       </div>
     </div>
   );

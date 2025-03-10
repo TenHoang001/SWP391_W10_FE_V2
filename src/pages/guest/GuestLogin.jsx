@@ -25,7 +25,7 @@ const GuestLogin = () => {
     e.preventDefault();
 
     const data = {
-      usernameOrEmail: email,
+      username: email,
       password: password,
     };
 
@@ -36,6 +36,7 @@ const GuestLogin = () => {
       if (response?.status) {
         localStorage.setItem('user', JSON.stringify(response.data));
         localStorage.setItem('userId', JSON.stringify(response.data.userId));
+        localStorage.setItem('token', JSON.stringify(response.data.token));
 
         // Phân quyền điều hướng dựa vào role
         switch (response.data.role) {

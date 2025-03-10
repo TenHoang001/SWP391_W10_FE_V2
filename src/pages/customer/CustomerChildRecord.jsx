@@ -86,6 +86,7 @@ const CustomerChildRecord = () => {
                 <th className='px-4 py-3'>Date</th>
                 <th className='px-4 py-3'>Weight (kg)</th>
                 <th className='px-4 py-3'>Height (cm)</th>
+                <th className='px-4 py-3'>Head Circumference (cm)</th>
                 <th className='px-4 py-3'>BMI</th>
                 <th className='px-4 py-3'>Note</th>
                 <th className='px-4 py-3'>Actions</th>
@@ -102,6 +103,7 @@ const CustomerChildRecord = () => {
                   </td>
                   <td className='px-4 py-3'>{record.weight}</td>
                   <td className='px-4 py-3'>{record.height}</td>
+                  <td className='px-4 py-3'>{record.headCircumference}</td>
                   <td className='px-4 py-3'>{record.bmi}</td>
                   <td className='px-4 py-3'>{record.note || '-'}</td>
                   <td className='flex items-center gap-2 px-4 py-3'>

@@ -104,7 +104,7 @@ const UpdateChild = () => {
   };
 
   return (
-    <div className='m-10 mb-20'>
+    <div className='mt-5 mb-20 pb-20'>
       {showAlert && (
         <Alert
           open={showAlert}

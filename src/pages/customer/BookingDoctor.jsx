@@ -21,9 +21,11 @@ const BookingDoctor = () => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedChild, setSelectedChild] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [scheduleId, setScheduleId] = useState(null);
+  
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -36,19 +38,7 @@ const BookingDoctor = () => {
     loadDoctorSchedule();
   }, []);
 
-  useEffect(() => {
-    console.log(selectedDoctor);
-    console.log(selectedDate);
-    console.log(selectedChild);
-    console.log(selectedSlot);
-    console.log(availableSlots);
-  }, [
-    selectedDoctor,
-    selectedDate,
-    selectedChild,
-    availableSlots,
-    selectedSlot,
-  ]);
+
 
   useEffect(() => {
     if (selectedDoctor && selectedDate) {
@@ -84,12 +74,12 @@ const BookingDoctor = () => {
       );
       const schedule = response.data.schedules.find(
         (s) => s.workDate === format(selectedDate, 'yyyy-MM-dd')
-      );
+      ); //loại bỏ ngày không làm việc
 
       if (schedule) {
-        setScheduleId(schedule.scheduleId);
+        setScheduleId(schedule.scheduleId); //lấy id lịch bác sĩ
         setAvailableSlots(
-          schedule.availableSlots.filter((slot) => slot.isAvailable)
+          schedule.availableSlots.filter((slot) => slot.isAvailable) //lấy các slot có thể đặt lịch.
         );
       } else {
         setAvailableSlots([]);
@@ -111,7 +101,7 @@ const BookingDoctor = () => {
         userId: parseInt(userId),
         childId: parseInt(selectedChild),
         slotTime: selectedSlot + "",
-        description: 'Đặt lịch tư vấn trực tuyến',
+        description: '',
       };
 
       const response = await CreateAppointmentAPI(appointmentData);
@@ -184,7 +174,7 @@ const BookingDoctor = () => {
               <Button
                 key={slot.slotId}
                 variant={selectedSlot === slot.slotTime ? 'filled' : 'outlined'}
-                onClick={() => setSelectedSlot(slot.slotTime)}
+                onClick={() => setSelectedSlot(slot.slotId)}
               >
                 {slot.startTime} - {slot.endTime}
               </Button>

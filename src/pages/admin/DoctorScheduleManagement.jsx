@@ -39,7 +39,8 @@ const DoctorScheduleManagement = () => {
       const response = await GetDefaultSlotsAPI();
       setDefaultSlots(response.data);
     } catch (error) {
-      showNotification('Lỗi khi tải danh sách slot mặc định', 'error');
+      console.log('1');
+      // showNotification('Lỗi khi tải danh sách slot mặc định', 'error');
     }
   };
 
@@ -51,8 +52,8 @@ const DoctorScheduleManagement = () => {
       );
       setWeekSchedule(response.data);
     } catch (error) {
-      console.log(error.response);
-      showNotification('Lỗi khi tải lịch làm việc', 'error');
+      console.log('2');
+      // showNotification('Lỗi khi tải lịch làm việc', 'error');
     }
   };
 
@@ -73,8 +74,13 @@ const DoctorScheduleManagement = () => {
         setSelectedSlots([]);
       }
     } catch (error) {
-      console.log(error);
-      showNotification(error.response.data.message, 'error');
+      console.log(error.response.data.message);
+      showNotification(
+        error.response.data.message == undefined
+          ? 'Phải chọn ít nhất 6 slot'
+          : error.response.data.message,
+        'error'
+      );
     }
   };
 

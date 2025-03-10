@@ -22,8 +22,11 @@ const HomePage = () => {
 
   useEffect(() => {
     setUser(useObject);
-  }, {});
+  }, []);
+
   const userRole = useObject?.role;
+  console.log(userRole);
+
   useEffect(() => {
     switch (userRole) {
       case 'Doctor':
@@ -37,7 +40,7 @@ const HomePage = () => {
         break;
       default:
     }
-  }, {});
+  }, []);
 
   return (
     <div className='mt-2'>

@@ -57,7 +57,7 @@ const AddNewChild = () => {
   };
 
   return (
-    <div className='m-10 mb-20'>
+    <div className='m-10 mb-20 my-20 py-20'>
       {showAlert && (
         <Alert
           open={showAlert}

@@ -3,10 +3,18 @@ import { Eye, Plus, NotebookPen, Search, RefreshCcw } from 'lucide-react';
 import hinh4 from '../../assets/hinh4.png';
 import { useEffect, useState } from 'react';
 import { GetChildrenByUserIdAPI } from '../../api/ChildrenAPI';
+import { CreateConsultationRequestAPI } from '../../api/ConsultationAPI';
+import { Alert } from '@material-tailwind/react';
+import { CheckCircle, XCircle } from 'lucide-react';
 
 const HomePageCus = () => {
   const [children, setChildren] = useState([]);
   const navigate = useNavigate();
+  const [alert, setAlert] = useState({
+    show: false,
+    message: '',
+    type: 'success',
+  });
 
   useEffect(() => {
     fetchChildren();
@@ -120,14 +128,87 @@ const HomePageCus = () => {
           </Link>
         </div>
         <div className='mx-auto max-w-lg rounded-lg bg-white p-6 shadow-lg'>
-          <label className='mb-2 block font-medium'>Bác sĩ</label>
-          <select className='w-full rounded border border-gray-300 px-3 py-2'>
-            <option>Bs. Nguyễn Văn A</option>
-            <option>Bs. Nguyễn Văn B</option>
+          {alert.show && (
+            <Alert
+              variant='gradient'
+              color={alert.type === 'success' ? 'green' : 'red'}
+              className='mb-4'
+              icon={
+                alert.type === 'success' ? (
+                  <CheckCircle className='h-6 w-6' />
+                ) : (
+                  <XCircle className='h-6 w-6' />
+                )
+              }
+              open={alert.show}
+              onClose={() => setAlert({ ...alert, show: false })}
+            >
+              {alert.message}
+            </Alert>
+          )}
+
+          <label className='mb-2 block font-medium'>Chọn trẻ</label>
+          <select
+            className='w-full rounded border border-gray-300 px-3 py-2'
+            id='childId'
+          >
+            <option value=''>-- Chọn trẻ --</option>
+            {children.map((child) => (
+              <option key={child.childId} value={child.childId}>
+                {child.fullName}
+              </option>
+            ))}
           </select>
           <label className='mb-2 mt-4 block font-medium'>Mô tả vấn đề</label>
-          <textarea className='min-h-28 w-full resize-none rounded border border-gray-300 px-3 py-2'></textarea>
-          <button className='mt-4 w-full rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600'>
+          <textarea
+            className='min-h-28 w-full resize-none rounded border border-gray-300 px-3 py-2'
+            id='description'
+          ></textarea>
+          <button
+            className='mt-4 w-full rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600'
+            onClick={async () => {
+              const childId = document.getElementById('childId').value;
+              const description = document.getElementById('description').value;
+
+              if (!childId) {
+                setAlert({
+                  show: true,
+                  message: 'Vui lòng chọn trẻ',
+                  type: 'error',
+                });
+                return;
+              }
+              if (!description.trim()) {
+                setAlert({
+                  show: true,
+                  message: 'Vui lòng nhập mô tả vấn đề',
+                  type: 'error',
+                });
+                return;
+              }
+
+              try {
+                const response = await CreateConsultationRequestAPI({
+                  childId: parseInt(childId),
+                  description: description,
+                });
+                if (response.status === 201) {
+                  setAlert({
+                    show: true,
+                    message: 'Đã gửi yêu cầu',
+                    type: 'success',
+                  });
+                }
+              } catch (error) {
+                console.error(error);
+                setAlert({
+                  show: true,
+                  message: 'Có lỗi xảy ra khi gửi yêu cầu',
+                  type: 'error',
+                });
+              }
+            }}
+          >
             Gửi yêu cầu
           </button>
         </div>

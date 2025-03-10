@@ -3,7 +3,7 @@ import AxiosAPI from './AxiosAPI';
 const END_POINT = {
   APPOINTMENT: 'Appointment',
   GET_BY_USER: (userId) => `Appointment/GetAppoinmentByUserId/${userId}`,
-  GET_BY_DOCTOR: (doctorId) => `Appointment/GetAppoinmentByDoctorId/${doctorId}`,
+  GET_BY_DOCTOR: (doctorId) => `Appointment/GetAppoinmentByDoctor/${doctorId}`,
   GET_BY_ID: (appointmentId) => `Appointment/GetAppoinmentBy/${appointmentId}`,
   CREATE: 'Appointment/User create the appoinment',
   CANCEL: (appointmentId) => `Appointment/${appointmentId}/User cancel the appoinment`,

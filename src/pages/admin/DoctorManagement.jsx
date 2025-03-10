@@ -5,7 +5,6 @@ import {
   GetAllDoctorsAPI,
   CreateDoctorAPI,
   UpdateDoctorAPI,
-  DeleteDoctorAPI,
 } from '../../api/DoctorAPI';
 import { Alert } from '@material-tailwind/react';
 
@@ -20,17 +19,35 @@ const DoctorManagement = () => {
   });
   const [formData, setFormData] = useState({
     username: '',
-    password: '',
     email: '',
+    password: '',
     fullName: '',
-    phone: '',
+    phoneNumber: '',
     address: '',
     specialization: '',
     qualification: '',
-    experience: '',
     licenseNumber: '',
-    biography: '',
+    experience: 0,
+    biography: ''
   });
+
+  const [updateFormData, setUpdateFormData] = useState({
+    fullName: '',
+    phoneNumber: '',
+    address: '',
+    dateOfBirth: '',
+    specialization: '',
+    qualification: '',
+    licenseNumber: '',
+    experience: 0,
+    biography: '',
+    isAvailable: true
+  });
+
+  const inputStyle = "mt-1 block w-full px-4 py-2.5 rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-sm";
+  const labelStyle = "block text-sm font-semibold text-gray-700 mb-1.5";
+  const selectStyle = "mt-1 block w-full px-4 py-2.5 rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-sm cursor-pointer";
+  const textareaStyle = "mt-1 block w-full px-4 py-2.5 rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-sm resize-none min-h-[120px]";
 
   useEffect(() => {
     loadDoctors();
@@ -57,7 +74,7 @@ const DoctorManagement = () => {
     e.preventDefault();
     try {
       if (selectedDoctor) {
-        const response = await UpdateDoctorAPI(selectedDoctor.id, formData);
+        const response = await UpdateDoctorAPI(selectedDoctor.userId, updateFormData);
         if (response.status) {
           showNotification('Cập nhật bác sĩ thành công');
         }
@@ -75,37 +92,19 @@ const DoctorManagement = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Bạn có chắc muốn xóa bác sĩ này?')) {
-      try {
-        const response = await DeleteDoctorAPI(id);
-        if (response.status) {
-          showNotification('Xóa bác sĩ thành công');
-          loadDoctors();
-        }
-      } catch (error) {
-        showNotification('Lỗi khi xóa bác sĩ', 'error');
-      }
-    }
-  };
-
   const resetForm = () => {
     setFormData({
       username: '',
-      password: '',
       email: '',
+      password: '',
       fullName: '',
       phoneNumber: '',
       address: '',
       specialization: '',
       qualification: '',
-      experience: '',
       licenseNumber: '',
-      description: '',
-      avatar: "https://t3.ftcdn.net/jpg/02/48/87/00/360_F_248870078_Wuf8dA4IVf1SB8aH9Ah0HMNYOCNun479.jpg",
-      workPlace: "ko",
-      gender: "Male",
-      
+      experience: 0,
+      biography: ''
     });
     setSelectedDoctor(null);
   };
@@ -125,16 +124,13 @@ const DoctorManagement = () => {
 
       <div className='flex justify-between items-center mb-6'>
         <h1 className='text-2xl font-bold'>Quản lý bác sĩ</h1>
-        <button
-          onClick={() => {
-            resetForm();
-            setIsModalOpen(true);
-          }}
+        <Link
+          to="/admin/doctors/add"
           className='flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600'
         >
           <Plus className='h-5 w-5' />
           Thêm bác sĩ
-        </button>
+        </Link>
       </div>
 
       <div className='bg-white rounded-lg shadow overflow-x-auto'>
@@ -160,7 +156,7 @@ const DoctorManagement = () => {
           </thead>
           <tbody className='divide-y divide-gray-200'>
             {doctors.map((doctor) => (
-              <tr key={doctor.id}>
+              <tr key={doctor.userId}>
                 <td className='px-6 py-4'>{doctor.fullName}</td>
                 <td className='px-6 py-4'>{doctor.email}</td>
                 <td className='px-6 py-4'>{doctor.phoneNumber}</td>
@@ -173,16 +169,12 @@ const DoctorManagement = () => {
                   >
                     <Calendar className='h-5 w-5' />
                   </Link>
-                  <button
-                    onClick={() => {
-                      setSelectedDoctor(doctor);
-                      setFormData(doctor);
-                      setIsModalOpen(true);
-                    }}
+                  <Link
+                    to={`/admin/doctors/update/${doctor.userId}`}
                     className='text-blue-600 hover:text-blue-900 mr-4'
                   >
                     <Pencil className='h-5 w-5' />
-                  </button>
+                  </Link>
                   <button
                     onClick={() => handleDelete(doctor.id)}
                     className='text-red-600 hover:text-red-900'
@@ -196,207 +188,98 @@ const DoctorManagement = () => {
         </table>
       </div>
 
-      {/* Modal Form */}
+      {/* Modal Form với CSS đẹp hơn */}
       {isModalOpen && (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
-          <div className='bg-white p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto'>
-            <h2 className='text-xl font-bold mb-4'>
-              {selectedDoctor ? 'Cập nhật thông tin bác sĩ' : 'Thêm bác sĩ mới'}
-            </h2>
-            <form onSubmit={handleSubmit} className='space-y-4'>
-              <div className='grid grid-cols-2 gap-4'>
-                <div>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Username
-                  </label>
-                  <input
-                    type='text'
-                    value={formData.username}
-                    onChange={(e) =>
-                      setFormData({ ...formData, username: e.target.value })
-                    }
-                    className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
-                    required
-                  />
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.12)] overflow-hidden">
+            {/* Modal Header */}
+            <div className="bg-gray-50 p-6 border-b">
+              <h2 className="text-2xl font-bold text-gray-800">
+                {selectedDoctor ? 'Cập nhật thông tin bác sĩ' : 'Thêm bác sĩ mới'}
+              </h2>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  {!selectedDoctor ? (
+                    <>
+                      {/* Form fields cho thêm mới */}
+                      <div className="bg-gray-50/50 p-4 rounded-xl hover:bg-gray-50 transition-all duration-300">
+                        <label className={labelStyle}>
+                          Username
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.username}
+                          onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                          className={inputStyle}
+                          placeholder="Nhập username"
+                          required
+                        />
+                      </div>
+                      {/* Các field khác tương tự */}
+                    </>
+                  ) : (
+                    <>
+                      {/* Form fields cho cập nhật */}
+                      <div className="bg-gray-50/50 p-4 rounded-xl hover:bg-gray-50 transition-all duration-300">
+                        <label className={labelStyle}>
+                          Họ và tên
+                        </label>
+                        <input
+                          type="text"
+                          value={updateFormData.fullName}
+                          onChange={(e) => setUpdateFormData({ ...updateFormData, fullName: e.target.value })}
+                          className={inputStyle}
+                          placeholder="Nhập họ và tên"
+                          required
+                        />
+                      </div>
+                      {/* Các field khác tương tự */}
+                    </>
+                  )}
                 </div>
 
-                {!selectedDoctor && (
-                  <div>
-                    <label className='block text-sm font-medium text-gray-700'>
-                      Mật khẩu
-                    </label>
-                    <input
-                      type='password'
-                      value={formData.password}
-                      onChange={(e) =>
-                        setFormData({ ...formData, password: e.target.value })
+                {/* Textarea Biography */}
+                <div className="bg-gray-50/50 p-4 rounded-xl hover:bg-gray-50 transition-all duration-300">
+                  <label className={labelStyle}>
+                    Tiểu sử
+                  </label>
+                  <textarea
+                    value={selectedDoctor ? updateFormData.biography : formData.biography}
+                    onChange={(e) => {
+                      if (selectedDoctor) {
+                        setUpdateFormData({ ...updateFormData, biography: e.target.value });
+                      } else {
+                        setFormData({ ...formData, biography: e.target.value });
                       }
-                      className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
-                      required={!selectedDoctor}
-                    />
-                  </div>
-                )}
-
-                <div>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Email
-                  </label>
-                  <input
-                    type='email'
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
-                    required
+                    }}
+                    className={textareaStyle}
+                    placeholder="Nhập tiểu sử bác sĩ..."
+                    rows={4}
                   />
                 </div>
 
-                <div>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Họ và tên
-                  </label>
-                  <input
-                    type='text'
-                    value={formData.fullName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, fullName: e.target.value })
-                    }
-                    className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
-                    required
-                  />
+                {/* Modal Footer */}
+                <div className="flex justify-end gap-4 pt-6 border-t">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 hover:shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    {selectedDoctor ? 'Cập nhật' : 'Thêm mới'}
+                  </button>
                 </div>
-
-                <div>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Số điện thoại
-                  </label>
-                  <input
-                    type='tel'
-                    value={formData.phoneNumber}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phoneNumber: e.target.value })
-                    }
-                    className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Địa chỉ
-                  </label>
-                  <input
-                    type='text'
-                    value={formData.address}
-                    onChange={(e) =>
-                      setFormData({ ...formData, address: e.target.value })
-                    }
-                    className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Chuyên khoa
-                  </label>
-                  <input
-                    type='text'
-                    value={formData.specialization}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        specialization: e.target.value,
-                      })
-                    }
-                    className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Bằng cấp
-                  </label>
-                  <input
-                    type='text'
-                    value={formData.qualification}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        qualification: e.target.value,
-                      })
-                    }
-                    className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Kinh nghiệm (năm)
-                  </label>
-                  <input
-                    type='text'
-                    value={formData.experience}
-                    onChange={(e) =>
-                      setFormData({ ...formData, experience: e.target.value })
-                    }
-                    className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Số giấy phép
-                  </label>
-                  <input
-                    type='text'
-                    value={formData.licenseNumber}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        licenseNumber: e.target.value,
-                      })
-                    }
-                    className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className='block text-sm font-medium text-gray-700'>
-                  Tiểu sử
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  rows={4}
-                  className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
-                />
-              </div>
-
-              <div className='flex justify-end gap-4 mt-6'>
-                <button
-                  type='button'
-                  onClick={() => setIsModalOpen(false)}
-                  className='px-4 py-2 border rounded-lg hover:bg-gray-50'
-                >
-                  Hủy
-                </button>
-                <button
-                  type='submit'
-                  className='px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600'
-                >
-                  {selectedDoctor ? 'Cập nhật' : 'Thêm mới'}
-                </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       )}
