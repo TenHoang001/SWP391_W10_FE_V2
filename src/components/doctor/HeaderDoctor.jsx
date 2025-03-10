@@ -1,7 +1,14 @@
 import { useState } from 'react';
 import Logo from '../../assets/logo.png';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { UserRound, ClipboardList, Calendar, BookOpen, LogOut, User } from 'lucide-react';
+import {
+  UserRound,
+  ClipboardList,
+  Calendar,
+  BookOpen,
+  LogOut,
+  User,
+} from 'lucide-react';
 
 const HeaderDoctor = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -9,14 +16,16 @@ const HeaderDoctor = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('jwt');
     localStorage.removeItem('userId');
     localStorage.removeItem('user');
     navigate('/');
   };
 
   const isActiveLink = (path) => {
-    return location.pathname === path ? 'bg-blue-50 text-blue-600 font-medium' : '';
+    return location.pathname === path
+      ? 'bg-blue-50 text-blue-600 font-medium'
+      : '';
   };
 
   return (
@@ -25,10 +34,10 @@ const HeaderDoctor = () => {
       <div className='flex flex-col items-center gap-3 px-6 mb-12'>
         <Link to={'/doctor'}>
           <figure className='w-20 h-20 flex items-center justify-center'>
-            <img 
-              src={Logo} 
+            <img
+              src={Logo}
               alt='Logo'
-              className='w-full h-full object-contain' 
+              className='w-full h-full object-contain'
             />
           </figure>
         </Link>
@@ -39,23 +48,29 @@ const HeaderDoctor = () => {
 
       {/* Menu */}
       <nav className='flex flex-col gap-2 px-4 mb-12'>
-        <Link 
-          to={'/doctor/'} 
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-blue-50 hover:text-blue-600 ${isActiveLink('/doctor/')}`}
+        <Link
+          to={'/doctor/'}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-blue-50 hover:text-blue-600 ${isActiveLink(
+            '/doctor/'
+          )}`}
         >
           <ClipboardList className='h-5 w-5' />
           Danh sách tham vấn
         </Link>
         <Link
           to={'/doctor/schedule'}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-blue-50 hover:text-blue-600 ${isActiveLink('/doctor/all-appointments')}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-blue-50 hover:text-blue-600 ${isActiveLink(
+            '/doctor/all-appointments'
+          )}`}
         >
           <Calendar className='h-5 w-5' />
           Danh sách tư vấn
         </Link>
-        <Link 
-          to={'/doctor/blog'} 
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-blue-50 hover:text-blue-600 ${isActiveLink('/doctor/blog')}`}
+        <Link
+          to={'/doctor/blog'}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-blue-50 hover:text-blue-600 ${isActiveLink(
+            '/doctor/blog'
+          )}`}
         >
           <BookOpen className='h-5 w-5' />
           Blog
@@ -64,7 +79,7 @@ const HeaderDoctor = () => {
 
       {/* User Icon */}
       <div className='px-4 relative'>
-        <button 
+        <button
           className='flex items-center gap-3 w-full px-4 py-3 rounded-lg transition-all hover:bg-blue-50 text-gray-700 hover:text-blue-600'
           onClick={() => setShowPopup(!showPopup)}
         >
@@ -76,16 +91,19 @@ const HeaderDoctor = () => {
 
         {/* Popup Menu */}
         {showPopup && (
-          <div className="absolute bottom-full left-4 mb-2 w-48 rounded-lg bg-white shadow-lg border border-gray-200">
-            <Link to="/doctor/profile" className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">
-              <User className="h-4 w-4" />
+          <div className='absolute bottom-full left-4 mb-2 w-48 rounded-lg bg-white shadow-lg border border-gray-200'>
+            <Link
+              to='/doctor/profile'
+              className='flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+            >
+              <User className='h-4 w-4' />
               Thông tin cá nhân
             </Link>
-            <button 
+            <button
               onClick={handleLogout}
-              className="flex items-center gap-2 w-full px-4 py-2 text-red-600 hover:bg-red-50"
+              className='flex items-center gap-2 w-full px-4 py-2 text-red-600 hover:bg-red-50'
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className='h-4 w-4' />
               Đăng xuất
             </button>
           </div>

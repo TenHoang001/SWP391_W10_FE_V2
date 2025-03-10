@@ -9,7 +9,7 @@ const HeaderAdmin = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('jwt');
     localStorage.removeItem('userId');
     localStorage.removeItem('user');
     navigate('/');
