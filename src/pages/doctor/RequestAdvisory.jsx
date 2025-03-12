@@ -16,7 +16,7 @@ import { format } from 'date-fns';
 const RequestAdvisory = () => {
   const [consultations, setConsultations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('processing');
+  const [activeTab, setActiveTab] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [updateStatus, setUpdateStatus] = useState(false);
@@ -44,9 +44,9 @@ const RequestAdvisory = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Pending':
-        return 'bg-yellow-200';
       case 'Assigned':
+        return 'bg-yellow-200';
+      case 'InProgress':
         return 'bg-blue-200';
       case 'Completed':
         return 'bg-gray-200';
@@ -68,26 +68,33 @@ const RequestAdvisory = () => {
     }
   };
 
-  // const filteredConsultations = consultations.filter((consultation) => {
-  //   const matchSearch = consultation.child?.fullName
-  //     .toLowerCase()
-  //     .includes(searchTerm.toLowerCase());
-  //   const matchDoctor = consultation.assignedDoctorId === userId;
-  //   let matchStatus = true;
+  const filteredConsultations = consultations.filter((consultation) => {
+    const matchSearch = consultation?.childName
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
 
-  //   switch (activeTab) {
-  //     case 'processing':
-  //       matchStatus =
-  //         consultation.status === 'Assigned' ||
-  //         consultation.status === 'Pending';
-  //       break;
-  //     case 'completed':
-  //       matchStatus = consultation.status === 'Completed';
-  //       break;
-  //   }
+    let matchStatus = activeTab === 'all' || consultation.status === activeTab;
 
-  //   return matchSearch && matchStatus && matchDoctor;
-  // });
+    switch (activeTab) {
+      case 'all':
+        matchStatus = true;
+        break;
+      case 'Assigned':
+        matchStatus = consultation.status === 'Assigned';
+        break;
+      case 'InProgress':
+        matchStatus = consultation.status === 'InProgress';
+        break;
+      case 'Completed':
+        matchStatus = consultation.status === 'Completed';
+        break;
+
+      default:
+        break;
+    }
+
+    return matchSearch && matchStatus;
+  });
 
   if (loading) {
     return <div className='text-center py-4'>Đang tải...</div>;
@@ -100,7 +107,7 @@ const RequestAdvisory = () => {
       </Alert>
     );
   }
-console.log(consultations);
+  console.log(consultations);
 
   return (
     <div className='min-h-screen bg-gray-50 p-6'>
@@ -115,9 +122,10 @@ console.log(consultations);
 
       <div className='mb-6 flex space-x-3'>
         {[
-          { id: 'processing', label: 'Đang xử lý', icon: Clock },
-          { id: 'completed', label: 'Đã xử lý', icon: MessageCircle },
           { id: 'all', label: 'Tất cả', icon: FileText },
+          { id: 'Assigned', label: 'Đang chờ', icon: Clock },
+          { id: 'InProgress', label: 'Đang xử lý', icon: MessageCircle },
+          { id: 'Completed', label: 'Đã hoàn thành', icon: FileText },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -162,7 +170,7 @@ console.log(consultations);
       )}
 
       <div className='grid gap-6'>
-        {consultations.map((consultation) => (
+        {filteredConsultations.map((consultation) => (
           <Card key={consultation.requestId} className='overflow-hidden'>
             <CardBody className='p-4'>
               <div className='flex items-start justify-between gap-4'>
@@ -170,14 +178,14 @@ console.log(consultations);
                   <div className='h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center'>
                     <User className='h-6 w-6 text-blue-500' />
                   </div>
-                  <div className='space-y-1'>
-                    <Typography variant='h6' color='blue-gray'>
-                      {consultation.child?.fullName}
+                  <div className='space-y-1 '>
+                    <Typography variant='h6' color='blue-gray' className=''>
+                      Bé: {consultation.childName}
                     </Typography>
                     <div className='space-y-1 text-sm text-gray-600'>
                       <div className='flex items-center gap-2'>
                         <User className='h-4 w-4' />
-                        <span>Phụ huynh: {consultation.userId}</span>
+                        <span>Phụ huynh: {consultation.user.fullName}</span>
                       </div>
                       <div className='flex items-center gap-2'>
                         <Calendar className='h-4 w-4' />
@@ -223,7 +231,6 @@ console.log(consultations);
             </CardBody>
           </Card>
         ))}
-        {/* && filteredConsultations.length === 0  */}
         {!loading && (
           <div className='text-center py-8'>
             <FileText className='h-12 w-12 text-gray-400 mx-auto mb-3' />
