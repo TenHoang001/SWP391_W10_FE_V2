@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   LineChart,
   Line,
@@ -7,155 +9,252 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  ReferenceLine
 } from 'recharts';
-import { User, Ruler, Weight, Circle, Activity } from 'lucide-react';
+import { User, Ruler, Weight, Circle, Activity, AlertTriangle, ArrowUp, ArrowDown, Info } from 'lucide-react';
+import { AssessGrowthByChildIdAPI } from '../../api/GrowthAssessmentAPI';
+import { format } from 'date-fns';
 
 const CustomerChartOfChild = () => {
-  const data = [
+  const { childId } = useParams();
+  const [assessmentData, setAssessmentData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchData();
+  }, [childId]);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await AssessGrowthByChildIdAPI(childId);
+      if (response.status === 200) {
+        setAssessmentData(response.data);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const metrics = [
     {
-      month: 24.5,
-      P3: 10.32,
-      P5: 10.57,
-      P10: 10.98,
-      P25: 11.71,
-      P50: 12.59,
-      P75: 13.55,
-      P90: 14.49,
-      P95: 15.09,
-      P97: 15.5,
+      title: 'Chiều cao',
+      icon: <Ruler />,
+      value: assessmentData?.latestMeasurement?.height,
+      zScore: assessmentData?.assessment?.zScores?.height,
+      status: assessmentData?.assessment?.assessments?.heightStatus,
+      unit: 'cm',
+      dataKey: 'height'
     },
     {
-      month: 36,
-      P3: 11.2,
-      P5: 11.5,
-      P10: 12.0,
-      P25: 12.8,
-      P50: 13.7,
-      P75: 14.8,
-      P90: 15.9,
-      P95: 16.5,
-      P97: 17.0,
+      title: 'Cân nặng',
+      icon: <Weight />,
+      value: assessmentData?.latestMeasurement?.weight,
+      zScore: assessmentData?.assessment?.zScores?.weight,
+      status: assessmentData?.assessment?.assessments?.weightStatus,
+      unit: 'kg',
+      dataKey: 'weight'
     },
     {
-      month: 48,
-      P3: 12.0,
-      P5: 12.3,
-      P10: 12.9,
-      P25: 13.8,
-      P50: 14.9,
-      P75: 16.0,
-      P90: 17.1,
-      P95: 17.8,
-      P97: 18.3,
+      title: 'Vòng đầu',
+      icon: <Circle />,
+      value: assessmentData?.latestMeasurement?.headCircumference,
+      zScore: assessmentData?.assessment?.zScores?.headCircumference,
+      status: assessmentData?.assessment?.assessments?.headCircumferenceStatus,
+      unit: 'cm',
+      dataKey: 'headCircumference'
     },
     {
-      month: 60,
-      P3: 12.8,
-      P5: 13.2,
-      P10: 13.9,
-      P25: 15.0,
-      P50: 16.2,
-      P75: 17.5,
-      P90: 18.8,
-      P95: 19.6,
-      P97: 20.2,
-    },
+      title: 'Chỉ số BMI',
+      icon: <Activity />,
+      value: assessmentData?.latestMeasurement?.bmi,
+      zScore: assessmentData?.assessment?.zScores?.bmi,
+      status: assessmentData?.assessment?.assessments?.bmiStatus,
+      unit: 'kg/m²',
+      dataKey: 'bmi'
+    }
   ];
 
-  const colors = [
-    '#FF0000',
-    '#FF4500',
-    '#FFA500',
-    '#32CD32',
-    '#0000FF',
-    '#4B0082',
-    '#800080',
-    '#A52A2A',
-  ];
+  const getStatusColor = (status) => {
+    if (!status) return 'bg-gray-200 text-gray-700';
+    if (status.includes('bình thường')) return 'bg-green-200 text-green-700';
+    if (status.includes('thấp') || status.includes('nhẹ cân')) return 'bg-yellow-200 text-yellow-700';
+    if (status.includes('cao') || status.includes('béo')) return 'bg-red-200 text-red-700';
+    return 'bg-gray-200 text-gray-700';
+  };
+
+  // Sửa lại hàm generateZScoreData
+  const generateZScoreData = (zScore) => {
+    // Kiểm tra zScore có hợp lệ không
+    if (!zScore || isNaN(zScore)) return [];
+    
+    // Chỉ tạo một điểm thực tế
+    const actualScore = Math.min(Math.max(zScore, -3), 3);
+    return [{
+      x: actualScore,
+      y: 0,
+      isActual: true
+    }];
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    try {
+      return format(new Date(dateString), 'dd/MM/yyyy');
+    } catch (error) {
+      console.error('Invalid date:', dateString);
+      return '';
+    }
+  };
+
+  // Thêm hàm getZScoreInfo
+  const getZScoreInfo = (zScore) => {
+    if (!zScore || isNaN(zScore)) return null;
+    if (zScore > 3) return {
+      icon: <ArrowUp className="h-4 w-4 text-red-500" />,
+      text: 'Bất thường (quá cao)',
+      color: 'text-red-500'
+    };
+    if (zScore < -3) return {
+      icon: <ArrowDown className="h-4 w-4 text-red-500" />,
+      text: 'Bất thường (quá thấp)',
+      color: 'text-red-500'
+    };
+    return {
+      icon: <Info className="h-4 w-4 text-blue-500" />,
+      text: 'Trong ngưỡng bình thường',
+      color: 'text-blue-500'
+    };
+  };
+
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen">Đang tải...</div>;
+  }
 
   return (
-    <div className='bg-gray-200 py-6'>
-      <div className='mx-auto max-w-4xl rounded-lg bg-white p-4 shadow-md'>
-        <div className='flex items-center space-x-4'>
-          <User className='h-12 w-12 text-gray-500' />
-          <div>
-            <h2 className='text-lg font-semibold'>Nguyễn Văn An</h2>
-            <p className='text-sm text-gray-500'>3 tuổi 2 tháng (Nam)</p>
+    <div className='bg-gray-50 py-6'>
+      <div className='mx-auto max-w-7xl px-4'>
+        <div className='mb-6 bg-white rounded-lg p-6 shadow'>
+          <div className='flex items-center space-x-4 mb-4'>
+            <User className='h-12 w-12 text-blue-500' />
+            <div>
+              <h2 className='text-xl font-semibold'>
+                Tuổi: {assessmentData?.assessment?.exactAgeInMonths?.toFixed(1) || 'N/A'} tháng
+              </h2>
+              <p className='text-gray-500'>
+                Ngày đo: {formatDate(assessmentData?.assessment?.measurementDate)}
+              </p>
+            </div>
           </div>
+
+          {assessmentData?.recommendations && (
+            <div className='bg-blue-50 rounded-lg p-4'>
+              <h3 className='font-semibold mb-2'>Khuyến nghị:</h3>
+              <p className='whitespace-pre-line'>{assessmentData.recommendations}</p>
+            </div>
+          )}
         </div>
 
-        <div className='mt-4 grid grid-cols-2 gap-4'>
-          {[
-            {
-              title: 'Chiều cao',
-              icon: <Ruler />,
-              status: 'Thấp còi độ 1',
-              statusColor: 'bg-orange-200 text-orange-700',
-            },
-            {
-              title: 'Cân nặng',
-              icon: <Weight />,
-              status: 'Bình thường',
-              statusColor: 'bg-green-200 text-green-700',
-            },
-            {
-              title: 'Vòng đầu',
-              icon: <Circle />,
-              status: 'Bình thường',
-              statusColor: 'bg-green-200 text-green-700',
-            },
-            {
-              title: 'Chỉ số BMI',
-              icon: <Activity />,
-              status: 'Bình thường',
-              statusColor: 'bg-green-200 text-green-700',
-            },
-          ].map((item, index) => (
-            <div key={index} className='rounded-lg bg-gray-100 p-4'>
-              <div className='flex items-center justify-between'>
-                <h3 className='text-sm font-medium flex items-center space-x-2'>
-                  {item.icon}
-                  <span>{item.title}</span>
-                </h3>
-                <span
-                  className={`rounded px-2 py-1 text-xs font-semibold ${item.statusColor}`}
-                >
-                  {item.status}
-                </span>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          {metrics.map((metric, index) => (
+            <div key={index} className='bg-white rounded-lg shadow p-6'>
+              <div className='flex items-center justify-between mb-4'>
+                <div className='flex items-center space-x-2'>
+                  {metric.icon}
+                  <h3 className='font-medium'>{metric.title}</h3>
+                </div>
+                <div className='flex flex-col items-end'>
+                  <span className='text-lg font-semibold'>
+                    {metric.value} {metric.unit}
+                  </span>
+                  <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(metric.status)}`}>
+                    {metric.status}
+                  </span>
+                </div>
               </div>
-              <div className='mt-2 flex h-[200px] justify-center rounded-md bg-white'>
-                <ResponsiveContainer width='100%' height={180}>
-                  <LineChart
-                    data={data}
-                    margin={{ top: 10, right: 10, left: -10, bottom: 5 }}
+
+              {metric.zScore && (
+                <div className='mb-4 p-3 bg-gray-50 rounded-lg'>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex items-center space-x-2'>
+                      <AlertTriangle className="h-4 w-4 text-gray-500" />
+                      <span className='text-sm font-medium'>Z-score: {metric.zScore.toFixed(2)}</span>
+                    </div>
+                    <div className='flex items-center space-x-1'>
+                      {getZScoreInfo(metric.zScore).icon}
+                      <span className={`text-sm ${getZScoreInfo(metric.zScore).color}`}>
+                        {getZScoreInfo(metric.zScore).text}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className='h-[300px]'>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart 
+                    data={generateZScoreData(metric.zScore)}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
                   >
-                    <CartesianGrid strokeDasharray='3 3' />
-                    <XAxis dataKey='month' />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    {[
-                      'P3',
-                      'P5',
-                      'P10',
-                      'P25',
-                      'P50',
-                      'P75',
-                      'P90',
-                      'P95',
-                      'P97',
-                    ].map((key, index) => (
-                      <Line
-                        key={key}
-                        type='monotone'
-                        dataKey={key}
-                        stroke={colors[index]}
-                        strokeWidth={2}
-                        dot={false}
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="x"
+                      domain={[-3, 3]}
+                      ticks={[-3, -2, -1, 0, 1, 2, 3]}
+                      type="number"
+                    />
+                    <YAxis domain={[-0.5, 0.5]} hide={true} />
+                    <Tooltip 
+                      formatter={(value, name, props) => {
+                        return [`Z-score: ${metric.zScore?.toFixed(2) || 'N/A'}`, metric.title];
+                      }}
+                    />
+                    {/* Chỉ vẽ điểm thực tế */}
+                    <Line 
+                      type="monotone"
+                      dataKey="y"
+                      stroke="none"
+                      dot={(props) => (
+                        <circle
+                          cx={props.cx}
+                          cy={props.cy}
+                          r={6}
+                          fill="#2563eb"
+                          stroke="white"
+                          strokeWidth={2}
+                        />
+                      )}
+                      name={metric.title}
+                    />
+                    {/* Vẽ các đường tham chiếu không có nhãn */}
+                    {[-3, -2, -1, 0, 1, 2, 3].map(score => (
+                      <ReferenceLine
+                        key={score}
+                        x={score}
+                        stroke="#gray"
+                        strokeDasharray="3 3"
                       />
                     ))}
                   </LineChart>
                 </ResponsiveContainer>
+              </div>
+
+              {/* Thêm chú thích Z-score */}
+              <div className='mt-4 space-y-2 text-sm text-gray-600'>
+                <div className='flex items-center space-x-2'>
+                  <ArrowUp className="h-4 w-4 text-red-500" />
+                  <span>Z-score > 3: Bất thường (quá cao)</span>
+                </div>
+                <div className='flex items-center space-x-2'>
+                  <ArrowDown className="h-4 w-4 text-red-500" />
+                  <span>Z-score {'<'} -3: Bất thường (quá thấp)</span>
+                </div>
+                <div className='flex items-center space-x-2'>
+                  <Info className="h-4 w-4 text-blue-500" />
+                  <span>-3 ≤ Z-score ≤ 3: Trong ngưỡng bình thường</span>
+                </div>
               </div>
             </div>
           ))}

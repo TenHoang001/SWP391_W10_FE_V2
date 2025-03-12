@@ -21,12 +21,13 @@ import DoctorConsultation from './pages/doctor/DoctorConsultation';
 import DoctorChartOfChild from './pages/doctor/DoctorChartOfChild';
 import LayoutAdmin from './layout/LayoutAdmin';
 import DoctorManagement from './pages/admin/DoctorManagement';
-// import CustomerEditChildIndex from './pages/customer/CustomerEditChildIndex';
+import CustomerEditChildIndex from './pages/customer/CustomerEditChildIndex';
 import DoctorSchedule from './pages/doctor/DoctorSchedule';
 import DoctorScheduleManagement from './pages/admin/DoctorScheduleManagement';
 import AddDoctor from './pages/admin/AddDoctor';
 import UpdateDoctor from './pages/admin/UpdateDoctor';
 import AppointmentDetail from './pages/doctor/AppointmentDetail';
+
 
 function App() {
   return (
@@ -47,8 +48,8 @@ function App() {
               element={<UpdateChild />}
             />
             <Route path='bookingDoctor' element={<BookingDoctor />} />
-            <Route path='bookingHistory' element={<BookingHistory />} />
             <Route path='listDoctor' element={<ListDoctor />} />
+            <Route path='bookingHistory' element={<BookingHistory />} />
             <Route path='consultationChat' element={<ConsultationChat />} />
             <Route
               path='consultationHistory'
@@ -65,10 +66,10 @@ function App() {
             />
             <Route path='child-records' element={<CustomerChildRecord />} />
             <Route path='chart-of-child' element={<CustomerChartOfChild />} />
-            {/* <Route
+            <Route
               path='/customer/editChildIndex/:childId/:recordId'
               element={<CustomerEditChildIndex />}
-            /> */}
+            />
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>
@@ -95,6 +96,8 @@ function App() {
             <Route path='doctors/update/:doctorId' element={<UpdateDoctor />} />
             <Route path='doctors/:doctorId/schedule' element={<DoctorScheduleManagement />} />
           </Route>
+
+          <Route path="/customer/chartOfChild/:childId" element={<CustomerChartOfChild />} />
         </Routes>
       </BrowserRouter>
     </>

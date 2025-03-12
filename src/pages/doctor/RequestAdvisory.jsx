@@ -61,7 +61,7 @@ const RequestAdvisory = () => {
 
   const filteredConsultations = consultations.filter(consultation => {
     const matchSearch = consultation.child?.fullName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchDoctor = consultation.assignedDoctorId.toString() === userId;
+    const matchDoctor = consultation.assignedDoctorId === userId;
     let matchStatus = true;
 
     switch (activeTab) {

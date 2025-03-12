@@ -37,6 +37,7 @@ const GuestLogin = () => {
         localStorage.setItem('user', JSON.stringify(response.data));
         localStorage.setItem('userId', JSON.stringify(response.data.userId));
         localStorage.setItem('token', JSON.stringify(response.data.token));
+        localStorage.setItem('role', response.data.role);
 
         // Phân quyền điều hướng dựa vào role
         switch (response.data.role) {
