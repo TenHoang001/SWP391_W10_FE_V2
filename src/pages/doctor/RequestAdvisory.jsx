@@ -57,9 +57,9 @@ const RequestAdvisory = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'Pending':
-        return 'Đang chờ';
       case 'Assigned':
+        return 'Đang chờ';
+      case 'InProgress':
         return 'Đang xử lý';
       case 'Completed':
         return 'Đã xử lý';
@@ -100,6 +100,7 @@ const RequestAdvisory = () => {
       </Alert>
     );
   }
+console.log(consultations);
 
   return (
     <div className='min-h-screen bg-gray-50 p-6'>
@@ -207,7 +208,7 @@ const RequestAdvisory = () => {
                     {getStatusText(consultation.status)}
                   </Link>
 
-                  {consultation.status !== 'Completed' && (
+                  {/* {consultation.status !== 'Completed' && (
                     <div className='bg-blue-100 rounded-full p-1/2'>
                       <button
                         onClick={() => setUpdateStatus(!updateStatus)}
@@ -216,7 +217,7 @@ const RequestAdvisory = () => {
                         Hoàn thành tư vấn
                       </button>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
             </CardBody>

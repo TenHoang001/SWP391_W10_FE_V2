@@ -17,7 +17,7 @@ const CustomerConsultationHistory = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [loading, setLoading] = useState(true);
-  const { childId } = useParams();
+  // const { childId } = useParams();
 
   useEffect(() => {
     fetchConsultations();
@@ -65,13 +65,13 @@ const CustomerConsultationHistory = () => {
 
   const getStatusButton = (status) => {
     switch (status) {
-      case 'Pending':
+      case 'Assigned':
         return {
           color: 'bg-yellow-200',
           text: 'Đang chờ',
           icon: <Clock className='h-4 w-4' />,
         };
-      case 'Assigned':
+      case 'InProgress':
         return {
           color: 'bg-blue-200',
           text: 'Đang xử lý',
@@ -100,7 +100,7 @@ const CustomerConsultationHistory = () => {
     )
     .filter((consultation) =>
       statusFilter === 'all' ? true : consultation.status === statusFilter
-    );
+  );
 
   return (
     <div className='min-h-screen bg-gray-100 px-6 py-5'>
@@ -125,8 +125,8 @@ const CustomerConsultationHistory = () => {
           onChange={(e) => setStatusFilter(e.target.value)}
         >
           <option value='all'>Tất cả trạng thái</option>
-          <option value='Pending'>Đang chờ</option>
-          <option value='Assigned'>Đang xử lý</option>
+          <option value='Assigned'>Đang chờ</option>
+          <option value='InProgress'>Đang xử lý</option>
           <option value='Completed'>Đã hoàn thành</option>
         </select>
       </div>
@@ -137,6 +137,8 @@ const CustomerConsultationHistory = () => {
         <div className='space-y-3 pt-5'>
           {filteredConsultations.map((consultation) => {
             const statusInfo = getStatusButton(consultation.status);
+            console.log(consultation);
+            
             return (
               <div
                 key={consultation.requestId}
