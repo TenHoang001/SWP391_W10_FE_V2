@@ -14,9 +14,7 @@ import CustomerAddNewChildIndex from './pages/customer/CustomerAddNewChildIndex'
 import GuestLogin from './pages/guest/GuestLogin';
 import GuestRegister from './pages/guest/GuestRegister';
 import BookingHistory from './pages/customer/BookingHistory';
-import ListDoctor from "./pages/customer/ListDoctor";
 import UpdateChild from './pages/customer/UpdateChild';
-import ConsultationChat from './pages/customer/CustomerConsultationResult';
 import DoctorConsultation from './pages/doctor/DoctorConsultation';
 import DoctorChartOfChild from './pages/doctor/DoctorChartOfChild';
 import LayoutAdmin from './layout/LayoutAdmin';
@@ -27,7 +25,6 @@ import DoctorScheduleManagement from './pages/admin/DoctorScheduleManagement';
 import AddDoctor from './pages/admin/AddDoctor';
 import UpdateDoctor from './pages/admin/UpdateDoctor';
 import AppointmentDetail from './pages/doctor/AppointmentDetail';
-
 
 function App() {
   return (
@@ -48,9 +45,7 @@ function App() {
               element={<UpdateChild />}
             />
             <Route path='bookingDoctor' element={<BookingDoctor />} />
-            <Route path='listDoctor' element={<ListDoctor />} />
             <Route path='bookingHistory' element={<BookingHistory />} />
-            <Route path='consultationChat' element={<ConsultationChat />} />
             <Route
               path='consultationHistory'
               element={<CustomerConsultationHistory />}
@@ -70,23 +65,23 @@ function App() {
               path='/customer/editChildIndex/:childId/:recordId'
               element={<CustomerEditChildIndex />}
             />
+            <Route
+              path='/customer/chartOfChild/:childId'
+              element={<CustomerChartOfChild />}
+            />
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>
             <Route index element={<RequestAdvisory />} />
             <Route
-              path='/doctor/consultationChat'
-              element={<DoctorConsultation />}
-            />
-            <Route
               path='/doctor/chartOfChild'
               element={<DoctorChartOfChild />}
             />
+            <Route path='/doctor/schedule' element={<DoctorSchedule />} />
             <Route
-              path='/doctor/schedule'
-              element={<DoctorSchedule />}
+              path='appointment/:appointmentId'
+              element={<AppointmentDetail />}
             />
-            <Route path='appointment/:appointmentId' element={<AppointmentDetail />} />
           </Route>
 
           <Route path='/admin' element={<LayoutAdmin />}>
@@ -94,10 +89,11 @@ function App() {
             <Route path='doctors' element={<DoctorManagement />} />
             <Route path='doctors/add' element={<AddDoctor />} />
             <Route path='doctors/update/:doctorId' element={<UpdateDoctor />} />
-            <Route path='doctors/:doctorId/schedule' element={<DoctorScheduleManagement />} />
+            <Route
+              path='doctors/:doctorId/schedule'
+              element={<DoctorScheduleManagement />}
+            />
           </Route>
-
-          <Route path="/customer/chartOfChild/:childId" element={<CustomerChartOfChild />} />
         </Routes>
       </BrowserRouter>
     </>
