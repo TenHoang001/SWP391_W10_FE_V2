@@ -15,6 +15,7 @@ import GuestLogin from './pages/guest/GuestLogin';
 import GuestRegister from './pages/guest/GuestRegister';
 import BookingHistory from './pages/customer/BookingHistory';
 import UpdateChild from './pages/customer/UpdateChild';
+import ConsultationChat from './pages/shared/ConsultationChat';
 import DoctorConsultation from './pages/doctor/DoctorConsultation';
 import DoctorChartOfChild from './pages/doctor/DoctorChartOfChild';
 import LayoutAdmin from './layout/LayoutAdmin';
@@ -46,6 +47,7 @@ function App() {
             />
             <Route path='bookingDoctor' element={<BookingDoctor />} />
             <Route path='bookingHistory' element={<BookingHistory />} />
+            <Route path='consultationChat' element={<ConsultationChat />} />
             <Route
               path='consultationHistory'
               element={<CustomerConsultationHistory />}
@@ -94,6 +96,15 @@ function App() {
               element={<DoctorScheduleManagement />}
             />
           </Route>
+
+          <Route
+            path='/doctor/consultationChat/:requestId'
+            element={<ConsultationChat />}
+          />
+          <Route
+            path='/customer/consultationChat/:requestId'
+            element={<ConsultationChat />}
+          />
         </Routes>
       </BrowserRouter>
     </>
