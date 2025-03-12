@@ -19,8 +19,8 @@ const RequestAdvisory = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [updateStatus, setUpdateStatus] = useState(false);
-  const userId = localStorage.getItem('userId');
+  // const [updateStatus, setUpdateStatus] = useState(false);
+  // const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     fetchConsultations();
@@ -30,7 +30,6 @@ const RequestAdvisory = () => {
     try {
       setLoading(true);
       const response = await GetDoctorConsultationsAPI();
-      console.log(response.data);
       if (response.status === 200) {
         setConsultations(response.data);
       }
@@ -75,23 +74,23 @@ const RequestAdvisory = () => {
 
     let matchStatus = activeTab === 'all' || consultation.status === activeTab;
 
-    switch (activeTab) {
-      case 'all':
-        matchStatus = true;
-        break;
-      case 'Assigned':
-        matchStatus = consultation.status === 'Assigned';
-        break;
-      case 'InProgress':
-        matchStatus = consultation.status === 'InProgress';
-        break;
-      case 'Completed':
-        matchStatus = consultation.status === 'Completed';
-        break;
+    // switch (activeTab) {
+    //   case 'all':
+    //     matchStatus = true;
+    //     break;
+    //   case 'Assigned':
+    //     matchStatus = consultation.status === 'Assigned';
+    //     break;
+    //   case 'InProgress':
+    //     matchStatus = consultation.status === 'InProgress';
+    //     break;
+    //   case 'Completed':
+    //     matchStatus = consultation.status === 'Completed';
+    //     break;
 
-      default:
-        break;
-    }
+    //   default:
+    //     break;
+    // }
 
     return matchSearch && matchStatus;
   });

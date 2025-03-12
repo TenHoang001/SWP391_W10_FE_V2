@@ -7,6 +7,7 @@ import LayoutDoctor from './layout/LayoutDoctor';
 import RequestAdvisory from './pages/doctor/RequestAdvisory';
 import AddNewChild from './pages/customer/AddNewChild';
 import BookingDoctor from './pages/customer/BookingDoctor';
+import ListDoctor from './pages/customer/ListDoctor';
 import CustomerConsultationHistory from './pages/customer/CustomerConsultationHistory';
 import CustomerChildRecord from './pages/customer/CustomerChildRecord';
 import CustomerChartOfChild from './pages/customer/CustomerChartOfChild';
@@ -46,6 +47,7 @@ function App() {
             />
             <Route path='bookingDoctor' element={<BookingDoctor />} />
             <Route path='bookingHistory' element={<BookingHistory />} />
+            <Route path='listDoctor' element={<ListDoctor />} />
             <Route path='consultationChat' element={<ConsultationChat />} />
             <Route
               path='consultationHistory'

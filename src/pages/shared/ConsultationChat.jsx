@@ -15,14 +15,14 @@ import {
   CompleteConsultationRequestAPI
 } from '../../api/ConsultationAPI';
 
-const COMMENTS_PER_PAGE = 10;
+// const COMMENTS_PER_PAGE = 10;
 
 const ConsultationChat = () => {
   const { requestId } = useParams();
   const [consultation, setConsultation] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [currentPage, setCurrentPage] = useState(1);
   const userData = JSON.parse(localStorage.getItem('user'));
   const userRole = userData?.role;
 
@@ -47,6 +47,7 @@ const ConsultationChat = () => {
   const fetchConsultation = async () => {
     try {
       const response = await GetConsultationRequestByIdAPI(requestId);
+      
       if (response.status === 200) {
         const sortedResponses = response.data.consultationResponses.sort((a, b) => 
           new Date(b.createdAt) - new Date(a.createdAt)
@@ -83,7 +84,7 @@ const ConsultationChat = () => {
 
       if (response.status === 200) {
         setNewMessage('');
-        setCurrentPage(1); 
+        // setCurrentPage(1); 
         fetchConsultation();
       }
     } catch (error) {
@@ -94,10 +95,10 @@ const ConsultationChat = () => {
   // const totalPages = Math.ceil(
   //   (consultation?.consultationResponses?.length || 0) / COMMENTS_PER_PAGE
   // );
-  const paginatedComments = consultation?.consultationResponses?.slice(
-    (currentPage - 1) * COMMENTS_PER_PAGE,
-    currentPage * COMMENTS_PER_PAGE
-  );
+  // const paginatedComments = consultation?.consultationResponses?.slice(
+  //   (currentPage - 1) * COMMENTS_PER_PAGE,
+  //   currentPage * COMMENTS_PER_PAGE
+  // );
 
   if (loading) {
     return (
@@ -165,7 +166,7 @@ const ConsultationChat = () => {
       )}
 
       <div className='space-y-4 mb-6'>
-        {paginatedComments?.map((comment) => (
+        {consultation?.consultationResponses.map((comment) => (
           <div
             key={comment.responseId}
             className={`p-4 rounded-lg ${

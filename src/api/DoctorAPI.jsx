@@ -1,12 +1,12 @@
 import AxiosAPI from './AxiosAPI';
 
 const END_POINT = {
-  DOCTORS: 'Doctors'
+  DOCTORS: 'Doctors',
 };
 
 // Get all doctors
 export const GetAllDoctorsAPI = async () => {
-  const response = await AxiosAPI.get(`${END_POINT.DOCTORS}`);
+  const response = await AxiosAPI.get(END_POINT.DOCTORS);
   return response;
 };
 
@@ -30,6 +30,8 @@ export const UpdateDoctorAPI = async (doctorId, data) => {
 
 // Verify doctor
 export const VerifyDoctorAPI = async (doctorId) => {
-  const response = await AxiosAPI.put(`${END_POINT.DOCTORS}/${doctorId}/verify`);
+  const response = await AxiosAPI.put(
+    `${END_POINT.DOCTORS}/${doctorId}/verify`
+  );
   return response;
 };
