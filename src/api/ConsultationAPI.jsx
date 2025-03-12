@@ -1,62 +1,94 @@
 import AxiosAPI from './AxiosAPI';
 
 const END_POINT = {
-  CREATE_REQUEST: 'Consultation/request',
-  GET_REQUEST_BY_ID: 'Consultation/request',
-  GET_USER_REQUESTS: 'Consultation/user/requests',
-  GET_DOCTOR_REQUESTS: 'Consultation/doctor/requests',
-  RESPONSE_REQUEST: 'Consultation/request',
-  ADD_QUESTION: 'Consultation/request',
-  COMPLETE_REQUEST: 'Consultation/request',
+  CONSULTATION: '/Consultation',
 };
 
-// Tạo yêu cầu tham vấn mới
 export const CreateConsultationRequestAPI = async (data) => {
-  const response = await AxiosAPI.post(END_POINT.CREATE_REQUEST, data);
+  const response = await AxiosAPI.post(`${END_POINT.CONSULTATION}/request`, {
+    childId: data.childId,
+    description: data.description,
+  });
   return response;
 };
 
-// Lấy chi tiết yêu cầu tham vấn theo ID
-export const GetConsultationByIdAPI = async (requestId) => {
-  const response = await AxiosAPI.get(`${END_POINT.GET_REQUEST_BY_ID}/${requestId}`);
+export const GetConsultationRequestByIdAPI = async (requestId) => {
+  const response = await AxiosAPI.get(
+    `${END_POINT.CONSULTATION}/request/${requestId}`
+  );
   return response;
 };
 
-// Lấy danh sách yêu cầu tham vấn của user
 export const GetUserConsultationsAPI = async () => {
-  const response = await AxiosAPI.get(END_POINT.GET_USER_REQUESTS);
+  const response = await AxiosAPI.get(
+    `${END_POINT.CONSULTATION}/user/requests`
+  );
   return response;
 };
 
-// Lấy danh sách yêu cầu tham vấn của bác sĩ
 export const GetDoctorConsultationsAPI = async () => {
-  const response = await AxiosAPI.get(END_POINT.GET_DOCTOR_REQUESTS);
-  return response;
-};
-
-// Trả lời yêu cầu tham vấn
-export const ResponseConsultationAPI = async (requestId, data) => {
-  const response = await AxiosAPI.post(
-    `${END_POINT.RESPONSE_REQUEST}/${requestId}/response`,
-    data
+  const response = await AxiosAPI.get(
+    `${END_POINT.CONSULTATION}/doctor/requests`
   );
   return response;
 };
 
-// Thêm câu hỏi cho yêu cầu tham vấn
-export const AddQuestionToConsultationAPI = async (requestId, question) => {
+export const SendConsultationResponseAPI_Doctor = async (requestId, answer) => {
   const response = await AxiosAPI.post(
-    `${END_POINT.ADD_QUESTION}/${requestId}/question`,
-    JSON.stringify(question)
+    `${END_POINT.CONSULTATION}/request/${requestId}/response`,
+    answer
   );
   return response;
 };
 
-// Hoàn thành yêu cầu tham vấn
-export const CompleteConsultationAPI = async (requestId, isComplete = true) => {
+export const SendConsultationQuestionAPI_Customer = async (
+  requestId,
+  question
+) => {
   const response = await AxiosAPI.post(
-    `${END_POINT.COMPLETE_REQUEST}/${requestId}/complete`,
-    isComplete
+    `${END_POINT.CONSULTATION}/request/${requestId}/question`,
+    question
   );
   return response;
-}; 
+};
+
+export const AnswerConsultationQuestionAPI = async (
+  requestId,
+  questionId,
+  answer
+) => {
+  const response = await AxiosAPI.post(
+    `${END_POINT.CONSULTATION}/request/${requestId}/response/${questionId}`,
+    {
+      answer,
+      attachments: null,
+    }
+  );
+  return response;
+};
+
+export const AskQuestionForResponseAPI = async (
+  requestId,
+  responseId,
+  question
+) => {
+  const response = await AxiosAPI.post(
+    `${END_POINT.CONSULTATION}/request/${requestId}/question/${responseId}`,
+    {
+      question,
+      attachments: null,
+    }
+  );
+  return response;
+};
+
+export const CompleteConsultationRequestAPI = async (
+  requestId,
+  isSatisfied = true
+) => {
+  const response = await AxiosAPI.post(
+    `${END_POINT.CONSULTATION}/request/${requestId}/complete`,
+    isSatisfied
+  );
+  return response;
+};
