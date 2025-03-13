@@ -69,10 +69,10 @@ const Header = () => {
           </Link>
           <div className='mt-3 flex flex-col gap-2'>
             <button className='rounded-lg border border-blue-500 px-4 py-2 text-blue-500 transition hover:bg-blue-100'>
-              Đăng nhập
+              <Link to={'/login'}>Đăng nhập</Link>
             </button>
             <button className='rounded-lg bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600'>
-              Đăng ký
+              <Link to={'/register'}>Đăng ký</Link>
             </button>
           </div>
         </div>

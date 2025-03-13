@@ -65,7 +65,7 @@ const GuestLogin = () => {
     } catch (error) {
       console.error('Login error:', error);
       setNotification(true);
-      setMsg('Đã có lỗi xảy ra khi đăng nhập');
+      setMsg(error.response.data.message);
       setTimeout(() => {
         setNotification(false);
         setMsg('');
