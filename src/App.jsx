@@ -12,6 +12,7 @@ import CustomerConsultationHistory from './pages/customer/CustomerConsultationHi
 import CustomerChildRecord from './pages/customer/CustomerChildRecord';
 import CustomerChartOfChild from './pages/customer/CustomerChartOfChild';
 import CustomerAddNewChildIndex from './pages/customer/CustomerAddNewChildIndex';
+
 import GuestLogin from './pages/guest/GuestLogin';
 import GuestRegister from './pages/guest/GuestRegister';
 import BookingHistory from './pages/customer/BookingHistory';
@@ -26,6 +27,8 @@ import DoctorScheduleManagement from './pages/admin/DoctorScheduleManagement';
 import AddDoctor from './pages/admin/AddDoctor';
 import UpdateDoctor from './pages/admin/UpdateDoctor';
 import AppointmentDetail from './pages/doctor/AppointmentDetail';
+import CustomerProfile from './pages/customer/CustomerProfile';
+import DoctorProfile from './pages/doctor/DoctorProfile';
 
 function App() {
   return (
@@ -40,6 +43,7 @@ function App() {
 
           <Route path='/customer' element={<LayoutCustomer />}>
             <Route index element={<HomePageCus />} />
+            <Route path='profile' element={<CustomerProfile />} />
             <Route path='addNewChild' element={<AddNewChild />} />
             <Route
               path='/customer/children/edit/:childId'
@@ -68,6 +72,7 @@ function App() {
 
           <Route path='/doctor' element={<LayoutDoctor />}>
             <Route index element={<RequestAdvisory />} />
+            <Route path='profile' element={<DoctorProfile />} />
             <Route
               path='/doctor/consultationChat'
               element={<DoctorConsultation />}
