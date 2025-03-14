@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   LineChart,
   Line,
@@ -21,6 +21,7 @@ import {
   ArrowUp,
   ArrowDown,
   Info,
+  LineChart as LineChartIcon,
 } from 'lucide-react';
 import { AssessGrowthByChildIdAPI } from '../../api/GrowthAssessmentAPI';
 import { format } from 'date-fns';
@@ -29,6 +30,7 @@ const CustomerChartOfChild = () => {
   const { childId } = useParams();
   const [assessmentData, setAssessmentData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -254,6 +256,109 @@ const CustomerChartOfChild = () => {
     }
   };
 
+  const getNotesByMetricType = (metricType) => {
+    switch (metricType) {
+      case 'height':
+        return [
+          {
+            icon: <ArrowDown className='h-4 w-4 text-red-500' />,
+            text: 'Z-score < -3: Thấp còi nghiêm trọng',
+          },
+          {
+            icon: <ArrowDown className='h-4 w-4 text-orange-500' />,
+            text: 'Z-score < -2: Thấp còi',
+          },
+          {
+            icon: <ArrowDown className='h-4 w-4 text-yellow-500' />,
+            text: 'Z-score < -1: Chiều cao thấp',
+          },
+          {
+            icon: <Info className='h-4 w-4 text-green-500' />,
+            text: '-1 ≤ Z-score ≤ 2: Chiều cao bình thường',
+          },
+          {
+            icon: <ArrowUp className='h-4 w-4 text-red-500' />,
+            text: 'Z-score > 2: Chiều cao cao',
+          },
+        ];
+
+      case 'weight':
+        return [
+          {
+            icon: <ArrowDown className='h-4 w-4 text-red-500' />,
+            text: 'Z-score < -3: Suy dinh dưỡng nặng',
+          },
+          {
+            icon: <ArrowDown className='h-4 w-4 text-orange-500' />,
+            text: 'Z-score < -2: Suy dinh dưỡng',
+          },
+          {
+            icon: <Info className='h-4 w-4 text-green-500' />,
+            text: '-2 ≤ Z-score ≤ 1: Cân nặng bình thường',
+          },
+          {
+            icon: <ArrowUp className='h-4 w-4 text-yellow-500' />,
+            text: '1 < Z-score ≤ 2: Thừa cân',
+          },
+          {
+            icon: <ArrowUp className='h-4 w-4 text-red-500' />,
+            text: 'Z-score > 2: Béo phì',
+          },
+        ];
+
+      case 'bmi':
+        return [
+          {
+            icon: <ArrowDown className='h-4 w-4 text-red-500' />,
+            text: 'Z-score < -3: Gầy độ 3',
+          },
+          {
+            icon: <ArrowDown className='h-4 w-4 text-orange-500' />,
+            text: 'Z-score < -2: Gầy độ 2',
+          },
+          {
+            icon: <ArrowDown className='h-4 w-4 text-yellow-500' />,
+            text: 'Z-score < -1: Gầy độ 1',
+          },
+          {
+            icon: <Info className='h-4 w-4 text-green-500' />,
+            text: '-1 ≤ Z-score ≤ 1: BMI bình thường',
+          },
+          {
+            icon: <ArrowUp className='h-4 w-4 text-yellow-500' />,
+            text: '1 < Z-score ≤ 2: Thừa cân',
+          },
+          {
+            icon: <ArrowUp className='h-4 w-4 text-orange-500' />,
+            text: '2 < Z-score ≤ 3: Béo phì độ 1',
+          },
+          {
+            icon: <ArrowUp className='h-4 w-4 text-red-500' />,
+            text: 'Z-score > 3: Béo phì độ 2',
+          },
+        ];
+
+      case 'headCircumference':
+        return [
+          {
+            icon: <ArrowDown className='h-4 w-4 text-red-500' />,
+            text: 'Z-score < -2: Vòng đầu nhỏ',
+          },
+          {
+            icon: <Info className='h-4 w-4 text-green-500' />,
+            text: '-2 ≤ Z-score ≤ 2: Vòng đầu bình thường',
+          },
+          {
+            icon: <ArrowUp className='h-4 w-4 text-red-500' />,
+            text: 'Z-score > 2: Vòng đầu lớn',
+          },
+        ];
+
+      default:
+        return [];
+    }
+  };
+
   if (loading) {
     return (
       <div className='flex justify-center items-center min-h-screen'>
@@ -290,6 +395,18 @@ const CustomerChartOfChild = () => {
               </p>
             </div>
           )}
+
+          <div className='flex justify-end mb-4 pt-4'>
+            <button
+              onClick={() =>
+                navigate(`/customer/children/${childId}/growth-chart`)
+              }
+              className='flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700'
+            >
+              <LineChartIcon size={18} />
+              <span>Xem biểu đồ tăng trưởng</span>
+            </button>
+          </div>
         </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
@@ -324,7 +441,7 @@ const CustomerChartOfChild = () => {
                         Z-score: {metric.zScore.toFixed(2)}
                       </span>
                     </div>
-                    <div className='flex items-center space-x-1'>
+                    {/* <div className='flex items-center space-x-1'>
                       {getZScoreInfo(metric.zScore).icon}
                       <span
                         className={`text-sm ${
@@ -333,7 +450,7 @@ const CustomerChartOfChild = () => {
                       >
                         {getZScoreInfo(metric.zScore).text}
                       </span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               )}
@@ -393,18 +510,12 @@ const CustomerChartOfChild = () => {
               </div>
 
               <div className='mt-4 space-y-2 text-sm text-gray-600'>
-                <div className='flex items-center space-x-2'>
-                  <ArrowUp className='h-4 w-4 text-red-500' />
-                  <span>Z-score > 3: Bất thường (quá cao)</span>
-                </div>
-                <div className='flex items-center space-x-2'>
-                  <ArrowDown className='h-4 w-4 text-red-500' />
-                  <span>Z-score {'<'} -3: Bất thường (quá thấp)</span>
-                </div>
-                <div className='flex items-center space-x-2'>
-                  <Info className='h-4 w-4 text-blue-500' />
-                  <span>-3 ≤ Z-score ≤ 3: Trong ngưỡng bình thường</span>
-                </div>
+                {getNotesByMetricType(metric.dataKey).map((note, index) => (
+                  <div key={index} className='flex items-center space-x-2'>
+                    {note.icon}
+                    <span>{note.text}</span>
+                  </div>
+                ))}
               </div>
             </div>
           ))}

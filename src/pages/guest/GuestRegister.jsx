@@ -25,7 +25,6 @@ const GuestRegister = () => {
     });
   };
 
-  // Xử lý submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -36,7 +35,7 @@ const GuestRegister = () => {
           state: { msg: 'Đăng ký thành công' },
         });
       } else {
-        alert('Đăng ký thất bại. Vui lòng kiểm tra lại thông tin!');
+        setMsg('Đăng ký thất bại');
       }
     } catch (error) {
       setMsg(error.response.data.message);
@@ -51,9 +50,8 @@ const GuestRegister = () => {
         </Alert>
       )}
       <div className='p-[5em]'>
-        <div className='flex min-h-screen items-center justify-center '>
-          <div className='flex w-[800px] rounded-lg bg-white shadow-lg'>
-            {/* Form đăng ký */}
+        <div className='flex min-h-screen items-center justify-center'>
+          <div className='flex w-[800px] rounded-lg bg-white shadow-lg shadow-gray-500'>
             <div className='w-1/2 p-8'>
               <h2 className='text-2xl font-bold text-gray-900'>
                 Đăng ký tài khoản
@@ -138,7 +136,7 @@ const GuestRegister = () => {
 
                 <button
                   type='submit'
-                  className='mt-4 w-full rounded-lg bg-blue-600 py-2 text-white transition hover:bg-blue-700'
+                  className='mt-4 w-full rounded-lg border-[1px] border-solid border-blue-300 text-blue-300 hover:bg-blue-500 py-2 hover:text-white transition ease-in-out duration-300'
                 >
                   Đăng ký
                 </button>
@@ -152,8 +150,7 @@ const GuestRegister = () => {
               </p>
             </div>
 
-            {/* Phần nền xanh */}
-            <div className='w-1/2 bg-blue-300'>
+            <div className='w-1/2 bg-blue-300 rounded-e-lg shadow-lg shadow-gray-500'>
               <img src={hinh6} alt='' />
             </div>
           </div>

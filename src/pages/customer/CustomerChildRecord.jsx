@@ -31,10 +31,15 @@ const CustomerChildRecord = () => {
   const handleDelete = async (recordId) => {
     if (window.confirm('Bạn có chắc muốn xóa chỉ số này?')) {
       try {
-        await DeleteGrowthRecordAPI(recordId);
-        showNotification('Xóa chỉ số thành công');
-        loadGrowthRecords();
+        const response = await DeleteGrowthRecordAPI(recordId);
+        if (response.data.success) {
+          showNotification('Xóa chỉ số thành công');
+          loadGrowthRecords();
+        } else {
+          showNotification('Không thể xóa chỉ số', 'error');
+        }
       } catch (error) {
+        console.error('Error deleting record:', error);
         showNotification('Lỗi khi xóa chỉ số', 'error');
       }
     }
@@ -69,7 +74,7 @@ const CustomerChildRecord = () => {
                 Thêm chỉ số
               </button>
             </Link>
-            <Link to={`/customer/chartOfChild/${childId}`}>
+            <Link to={`/customer/children/${childId}/growth-chart`}>
               <button className='flex items-center gap-2 rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600'>
                 <BarChart3 className='h-4 w-4' />
                 Biểu đồ tăng trưởng
@@ -116,7 +121,7 @@ const CustomerChildRecord = () => {
                       </button>
                     </Link>
                     <button
-                      onClick={() => handleDelete(record.childId)}
+                      onClick={() => handleDelete(record.recordId)}
                       className='flex items-center gap-1 text-red-600 hover:underline'
                     >
                       <Trash2 className='h-4 w-4' />

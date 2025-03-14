@@ -26,6 +26,8 @@ import DoctorScheduleManagement from './pages/admin/DoctorScheduleManagement';
 import AddDoctor from './pages/admin/AddDoctor';
 import UpdateDoctor from './pages/admin/UpdateDoctor';
 import AppointmentDetail from './pages/doctor/AppointmentDetail';
+import CustomerGrowthChart from './pages/customer/CustomerGrowthChart';
+import ListDoctor from './pages/customer/ListDoctor';
 
 function App() {
   return (
@@ -45,6 +47,8 @@ function App() {
               path='/customer/children/edit/:childId'
               element={<UpdateChild />}
             />
+            <Route path='listDoctor' element={<ListDoctor />} />
+
             <Route path='bookingDoctor' element={<BookingDoctor />} />
             <Route path='bookingHistory' element={<BookingHistory />} />
             <Route path='consultationChat' element={<ConsultationChat />} />
@@ -71,6 +75,14 @@ function App() {
               path='/customer/chartOfChild/:childId'
               element={<CustomerChartOfChild />}
             />
+            <Route
+              path='/customer/children/:childId/growth-chart'
+              element={<CustomerGrowthChart />}
+            />
+            <Route
+              path='/customer/consultationChat/:requestId'
+              element={<ConsultationChat />}
+            />
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>
@@ -84,6 +96,10 @@ function App() {
               path='appointment/:appointmentId'
               element={<AppointmentDetail />}
             />
+            <Route
+              path='/doctor/consultationChat/:requestId'
+              element={<ConsultationChat />}
+            />
           </Route>
 
           <Route path='/admin' element={<LayoutAdmin />}>
@@ -96,15 +112,6 @@ function App() {
               element={<DoctorScheduleManagement />}
             />
           </Route>
-
-          <Route
-            path='/doctor/consultationChat/:requestId'
-            element={<ConsultationChat />}
-          />
-          <Route
-            path='/customer/consultationChat/:requestId'
-            element={<ConsultationChat />}
-          />
         </Routes>
       </BrowserRouter>
     </>

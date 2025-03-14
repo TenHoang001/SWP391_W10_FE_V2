@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import hinh5 from '../../assets/hinh5.png';
+import bg_1 from '../../assets/bg_1.jpg';
 import { Link } from 'react-router-dom';
 import { LoginAPI } from '../../api/AuthAPI';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -39,7 +40,6 @@ const GuestLogin = () => {
         localStorage.setItem('token', JSON.stringify(response.data.token));
         localStorage.setItem('role', response.data.role);
 
-        // Phân quyền điều hướng dựa vào role
         switch (response.data.role) {
           case 'Doctor':
             navigate('/doctor', { replace: true });
@@ -76,28 +76,27 @@ const GuestLogin = () => {
   return (
     <div>
       {notification && (
-        <Alert className='w-auto absolute right-1 top-20' color='red'>
+        <Alert className='fixed w-auto  right-1 top-5' color='red'>
           {msg || 'Email hoặc mật khẩu không hợp lệ'}
         </Alert>
       )}
       {msg && !notification && (
-        <Alert className='w-auto absolute right-1 top-20' color='blue'>
+        <Alert className='w-auto fixed right-1 top-5' color='blue'>
           {msg}
         </Alert>
       )}
-      <div className='flex min-h-screen items-center justify-center bg-gray-100'>
-        <div className='grid w-full max-w-4xl grid-cols-1 rounded-lg bg-white shadow-lg md:grid-cols-2'>
-          {/* Form đăng nhập */}
+      <div className={`flex min-h-screen items-center justify-center`}>
+        <div className='grid w-full max-w-4xl grid-cols-1 rounded-lg bg-white shadow-gray-500 shadow-lg md:grid-cols-2'>
           <div className='p-8'>
             <h2 className='text-center text-2xl font-semibold'>Đăng nhập</h2>
             <p className='mb-6 text-center text-gray-500'>
               Chào mừng bạn quay trở lại
             </p>
 
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleLogin} className='space-y-7'>
               <div className='mb-4'>
                 <label className='mb-2 block text-sm font-medium text-gray-700'>
-                  Email
+                  Username
                 </label>
                 <input
                   placeholder='your@email.com'
@@ -121,33 +120,30 @@ const GuestLogin = () => {
                   required
                 />
               </div>
-
-              <div className='mb-4 flex items-center'>
-                <input type='checkbox' id='remember' className='mr-2' />
-                <label htmlFor='remember' className='text-sm text-gray-600'>
-                  Ghi nhớ đăng nhập
-                </label>
-              </div>
-
+              <p className='mt-4 text-center text-sm text-gray-600'>
+                Chưa có tài khoản?{' '}
+                <Link to='/register' className='text-blue-500 hover:underline'>
+                  Đăng ký ngay
+                </Link>
+              </p>
               <button
                 type='submit'
-                className='w-full rounded-lg bg-blue-600 py-2 text-white transition hover:bg-blue-700'
+                className='w-full rounded-lg border-blue-300 border-[1px] text-blue-300 border-solid hover:bg-blue-500 transition-all py-2 hover:text-gray-100  duration-300 ease-in-out'
               >
                 Đăng nhập
               </button>
             </form>
-
-            <p className='mt-4 text-center text-sm text-gray-600'>
-              Chưa có tài khoản?{' '}
-              <Link to='/register' className='text-blue-500 hover:underline'>
-                Đăng ký ngay
-              </Link>
-            </p>
           </div>
 
-          {/* Ảnh bên phải */}
-          <div className='hidden bg-pink-200 md:block'>
-            <img src={hinh5} alt='' />
+          <div
+            className='hidden md:block rounded-e-lg shadow-lg shadow-gray-500'
+            style={{
+              backgroundImage: `url(${bg_1})`,
+              backgroundPosition: 'center',
+              backgroundSize: 'cover',
+            }}
+          >
+            <img src={hinh5} alt='' className='blur-0  pl-2' />
           </div>
         </div>
       </div>

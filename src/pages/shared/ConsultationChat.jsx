@@ -91,9 +91,7 @@ const ConsultationChat = () => {
     }
   };
 
-  // const totalPages = Math.ceil(
-  //   (consultation?.consultationResponses?.length || 0) / COMMENTS_PER_PAGE
-  // );
+  
   const paginatedComments = consultation?.consultationResponses?.slice(
     (currentPage - 1) * COMMENTS_PER_PAGE,
     currentPage * COMMENTS_PER_PAGE

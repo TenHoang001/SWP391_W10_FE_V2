@@ -36,7 +36,7 @@ const Header = () => {
           <Link to={'/customer'} className='transition hover:text-blue-500'>
             Trang chủ
           </Link>
-          <Link to={'/customer'} className='transition hover:text-blue-500'>
+          <Link to={'/customer/listDoctor'} className='transition hover:text-blue-500'>
             Danh sách bác sĩ
           </Link>
           <Link to={'bookingDoctor'} className='transition hover:text-blue-500'>

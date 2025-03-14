@@ -230,7 +230,7 @@ const DoctorSchedule = () => {
                   </th>
                   <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
                     <Typography variant="small" color="blue-gray" className="font-semibold">
-                      Bệnh nhân
+                      Trẻ em
                     </Typography>
                   </th>
                   <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
