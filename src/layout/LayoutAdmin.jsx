@@ -13,7 +13,7 @@ const LayoutAdmin = () => {
               <div className="flex">
                 <Link
                   to="/admin/doctors"
-                  className="px-3 py-2 rounded-md text-sm font-medium"
+                  className=" px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Quản lý bác sĩ
                 </Link>
@@ -22,6 +22,12 @@ const LayoutAdmin = () => {
                   className="px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Quản lý lịch làm việc
+                </Link>
+                <Link
+                  to="/admin/blogs"
+                  className="px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Quản lý bài viết
                 </Link>
                 {/* Add other admin navigation links */}
               </div>

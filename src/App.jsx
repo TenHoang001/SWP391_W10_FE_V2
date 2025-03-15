@@ -31,7 +31,8 @@ import AppointmentDetail from './pages/doctor/AppointmentDetail';
 import CustomerProfile from './pages/customer/CustomerProfile';
 import DoctorProfile from './pages/doctor/DoctorProfile';
 import CustomerGrowthChart from './pages/customer/CustomerGrowthChart';
-import ListDoctor from './pages/customer/ListDoctor';
+import BlogManagement from './pages/shared/BlogManagement';
+import BlogList from './pages/shared/BlogList';
 
 function App() {
   return (
@@ -42,10 +43,12 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path='/login' element={<GuestLogin />} />
             <Route path='/register' element={<GuestRegister />} />
+            <Route path='/blogs' element={<BlogList />} />
           </Route>
 
           <Route path='/customer' element={<LayoutCustomer />}>
             <Route index element={<HomePageCus />} />
+            <Route path='blogs' element={<BlogList />} />
             <Route path='profile' element={<CustomerProfile />} />
             <Route path='addNewChild' element={<AddNewChild />} />
             <Route
@@ -53,7 +56,6 @@ function App() {
               element={<UpdateChild />}
             />
             <Route path='listDoctor' element={<ListDoctor />} />
-
             <Route path='bookingDoctor' element={<BookingDoctor />} />
             <Route path='bookingHistory' element={<BookingHistory />} />
             <Route path='listDoctor' element={<ListDoctor />} />
@@ -94,6 +96,7 @@ function App() {
           <Route path='/doctor' element={<LayoutDoctor />}>
             <Route index element={<RequestAdvisory />} />
             <Route path='profile' element={<DoctorProfile />} />
+            <Route path='blogs' element={<BlogManagement />} />
             <Route
               path='/doctor/consultationChat'
               element={<DoctorConsultation />}
@@ -115,6 +118,7 @@ function App() {
 
           <Route path='/admin' element={<LayoutAdmin />}>
             <Route index element={<Navigate to='/admin/doctors' replace />} />
+            <Route path='blogs' element={<BlogManagement />} />
             <Route path='doctors' element={<DoctorManagement />} />
             <Route path='doctors/add' element={<AddDoctor />} />
             <Route path='doctors/update/:doctorId' element={<UpdateDoctor />} />
