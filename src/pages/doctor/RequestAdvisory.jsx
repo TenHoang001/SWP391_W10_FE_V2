@@ -9,9 +9,8 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { GetDoctorConsultationsAPI } from '../../api/ConsultationAPI';
-
 import { format } from 'date-fns';
+import { GetDoctorConsultationsAPI } from '../../api/ConsultationAPI';
 
 const RequestAdvisory = () => {
   const [consultations, setConsultations] = useState([]);

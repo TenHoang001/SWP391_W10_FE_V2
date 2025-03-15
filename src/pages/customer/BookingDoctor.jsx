@@ -140,7 +140,7 @@ const BookingDoctor = () => {
           <Select onChange={(value) => setSelectedDoctor(value)}>
             {doctors.map((doctor) => (
               <Option key={doctor.userId} value={doctor.userId}>
-                {doctor.fullName} - {doctor.specialization}
+                {doctor.fullName}
               </Option>
             ))}
           </Select>
