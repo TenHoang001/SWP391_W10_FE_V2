@@ -30,14 +30,14 @@ const ManageUser = () => {
     }
   };
 
-  const handleEdit = (user) => {
-    setEditingUser(user);
-    setForm({
-      fullName: user.fullName,
-      phoneNumber: user.phoneNumber,
-      address: user.address,
-    });
-  };
+//   const handleEdit = (user) => {
+//     setEditingUser(user);
+//     setForm({
+//       fullName: user.fullName,
+//       phoneNumber: user.phoneNumber,
+//       address: user.address,
+//     });
+//   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -107,20 +107,20 @@ const ManageUser = () => {
                   <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                 </label>
               </td>
-              <td className='p-3 flex justify-center'>
+              {/* <td className='p-3 flex justify-center'>
                 <button
                   className='bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 flex items-center'
                   onClick={() => handleEdit(user)}
                 >
                   <Pencil className='h-5 w-5' />
                 </button>
-              </td>
+              </td> */}
             </tr>
           ))}
         </tbody>
       </table>
 
-      {editingUser && (
+      {/* {editingUser && (
         <form
           onSubmit={handleSubmit}
           className='bg-white p-4 rounded shadow-md mt-6'
@@ -155,7 +155,7 @@ const ManageUser = () => {
             Hủy
           </Button>
         </form>
-      )}
+      )} */}
     </div>
   );
 };
