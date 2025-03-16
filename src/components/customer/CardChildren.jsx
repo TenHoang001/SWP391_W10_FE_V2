@@ -14,7 +14,7 @@ const CardChildren = ({ fullName, birthDate, gender, bloodType, childId }) => {
         <div>
           <p className='font-bold'>{fullName}</p>
           <p>Ngày sinh: {birthDate}</p>
-          <p>Giới tính: {gender === 'Male' ? 'Nam' : 'Nữ'}</p>
+          <p>Giới tính: {gender}</p>
           <p>Nhóm máu: {bloodType}</p>
         </div>
       </div>

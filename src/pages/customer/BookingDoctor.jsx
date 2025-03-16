@@ -20,7 +20,7 @@ const BookingDoctor = () => {
   const [children, setChildren] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedChild, setSelectedChild] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [scheduleId, setScheduleId] = useState(null);
@@ -168,8 +168,8 @@ const BookingDoctor = () => {
           <label className='block mb-2'>Chọn ngày</label>
           <input
             type='date'
-            value={format(selectedDate, 'yyyy-MM-dd')}
-            onChange={(e) => setSelectedDate(new Date(e.target.value))}
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(format(e.target.value, 'yyyy-MM-dd'))}
             className='w-full p-2 border rounded'
           />
         </div>

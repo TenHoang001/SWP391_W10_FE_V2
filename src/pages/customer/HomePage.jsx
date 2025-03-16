@@ -19,7 +19,7 @@ const HomePageCus = () => {
   });
   const [openViewDropdown, setOpenViewDropdown] = useState(false);
   const [view, setView] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [filteredChildren, setFilteredChildren] = useState([]);
 
   useEffect(() => {
     fetchChildren();
@@ -57,10 +57,11 @@ const HomePageCus = () => {
       const response = await GetChildrenByUserIdAPI(userId);
       if (response?.status) {
         setChildren(response.data);
+        setFilteredChildren(response.data);
       }
     } catch (error) {
       console.error('Error fetching children:', error);
-    } 
+    }
   };
 
   const formatDate = (dateString) => {
@@ -74,6 +75,30 @@ const HomePageCus = () => {
     setView(data);
     const localView = localStorage.setItem('view', data);
     return localView;
+  };
+
+  const handleSearch = (value) => {
+    if (value.trim() !== '') {
+      const filteredChildren = children.filter((child) => {
+        const searchValue = value.toLowerCase();
+        if (searchValue.includes('nữ')) {
+          return child.gender.toLowerCase() === 'female';
+        }
+        if (searchValue.includes('nam')) {
+          return child.gender.toLowerCase() === 'male';
+        }
+
+        return (
+          child.fullName.toLowerCase().includes(searchValue) ||
+          child.gender.toLowerCase().includes(searchValue) ||
+          child.bloodType.toLowerCase().includes(searchValue) ||
+          child.birthDate.toLowerCase().includes(searchValue)
+        );
+      });
+      setFilteredChildren(filteredChildren);
+    } else {
+      fetchChildren();
+    }
   };
 
   return (
@@ -114,6 +139,7 @@ const HomePageCus = () => {
                   type='text'
                   placeholder='Tìm kiếm...'
                   className='w-full rounded border border-gray-300 py-2 pl-8 pr-2 text-gray-700'
+                  onChange={(e) => handleSearch(e.target.value)}
                 />
                 <Search className='absolute left-2 top-1/2 -translate-y-1/2 transform text-xl text-gray-500' />
               </div>
@@ -166,13 +192,13 @@ const HomePageCus = () => {
 
           {view && view === 'card' ? (
             <div className='grid grid-cols-1 gap-6 pt-10 sm:grid-cols-2 lg:grid-cols-3'>
-              {children.map((child) => (
+              {filteredChildren.map((child) => (
                 <CardChildren
                   key={child.childId}
                   childId={child.childId}
                   birthDate={formatDate(child.birthDate)}
                   fullName={child.fullName}
-                  gender={child.gender == 'Male' ? 'Nam' : 'Nữ'}
+                  gender={child.gender === 'Male' ? 'Nam' : 'Nữ'}
                   bloodType={child.bloodType}
                 />
               ))}
@@ -201,7 +227,7 @@ const HomePageCus = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {children.map((child, index) => (
+                  {filteredChildren.map((child, index) => (
                     <TableChildren
                       key={child.childId}
                       stt={index + 1}
