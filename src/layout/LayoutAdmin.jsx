@@ -7,27 +7,33 @@ const LayoutAdmin = () => {
     <div className='flex'>
       <div className='w-64 min-h-screen border-r border-gray-400/25'>
         <HeaderAdmin />
-        <nav className="bg-white shadow">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex justify-between h-16">
-              <div className="flex">
+        <nav className='bg-white shadow'>
+          <div className='max-w-7xl mx-auto px-4'>
+            <div className='flex justify-between h-16'>
+              <div className='flex'>
                 <Link
-                  to="/admin/doctors"
-                  className=" px-3 py-2 rounded-md text-sm font-medium"
+                  to='/admin/doctors'
+                  className=' px-3 py-2 rounded-md text-sm font-medium'
                 >
                   Quản lý bác sĩ
                 </Link>
                 <Link
-                  to="/admin/doctor-schedules"
-                  className="px-3 py-2 rounded-md text-sm font-medium"
+                  to='/admin/doctor-schedules'
+                  className='px-3 py-2 rounded-md text-sm font-medium'
                 >
                   Quản lý lịch làm việc
                 </Link>
                 <Link
-                  to="/admin/blogs"
-                  className="px-3 py-2 rounded-md text-sm font-medium"
+                  to='/admin/blogs'
+                  className='px-3 py-2 rounded-md text-sm font-medium'
                 >
                   Quản lý bài viết
+                </Link>
+                <Link
+                  to='/admin/users'
+                  className='px-3 py-2 rounded-md text-sm font-medium'
+                >
+                  Quản lý người dùng
                 </Link>
                 {/* Add other admin navigation links */}
               </div>

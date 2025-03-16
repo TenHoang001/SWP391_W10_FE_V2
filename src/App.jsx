@@ -33,6 +33,7 @@ import DoctorProfile from './pages/doctor/DoctorProfile';
 import CustomerGrowthChart from './pages/customer/CustomerGrowthChart';
 import BlogManagement from './pages/shared/BlogManagement';
 import BlogList from './pages/shared/BlogList';
+import ManageUser from './pages/admin/ManageUser';
 
 function App() {
   return (
@@ -58,7 +59,6 @@ function App() {
             <Route path='listDoctor' element={<ListDoctor />} />
             <Route path='bookingDoctor' element={<BookingDoctor />} />
             <Route path='bookingHistory' element={<BookingHistory />} />
-            <Route path='listDoctor' element={<ListDoctor />} />
             <Route path='consultationChat' element={<ConsultationChat />} />
             <Route
               path='consultationHistory'
@@ -126,6 +126,7 @@ function App() {
               path='doctors/:doctorId/schedule'
               element={<DoctorScheduleManagement />}
             />
+            <Route path='users' element={<ManageUser />} />
           </Route>
         </Routes>
       </BrowserRouter>
