@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import {
+ import {
   LineChart,
   Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
+
 import {
   User,
   Ruler,
@@ -23,8 +21,61 @@ import {
   Info,
   LineChart as LineChartIcon,
 } from 'lucide-react';
-import { AssessGrowthByChildIdAPI } from '../../api/GrowthAssessmentAPI';
+
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+
+import { AssessGrowthByChildIdAPI } from '../../api/GrowthAssessmentAPI';
+
+// {
+//   "latestMeasurement": {
+//     "recordId": 7,
+//     "childId": 8,
+//     "childName": "Dương Minh",
+//     "height": 60,
+//     "weight": 5,
+//     "bmi": 13.89,
+//     "headCircumference": 29.8,
+//     "ageInDays": 16,
+//     "note": "",
+//     "createdAt": "2025-03-14T00:00:00",
+//     "updatedAt": "2025-03-14T13:27:21.44"
+//   },
+//   "assessment": {
+//     "recordId": 7,
+//     "childId": 8,
+//     "exactAgeInMonths": 0.5352058694699967,
+//     "measurementDate": "2025-03-14T00:00:00",
+//     "height": 60,
+//     "weight": 5,
+//     "bmi": 13.89,
+//     "headCircumference": 29.8,
+//     "zScores": {
+//       "height": 5.315789473684211,
+//       "weight": 2.8333333333333335,
+//       "bmi": 0.35,
+//       "headCircumference": -3.9166666666666665
+//     },
+//     "assessments": {
+//       "heightStatus": "Chiều cao cao",
+//       "weightStatus": "Béo phì",
+//       "bmiStatus": "BMI bình thường",
+//       "headCircumferenceStatus": "Vòng đầu nhỏ"
+//     },
+//     "growthTrend": {
+//       "hasSufficientData": false,
+//       "heightVelocity": 0,
+//       "weightVelocity": 0,
+//       "bmiVelocity": 0,
+//       "lastMeasurementDate": "0001-01-01T00:00:00",
+//       "numberOfMeasurements": 0,
+//       "isGrowthConcerning": false
+//     },
+//     "recommendations": "- Trẻ em đang có chiều cao bất thường\n- Cần được sự tư vấn của bác sĩ"
+//   },
+//   "recommendations": "- Trẻ em đang có chiều cao bất thường\n- Cần được sự tư vấn của bác sĩ"
+// }
 
 const CustomerChartOfChild = () => {
   const { childId } = useParams();
@@ -33,10 +84,10 @@ const CustomerChartOfChild = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchData();
+    getData();
   }, [childId]);
 
-  const fetchData = async () => {
+  const getData = async () => {
     try {
       setLoading(true);
       const response = await AssessGrowthByChildIdAPI(childId);
@@ -56,7 +107,7 @@ const CustomerChartOfChild = () => {
       icon: <Ruler />,
       value: assessmentData?.latestMeasurement?.height,
       zScore: assessmentData?.assessment?.zScores?.height,
-      status: assessmentData?.assessment?.assessments?.heightStatus,
+      status: assessmentData?.assessment?.assessments?.heightStatus,  
       unit: 'cm',
       dataKey: 'height',
     },
@@ -91,7 +142,6 @@ const CustomerChartOfChild = () => {
 
   const getStatusColor = (zScore, title) => {
     if (!zScore || isNaN(zScore)) return 'bg-gray-200 text-gray-700';
-
     switch (title) {
       case 'Chiều cao':
         if (zScore < -3) return 'bg-red-200 text-red-700';
@@ -128,7 +178,6 @@ const CustomerChartOfChild = () => {
 
   const generateZScoreData = (zScore) => {
     if (!zScore || isNaN(zScore)) return [];
-
     return [
       {
         x: zScore,
@@ -159,27 +208,6 @@ const CustomerChartOfChild = () => {
       console.error('Invalid date:', dateString);
       return '';
     }
-  };
-
-  const getZScoreInfo = (zScore) => {
-    if (!zScore || isNaN(zScore)) return null;
-    if (zScore > 3)
-      return {
-        icon: <ArrowUp className='h-4 w-4 text-red-500' />,
-        text: 'Bất thường (quá cao)',
-        color: 'text-red-500',
-      };
-    if (zScore < -3)
-      return {
-        icon: <ArrowDown className='h-4 w-4 text-red-500' />,
-        text: 'Bất thường (quá thấp)',
-        color: 'text-red-500',
-      };
-    return {
-      icon: <Info className='h-4 w-4 text-blue-500' />,
-      text: 'Trong ngưỡng bình thường',
-      color: 'text-blue-500',
-    };
   };
 
   const getDotColor = (zScore, metricType) => {
@@ -256,6 +284,7 @@ const CustomerChartOfChild = () => {
     }
   };
 
+  
   const getNotesByMetricType = (metricType) => {
     switch (metricType) {
       case 'height':
@@ -370,7 +399,11 @@ const CustomerChartOfChild = () => {
   return (
     <div className='bg-gray-50 py-6'>
       <div className='mx-auto max-w-7xl px-4'>
+       
         <div className='mb-6 bg-white rounded-lg p-6 shadow'>
+          
+
+          {/* Thông tin trẻ */}
           <div className='flex items-center space-x-4 mb-4'>
             <User className='h-12 w-12 text-blue-500' />
             <div>
@@ -387,6 +420,8 @@ const CustomerChartOfChild = () => {
             </div>
           </div>
 
+
+          {/* Khuyến nghị */}
           {assessmentData?.recommendations && (
             <div className='bg-blue-50 rounded-lg p-4'>
               <h3 className='font-semibold mb-2'>Khuyến nghị:</h3>
@@ -396,6 +431,8 @@ const CustomerChartOfChild = () => {
             </div>
           )}
 
+
+          {/* Link đến cdc chart */}
           <div className='flex justify-end mb-4 pt-4'>
             <button
               onClick={() =>
@@ -407,53 +444,60 @@ const CustomerChartOfChild = () => {
               <span>Xem biểu đồ tăng trưởng</span>
             </button>
           </div>
+
         </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           {metrics.map((metric, index) => (
             <div key={index} className='bg-white rounded-lg shadow p-6'>
               <div className='flex items-center justify-between mb-4'>
+                
+                {/* Icon và titile */}
                 <div className='flex items-center space-x-2'>
                   {metric.icon}
                   <h3 className='font-medium'>{metric.title}</h3>
                 </div>
+
+
+                {/* Gía trị height thực tế và đơn vị đo */}
                 <div className='flex flex-col items-end'>
                   <span className='text-lg font-semibold'>
                     {metric.value} {metric.unit}
                   </span>
+
+                {/* Gía trị tính theo zscore */}
                   <span
                     className={`px-3 py-1 rounded-full text-sm ${getStatusColor(
                       metric.zScore,
                       metric.title
                     )}`}
                   >
-                    {metric.status}
+                    {metric.status } 
+                    {/* Chiều cao cao.... */}
                   </span>
+
                 </div>
+
+
               </div>
 
+              {/* Hiển thị zscore */}
               {metric.zScore && (
                 <div className='mb-4 p-3 bg-gray-50 rounded-lg'>
                   <div className='flex items-center justify-between'>
                     <div className='flex items-center space-x-2'>
                       <AlertTriangle className='h-4 w-4 text-gray-500' />
+                        {/* Gía trị  z score*/}
                       <span className='text-sm font-medium'>
                         Z-score: {metric.zScore.toFixed(2)}
                       </span>
                     </div>
-                    {/* <div className='flex items-center space-x-1'>
-                      {getZScoreInfo(metric.zScore).icon}
-                      <span
-                        className={`text-sm ${
-                          getZScoreInfo(metric.zScore).color
-                        }`}
-                      >
-                        {getZScoreInfo(metric.zScore).text}
-                      </span>
-                    </div> */}
+              
                   </div>
                 </div>
               )}
+
+
               {/* biểu đồ */}
               <div className='h-[300px]'>
                 <ResponsiveContainer width='100%' height='100%'>
@@ -462,13 +506,18 @@ const CustomerChartOfChild = () => {
                     margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
                   >
                     <CartesianGrid strokeDasharray='3 3' />
+
                     <XAxis
                       dataKey='x'
                       domain={['auto', 'auto']}
                       ticks={generateTicks(metric.zScore)}
                       type='number'
                     />
+                    
+
                     <YAxis domain={[-0.5, 0.5]} hide={true} />
+
+
                     {/* //Detail */}
                     <Tooltip
                       formatter={() => {
@@ -477,10 +526,12 @@ const CustomerChartOfChild = () => {
                           metric.title,
                         ];
                       }}
-                      labelFormatter={(label) => {
+                      labelFormatter={() => {
                         return `Z-score: ${metric.zScore?.toFixed(2) || 'N/A'}`;
                       }}
                     />
+
+
                     <Line
                       type='monotone'
                       dataKey='y'
@@ -492,19 +543,22 @@ const CustomerChartOfChild = () => {
                           r={6}
                           fill={getDotColor(metric.zScore, metric.dataKey)}
                           stroke='white'
-                          strokeWidth={2}
+                          strokeWidth={1}
                         />
                       )}
                       name={metric.title}
                     />
-                    {[-3, -2, -1, 0, 1, 2, 3].map((score) => (
+
+
+                    {/* {[-3, -2, -1, 0, 1, 2, 3].map((score) => (
                       <ReferenceLine
                         key={score}
                         x={score}
                         stroke='#gray'
                         strokeDasharray='3 3'
                       />
-                    ))}
+                    ))} */}
+
                   </LineChart>
                 </ResponsiveContainer>
               </div>

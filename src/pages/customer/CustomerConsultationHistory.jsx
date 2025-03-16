@@ -6,7 +6,7 @@ import {
   CheckCircle2,
   AlertCircle,
 } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link} from 'react-router-dom';
 import { GetUserConsultationsAPI } from '../../api/ConsultationAPI';
 import { format } from 'date-fns';
 import { GetChildDetailAPI } from '../../api/ChildrenAPI';

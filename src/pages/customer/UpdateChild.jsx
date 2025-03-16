@@ -25,9 +25,12 @@ const UpdateChild = () => {
   const [fullName, setFullName] = React.useState('');
   const [gender, setGender] = React.useState('');
   const [bloodType, setBloodType] = React.useState('A+');
-  const [showAlert, setShowAlert] = React.useState(false);
-  const [alertMessage, setAlertMessage] = React.useState('');
-  const [alertColor, setAlertColor] = React.useState('green');
+  const [showAlert, setShowAlert] = React.useState({
+    show: false,
+    message: '',
+    type: 'success',
+  });
+
   const navigate = useNavigate();
   const { childId } = useParams();
 
@@ -42,7 +45,7 @@ const UpdateChild = () => {
       if (response?.status) {
         const child = response.data;
         setFullName(child.fullName);
-        setDate(new Date(child.birthDate));
+        setDate(format(new Date(child.birthDate), 'yyyy-MM-dd'));
         setGender(child.gender === 'Male' ? 'Nam' : 'Nữ');
         setBloodType(child.bloodType);
       }
@@ -53,7 +56,7 @@ const UpdateChild = () => {
 
   const handleUpdate = async () => {
     if (!fullName || !date || !gender) {
-      alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+      showNotification('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
       return;
     }
 
@@ -71,18 +74,17 @@ const UpdateChild = () => {
       };
 
       await UpdateChildAPI(childId, userId, childData);
-      setAlertMessage(`Đã cập nhật thành công thông tin bé ${fullName}`);
-      setAlertColor('green');
-      setShowAlert(true);
+      showNotification(
+        'Đã cập nhật thành công thông tin bé ' + fullName,
+        'success'
+      );
 
       setTimeout(() => {
         navigate('/customer', { replace: true });
       }, 2000);
     } catch (error) {
       console.error('Error updating child:', error);
-      setAlertMessage('Có lỗi xảy ra khi cập nhật thông tin');
-      setAlertColor('red');
-      setShowAlert(true);
+      showNotification('Có lỗi xảy ra khi cập nhật thông tin', 'error');
     }
   };
 
@@ -91,36 +93,44 @@ const UpdateChild = () => {
       try {
         const userId = localStorage.getItem('userId');
         await DeleteChildAPI(childId, userId);
-        setAlertMessage(`Đã xóa thành công thông tin bé ${fullName}`);
-        setAlertColor('green');
-        setShowAlert(true);
+        showNotification(
+          'Đã xóa thành công thông tin bé ' + fullName,
+          'success'
+        );
 
         setTimeout(() => {
           navigate('/customer', { replace: true });
         }, 2000);
       } catch (error) {
-        console.error('Error deleting child:', error);
-        setAlertMessage('Có lỗi xảy ra khi xóa thông tin');
-        setAlertColor('red');
-        setShowAlert(true);
+        showNotification('Có lỗi xảy ra khi xóa thông tin', 'error');
       }
     }
   };
 
+  const showNotification = (message, type = 'success') => {
+    setShowAlert({ show: true, message, type });
+    setTimeout(
+      () => setShowAlert({ show: false, message: '', type: 'success' }),
+      3000
+    );
+  };
+
   return (
     <div className='m-10 mb-20 pb-20'>
-      {showAlert && (
+      {showAlert.show && (
         <Alert
-          open={showAlert}
-          onClose={() => setShowAlert(false)}
+          open={showAlert.show}
+          onClose={() =>
+            setShowAlert({ show: false, message: '', type: 'success' })
+          }
           animate={{
             mount: { y: 0 },
             unmount: { y: 100 },
           }}
           className='fixed top-4 right-4 z-50 w-auto'
-          color={alertColor}
+          color={showAlert.type === 'success' ? 'green' : 'red'}
         >
-          {alertMessage}
+          {showAlert.message}
         </Alert>
       )}
 
@@ -147,7 +157,7 @@ const UpdateChild = () => {
                 type='Date'
                 label='Chọn ngày sinh'
                 onChange={(e) => setDate(e.target.value)}
-                value={format(date, 'yyyy-MM-dd')}
+                value={date}
                 required
               />
             </div>

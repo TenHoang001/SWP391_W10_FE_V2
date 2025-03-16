@@ -10,93 +10,109 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
 import { GetGrowthRecordsByChildIdAPI } from '../../api/GrowthRecordAPI';
+import { GetGrowthStandardHeightAPI } from '../../api/GrowthStandardApi';
+import { GetGrowthStandardWeightAPI } from '../../api/GrowthStandardApi';
+import { GetGrowthStandardBMIAPI } from '../../api/GrowthStandardApi';
+import { GetGrowthStandardHeadCircumferenceAPI } from '../../api/GrowthStandardApi';
 import { BarChart3 } from 'lucide-react';
+import { GetChildDetailAPI } from '../../api/ChildrenAPI';
 
 const CustomerGrowthChart = () => {
+  const [growthRecords, setGrowthRecords] = useState([]);
+  const [standardData, setStandardData] = useState({
+    height: [],
+    weight: [],
+    bmi: [],
+    headCircumference: []
+  });
+  const [loading, setLoading] = useState(true);
   const { childId } = useParams();
   const navigate = useNavigate();
-  const [growthData, setGrowthData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const userId = localStorage.getItem('userId');
+  const [gender, setGender] = useState('Male');
   const [childName, setChildName] = useState('');
 
   useEffect(() => {
-    fetchGrowthHistory();
-  }, [childId]);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const childResponse = await GetChildDetailAPI(childId, userId);
+        const childGender = childResponse.data?.gender || 'Male';
+        setGender(childGender);
+        setChildName(childResponse.data?.fullName || '');
 
-  const fetchGrowthHistory = async () => {
-    try {
-      setLoading(true);
-      const response = await GetGrowthRecordsByChildIdAPI(childId);
-      if (response.status === 200) {
-        // Sắp xếp dữ liệu theo ngày tăng dần
-        const sortedData = response.data.sort((a, b) => 
-          new Date(a.createdAt) - new Date(b.createdAt)
-        );
+        const months = Array.from({ length: 24 }, (_, i) => i);
+
+        const [heightData, weightData, bmiData, headData] = await Promise.all([
+          Promise.all(months.map(month => GetGrowthStandardHeightAPI(childGender, month))),
+          Promise.all(months.map(month => GetGrowthStandardWeightAPI(childGender, month))),
+          Promise.all(months.map(month => GetGrowthStandardBMIAPI(childGender, month))),
+          Promise.all(months.map(month => GetGrowthStandardHeadCircumferenceAPI(childGender, month)))
+        ]);
+
         
-        if (sortedData.length > 0) {
-          setChildName(sortedData[0].childName);
+        setStandardData({
+          height: heightData.flat(),
+          weight: weightData.flat(),
+          bmi: bmiData.flat(),
+          headCircumference: headData.flat()
+        });
+
+        const recordsResponse = await GetGrowthRecordsByChildIdAPI(childId);
+        if (recordsResponse.status === 200) {
+          const sortedRecords = recordsResponse.data.sort(
+            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+          );
+          setGrowthRecords(sortedRecords);
         }
-        
-        setGrowthData(sortedData);
+
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  const formatDate = (dateString) => {
-    return format(new Date(dateString), 'dd/MM/yyyy', { locale: vi });
-  };
+    fetchData();
+  }, [childId, userId]);
 
-  const metrics = [
-    {
-      title: 'Chiều cao',
-      dataKey: 'height',
-      stroke: '#8884d8',
-      unit: 'cm',
-    },
-    {
-      title: 'Cân nặng',
-      dataKey: 'weight',
-      stroke: '#82ca9d',
-      unit: 'kg',
-    },
-    {
-      title: 'Vòng đầu',
-      dataKey: 'headCircumference',
-      stroke: '#ffc658',
-      unit: 'cm',
-    },
-    {
-      title: 'BMI',
-      dataKey: 'bmi',
-      stroke: '#ff7300',
-      unit: 'kg/m²',
-    },
-  ];
+  console.log(standardData.height)
+
+  const prepareChartData = (standardData, metricKey) => {
+    if (!standardData || standardData.length === 0) return [];
+    
+    return standardData.map(item => ({
+      ageInMonths: item.ageInMonths,
+      sd3neg: parseFloat(item.sd3neg),
+      sd2neg: parseFloat(item.sd2neg),
+      sd1neg: parseFloat(item.sd1neg),
+      median: parseFloat(item.median),
+      sd1pos: parseFloat(item.sd1pos),
+      sd2pos: parseFloat(item.sd2pos),
+      sd3pos: parseFloat(item.sd3pos),
+      actual: growthRecords.find(
+        record => Math.floor(record.ageInDays / 30) === item.ageInMonths
+      )?.[metricKey]
+    }));
+  };
 
   const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
+    if (active && payload && payload.length > 0) {
       return (
         <div className="bg-white p-4 border rounded-lg shadow-lg">
-          <p className="font-semibold mb-2">{formatDate(label)}</p>
-          <p className="text-sm text-gray-600 mb-1">
-            Tuổi: {payload[0]?.payload.ageInDays} ngày
-          </p>
+          <p className="font-semibold mb-2">Tháng tuổi: {label}</p>
           {payload.map((entry, index) => (
-            <div 
-              key={index} 
-              className="flex justify-between items-center py-1"
-              style={{ color: entry.color }}
-            >
-              <span className="font-medium">{entry.name}:</span>
-              <span>{entry.value} {metrics.find(m => m.dataKey === entry.dataKey)?.unit}</span>
-            </div>
+            entry.value && (
+              <div
+                key={index}
+                className="flex justify-between items-center py-1"
+                style={{ color: entry.color }}
+              >
+                <span className="font-medium">{entry.name}:</span>
+                <span>{entry.value.toFixed(2)} {entry.unit}</span>
+              </div>
+            )
           ))}
         </div>
       );
@@ -124,15 +140,14 @@ const CustomerGrowthChart = () => {
               Biểu đồ Z-score
             </button>
           </div>
-          
+
           <div className='bg-blue-50 p-4 rounded-lg mb-4'>
             <p className='text-sm text-blue-700'>
-              Số lần đo: {growthData.length} lần
-              {growthData.length > 0 && (
+              Số lần đo: {growthRecords.length} lần
+              {growthRecords.length > 0 && (
                 <>
                   <br />
-                  Từ ngày {formatDate(growthData[0]?.createdAt)} 
-                  đến {formatDate(growthData[growthData.length - 1]?.createdAt)}
+                  Từ tháng {Math.floor(growthRecords[0].ageInDays / 30)} đến tháng {Math.floor(growthRecords[growthRecords.length - 1].ageInDays / 30)}
                 </>
               )}
             </p>
@@ -140,57 +155,137 @@ const CustomerGrowthChart = () => {
         </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          {metrics.map((metric, index) => (
-            <div key={index} className='bg-white rounded-lg p-6 shadow'>
-              <div className='flex justify-between items-center mb-4'>
-                <h3 className='text-lg font-semibold'>{metric.title}</h3>
-                <span className='text-lg font-bold text-blue-600'>
-                  {growthData[growthData.length - 1]?.[metric.dataKey]} {metric.unit}
-                </span>
-              </div>
-              <div className='h-[300px]'>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={growthData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="createdAt" 
-                      tickFormatter={formatDate}
-                      angle={-45}
-                      textAnchor="end"
-                      height={80}
-                    />
-                    <YAxis 
-                      domain={['auto', 'auto']}
-                      label={{ 
-                        value: metric.unit, 
-                        angle: -90, 
-                        position: 'insideLeft',
-                        offset: 10
-                      }}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey={metric.dataKey}
-                      stroke={metric.stroke}
-                      strokeWidth={2}
-                      dot={{ r: 6, fill: metric.stroke }}
-                      name={metric.title}
-                      connectNulls
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+          {/* Biểu đồ chiều cao */}
+          <div className='bg-white rounded-lg p-6 shadow'>
+            <h3 className='text-lg font-semibold mb-4'>Chiều cao</h3>
+            <div className='h-[300px]'>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={prepareChartData(standardData.height, 'height')}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="ageInMonths" label={{ value: 'Tháng tuổi', position: 'bottom' }} />
+                  <YAxis label={{ value: 'cm', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  
+                  <Line type="monotone" dataKey="sd3pos" stroke="#ff4d4f" name="+3 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd2pos" stroke="#ff7a45" name="+2 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd1pos" stroke="#ffa940" name="+1 SD" dot={false} />
+                  <Line type="monotone" dataKey="median" stroke="#1890ff" name="Trung vị" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="sd1neg" stroke="#ffa940" name="-1 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd2neg" stroke="#ff7a45" name="-2 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd3neg" stroke="#ff4d4f" name="-3 SD" dot={false} />
+                  <Line 
+                    type="monotone" 
+                    dataKey="actual" 
+                    name="Chiều cao thực tế" 
+                    strokeWidth={0}
+                    dot={{ r: 6, fill: '#ff7300' }}
+                    connectNulls
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
-          ))}
+          </div>
+
+          {/* Biểu đồ cân nặng */}
+          <div className='bg-white rounded-lg p-6 shadow'>
+            <h3 className='text-lg font-semibold mb-4'>Cân nặng</h3>
+            <div className='h-[300px]'>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={prepareChartData(standardData.weight, 'weight')}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="ageInMonths" label={{ value: 'Tháng tuổi', position: 'bottom' }} />
+                  <YAxis label={{ value: 'kg', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  
+                  <Line type="monotone" dataKey="sd3pos" stroke="#ff4d4f" name="+3 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd2pos" stroke="#ff7a45" name="+2 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd1pos" stroke="#ffa940" name="+1 SD" dot={false} />
+                  <Line type="monotone" dataKey="median" stroke="#1890ff" name="Trung vị" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="sd1neg" stroke="#ffa940" name="-1 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd2neg" stroke="#ff7a45" name="-2 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd3neg" stroke="#ff4d4f" name="-3 SD" dot={false} />
+                  <Line 
+                    type="monotone" 
+                    dataKey="actual" 
+                    name="Cân nặng thực tế" 
+                    strokeWidth={0}
+                    dot={{ r: 6, fill: '#ff7300' }}
+                    connectNulls
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Biểu đồ BMI */}
+          <div className='bg-white rounded-lg p-6 shadow'>
+            <h3 className='text-lg font-semibold mb-4'>BMI</h3>
+            <div className='h-[300px]'>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={prepareChartData(standardData.bmi, 'bmi')}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="ageInMonths" label={{ value: 'Tháng tuổi', position: 'bottom' }} />
+                  <YAxis label={{ value: 'kg/m²', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  
+                  <Line type="monotone" dataKey="sd3pos" stroke="#ff4d4f" name="+3 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd2pos" stroke="#ff7a45" name="+2 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd1pos" stroke="#ffa940" name="+1 SD" dot={false} />
+                  <Line type="monotone" dataKey="median" stroke="#1890ff" name="Trung vị" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="sd1neg" stroke="#ffa940" name="-1 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd2neg" stroke="#ff7a45" name="-2 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd3neg" stroke="#ff4d4f" name="-3 SD" dot={false} />
+                  <Line 
+                    type="monotone" 
+                    dataKey="actual" 
+                    name="BMI thực tế" 
+                    strokeWidth={0}
+                    dot={{ r: 6, fill: '#ff7300' }}
+                    connectNulls
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Biểu đồ vòng đầu */}
+          <div className='bg-white rounded-lg p-6 shadow'>
+            <h3 className='text-lg font-semibold mb-4'>Vòng đầu</h3>
+            <div className='h-[300px]'>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={prepareChartData(standardData.headCircumference, 'headCircumference')}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="ageInMonths" label={{ value: 'Tháng tuổi', position: 'bottom' }} />
+                  <YAxis label={{ value: 'cm', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  
+                  <Line type="monotone" dataKey="sd3pos" stroke="#ff4d4f" name="+3 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd2pos" stroke="#ff7a45" name="+2 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd1pos" stroke="#ffa940" name="+1 SD" dot={false} />
+                  <Line type="monotone" dataKey="median" stroke="#1890ff" name="Trung vị" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="sd1neg" stroke="#ffa940" name="-1 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd2neg" stroke="#ff7a45" name="-2 SD" dot={false} />
+                  <Line type="monotone" dataKey="sd3neg" stroke="#ff4d4f" name="-3 SD" dot={false} />
+                  <Line 
+                    type="monotone" 
+                    dataKey="actual" 
+                    name="Vòng đầu thực tế" 
+                    strokeWidth={0}
+                    dot={{ r: 6, fill: '#ff7300' }}
+                    connectNulls
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default CustomerGrowthChart; 
+export default CustomerGrowthChart;

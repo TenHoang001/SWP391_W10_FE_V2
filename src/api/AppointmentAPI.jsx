@@ -28,25 +28,21 @@ export const GetAppointmentsByUserIdAPI = async (userId) => {
   return response;
 };
 
-// Lấy appointments theo doctorId
 export const GetAppointmentsByDoctorIdAPI = async (doctorId) => {
   const response = await AxiosAPI.get(END_POINT.GET_BY_DOCTOR(doctorId));
   return response;
 };
 
-// Lấy chi tiết appointment
 export const GetAppointmentByIdAPI = async (appointmentId) => {
   const response = await AxiosAPI.get(END_POINT.GET_BY_ID(appointmentId));
   return response;
 };
 
-// Cập nhật trạng thái appointment
 export const CompleteAppointmentAPI = async (appointmentId) => {
   const response = await AxiosAPI.post(END_POINT.COMPLETE(appointmentId));
   return response;
 };
 
-// Hủy appointment
 export const CancelAppointmentAPI = async (appointmentId) => {
   const response = await AxiosAPI.post(END_POINT.CANCEL(appointmentId));
   return response;

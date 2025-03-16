@@ -3,17 +3,12 @@ import {
   Input,
   Radio,
   Button,
-  Popover,
-  PopoverHandler,
-  PopoverContent,
   Select,
   Option,
   Alert,
 } from '@material-tailwind/react';
 import {} from 'lucide-react';
 import { format } from 'date-fns';
-import { DayPicker } from 'react-day-picker';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { CreateChildAPI } from '../../api/ChildrenAPI';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,12 +17,16 @@ const AddNewChild = () => {
   const [fullName, setFullName] = React.useState('');
   const [gender, setGender] = React.useState('');
   const [bloodType, setBloodType] = React.useState('A');
-  const [showAlert, setShowAlert] = React.useState(false);
+  const [showAlert, setShowAlert] = React.useState({
+    show: false,
+    message: '',
+    type: 'success',
+  });
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
     if (!fullName || !date || !gender) {
-      alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+      showNotification('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
       return;
     }
 
@@ -45,31 +44,40 @@ const AddNewChild = () => {
       };
 
       await CreateChildAPI(userId, childData);
-      setShowAlert(true);
+      showNotification('Đã thêm bé thành công bé ' + fullName, 'success');
 
       setTimeout(() => {
         navigate('/customer', { replace: true });
       }, 2000);
     } catch (error) {
-      console.error('Error creating child:', error);
-      alert('Có lỗi xảy ra khi tạo thông tin trẻ');
+      showNotification('Có lỗi xảy ra khi tạo thông tin trẻ', 'error');
     }
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setShowAlert({ show: true, message, type });
+    setTimeout(
+      () => setShowAlert({ show: false, message: '', type: 'success' }),
+      3000
+    );
   };
 
   return (
     <div className='m-10 mb-20 '>
-      {showAlert && (
+      {showAlert.show && (
         <Alert
-          open={showAlert}
-          onClose={() => setShowAlert(false)}
+          open={showAlert.show}
+          onClose={() =>
+            setShowAlert({ show: false, message: '', type: 'success' })
+          }
           animate={{
             mount: { y: 0 },
             unmount: { y: 100 },
           }}
           className='fixed top-4 right-4 z-50 w-auto'
-          color='green'
+          color={showAlert.type === 'success' ? 'green' : 'red'}
         >
-          Đã thêm thành công bé {fullName}
+          {showAlert.message}
         </Alert>
       )}
 
@@ -93,7 +101,7 @@ const AddNewChild = () => {
                 type='date'
                 label='Chọn ngày sinh'
                 onChange={(e) => setDate(e.target.value)}
-                value={format(date, 'yyyy-MM-dd')}
+                value={date}
                 required
               />
             </div>

@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Typography, Button } from '@material-tailwind/react';
-import { GetDoctorWeekScheduleAPI, GetDefaultSlotsAPI } from '../../api/DoctorScheduleAPI';
-import { GetAppointmentsByDoctorIdAPI, CompleteAppointmentAPI } from '../../api/AppointmentAPI';
-import { format } from 'date-fns';
+import {
+  GetDoctorWeekScheduleAPI,
+  GetDefaultSlotsAPI,
+} from '../../api/DoctorScheduleAPI';
+import {
+  GetAppointmentsByDoctorIdAPI,
+  CompleteAppointmentAPI,
+} from '../../api/AppointmentAPI';
+import { format, startOfWeek } from 'date-fns';
 import { Link } from 'react-router-dom';
 
 const DoctorSchedule = () => {
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const userId = localStorage.getItem('userId');
   const [weekSchedule, setWeekSchedule] = useState(null);
   const [appointments, setAppointments] = useState([]);
@@ -58,39 +64,63 @@ const DoctorSchedule = () => {
 
   const getAppointmentForSlot = (date, slotTime) => {
     return appointments.find(
-      app => app.appointmentDate === date && app.slotTime === slotTime
+      (app) => app.appointmentDate === date && app.slotTime === slotTime
     );
   };
 
-  const TABLE_ROWS =
-    weekSchedule?.schedules?.map((schedule) => {
-      const slotMap = schedule.availableSlots.reduce((acc, slot) => {
-        const appointment = getAppointmentForSlot(schedule.workDate, slot.slotTime);
-        acc[slot.slotTime] = {
-          exists: true,
-          isAvailable: slot.isAvailable,
-          appointment: appointment
-        };
-        return acc;
-      }, {});
+  const getWeekDays = (currentDate) => {
+    const start = startOfWeek(currentDate, { weekStartsOn: 1 });
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(start);
+      day.setDate(start.getDate() + i);
+      days.push(format(day, 'yyyy-MM-dd'));
+    }
+    return days;
+  };
 
+  const TABLE_ROWS = getWeekDays(date).map((dateStr) => {
+    const scheduleForDay = weekSchedule?.schedules?.find(
+      (schedule) => schedule.workDate === dateStr
+    );
+
+    const slots = [
+      '08:00',
+      '09:00',
+      '10:00',
+      '11:00',
+      '13:00',
+      '14:00',
+      '15:00',
+      '16:00',
+    ].map((time) => {
+      if (!scheduleForDay) {
+        return { exists: false, isAvailable: false };
+      }
+
+      const slot = scheduleForDay.availableSlots.find(
+        (s) => s.slotTime === time
+      );
+      if (!slot) {
+        return { exists: false, isAvailable: false };
+      }
+
+      const appointment = getAppointmentForSlot(dateStr, time);
       return {
-        date: schedule.workDate,
-        slots: [
-          '08:00',
-          '09:00',
-          '10:00',
-          '11:00',
-          '13:00',
-          '14:00',
-          '15:00',
-          '16:00',
-        ].map((time) => slotMap[time] ?? { exists: false, isAvailable: false }),
+        exists: true,
+        isAvailable: slot.isAvailable,
+        appointment: appointment,
       };
-    }) || [];
+    });
+
+    return {
+      date: dateStr,
+      slots: slots,
+    };
+  });
 
   const getSlotColor = (slot) => {
-    if (!slot.exists) return '';
+    if (!slot.exists) return 'bg-gray-50';
     if (slot.appointment) return 'bg-yellow-100';
     return slot.isAvailable ? 'bg-green-500' : 'bg-red-100';
   };
@@ -110,11 +140,10 @@ const DoctorSchedule = () => {
     }
   };
 
-  // Thêm hàm để lọc appointments theo ngày
   const getFilteredAppointments = () => {
     const selectedDate = format(date, 'yyyy-MM-dd');
-    return appointments.filter(appointment => 
-      appointment.appointmentDate === selectedDate
+    return appointments.filter(
+      (appointment) => appointment.appointmentDate === selectedDate
     );
   };
 
@@ -154,6 +183,9 @@ const DoctorSchedule = () => {
                 const baseClasses = isLast
                   ? 'p-4 text-center'
                   : 'p-4 border-b border-blue-gray-50 text-center';
+
+                const formattedDate = format(new Date(date), 'dd/MM/yyyy');
+
                 return (
                   <tr key={date}>
                     <td className={baseClasses}>
@@ -162,18 +194,20 @@ const DoctorSchedule = () => {
                         color='blue-gray'
                         className='font-normal'
                       >
-                        {date}
+                        {formattedDate}
                       </Typography>
                     </td>
                     {slots.map((slot, slotIndex) => (
                       <td
                         key={slotIndex}
-                        className={`${baseClasses} ${getSlotColor(slot)} cursor-pointer hover:opacity-80 transition-opacity`}
+                        className={`${baseClasses} ${getSlotColor(
+                          slot
+                        )} cursor-pointer hover:opacity-80 transition-opacity`}
                       >
                         {slot.appointment ? (
-                          <Link 
+                          <Link
                             to={`/doctor/appointment/${slot.appointment.appointmentId}`}
-                            className="block w-full h-full"
+                            className='block w-full h-full'
                           >
                             <Typography
                               variant='small'
@@ -186,7 +220,11 @@ const DoctorSchedule = () => {
                         ) : (
                           <Typography
                             variant='small'
-                            color={slot.exists && slot.isAvailable ? 'white' : 'blue-gray'}
+                            color={
+                              slot.exists && slot.isAvailable
+                                ? 'white'
+                                : 'blue-gray'
+                            }
                             className='font-normal'
                           >
                             {getSlotText(slot)}
@@ -201,55 +239,87 @@ const DoctorSchedule = () => {
           </table>
         </div>
       </Card>
-      <div className="mt-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Danh sách cuộc hẹn</h2>
-          <Typography variant="small" color="blue-gray">
+      <div className='mt-8'>
+        <div className='flex justify-between items-center mb-4'>
+          <h2 className='text-xl font-bold'>Danh sách cuộc hẹn</h2>
+          <Typography variant='small' color='blue-gray'>
             Ngày: {format(date, 'dd/MM/yyyy')}
           </Typography>
         </div>
-        <Card className="overflow-hidden rounded-lg shadow">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-max table-auto text-left">
+        <Card className='overflow-hidden rounded-lg shadow'>
+          <div className='overflow-x-auto'>
+            <table className='w-full min-w-max table-auto text-left'>
               <thead>
                 <tr>
-                  <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                    <Typography variant="small" color="blue-gray" className="font-semibold">
+                  <th className='border-b border-blue-gray-100 bg-blue-gray-50 p-4'>
+                    <Typography
+                      variant='small'
+                      color='blue-gray'
+                      className='font-semibold'
+                    >
                       Mã cuộc hẹn
                     </Typography>
                   </th>
-                  <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                    <Typography variant="small" color="blue-gray" className="font-semibold">
+                  <th className='border-b border-blue-gray-100 bg-blue-gray-50 p-4'>
+                    <Typography
+                      variant='small'
+                      color='blue-gray'
+                      className='font-semibold'
+                    >
                       Ngày hẹn
                     </Typography>
                   </th>
-                  <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                    <Typography variant="small" color="blue-gray" className="font-semibold">
+                  <th className='border-b border-blue-gray-100 bg-blue-gray-50 p-4'>
+                    <Typography
+                      variant='small'
+                      color='blue-gray'
+                      className='font-semibold'
+                    >
                       Thời gian
                     </Typography>
                   </th>
-                  <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                    <Typography variant="small" color="blue-gray" className="font-semibold">
+                  <th className='border-b border-blue-gray-100 bg-blue-gray-50 p-4'>
+                    <Typography
+                      variant='small'
+                      color='blue-gray'
+                      className='font-semibold'
+                    >
                       Trẻ em
                     </Typography>
                   </th>
-                  <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                    <Typography variant="small" color="blue-gray" className="font-semibold">
+                  <th className='border-b border-blue-gray-100 bg-blue-gray-50 p-4'>
+                    <Typography
+                      variant='small'
+                      color='blue-gray'
+                      className='font-semibold'
+                    >
                       Phụ huynh
                     </Typography>
                   </th>
-                  <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                    <Typography variant="small" color="blue-gray" className="font-semibold">
+                  <th className='border-b border-blue-gray-100 bg-blue-gray-50 p-4'>
+                    <Typography
+                      variant='small'
+                      color='blue-gray'
+                      className='font-semibold'
+                    >
                       Mô tả
                     </Typography>
                   </th>
-                  <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                    <Typography variant="small" color="blue-gray" className="font-semibold">
+                  <th className='border-b border-blue-gray-100 bg-blue-gray-50 p-4'>
+                    <Typography
+                      variant='small'
+                      color='blue-gray'
+                      className='font-semibold'
+                    >
                       Trạng thái
                     </Typography>
                   </th>
-                  <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                    <Typography variant="small" color="blue-gray" className="font-semibold">
+                  <th className='border-b border-blue-gray-100 bg-blue-gray-50 p-4'>
+                    <Typography
+                      variant='small'
+                      color='blue-gray'
+                      className='font-semibold'
+                    >
                       Thao tác
                     </Typography>
                   </th>
@@ -257,73 +327,92 @@ const DoctorSchedule = () => {
               </thead>
               <tbody>
                 {getFilteredAppointments().map((appointment) => {
-                  const defaultSlot = defaultSlots.find(slot => slot.slotId.toString() === appointment.slotTime);
+                  const defaultSlot = defaultSlots.find(
+                    (slot) => slot.slotId.toString() === appointment.slotTime
+                  );
                   return (
                     <tr key={appointment.appointmentId}>
-                      <td className="p-4 border-b border-blue-gray-50">
-                        <Typography variant="small" color="blue-gray">
+                      <td className='p-4 border-b border-blue-gray-50'>
+                        <Typography variant='small' color='blue-gray'>
                           #{appointment.appointmentId}
                         </Typography>
                       </td>
-                      <td className="p-4 border-b border-blue-gray-50">
-                        <Typography variant="small" color="blue-gray">
+                      <td className='p-4 border-b border-blue-gray-50'>
+                        <Typography variant='small' color='blue-gray'>
                           {appointment.appointmentDate}
                         </Typography>
                       </td>
-                      <td className="p-4 border-b border-blue-gray-50">
-                        <Typography variant="small" color="blue-gray">
-                          {defaultSlot ? `${defaultSlot.startTime} - ${defaultSlot.endTime}` : `Slot ${appointment.slotTime}`}
+                      <td className='p-4 border-b border-blue-gray-50'>
+                        <Typography variant='small' color='blue-gray'>
+                          {defaultSlot
+                            ? `${defaultSlot.startTime} - ${defaultSlot.endTime}`
+                            : `Slot ${appointment.slotTime}`}
                         </Typography>
                       </td>
-                      <td className="p-4 border-b border-blue-gray-50">
-                        <Typography variant="small" color="blue-gray">
+                      <td className='p-4 border-b border-blue-gray-50'>
+                        <Typography variant='small' color='blue-gray'>
                           {appointment.childName}
                         </Typography>
                       </td>
-                      <td className="p-4 border-b border-blue-gray-50">
-                        <Typography variant="small" color="blue-gray">
+                      <td className='p-4 border-b border-blue-gray-50'>
+                        <Typography variant='small' color='blue-gray'>
                           {appointment.userName}
                         </Typography>
                       </td>
-                      <td className="p-4 border-b border-blue-gray-50">
-                        <Typography variant="small" color="blue-gray" className="line-clamp-2">
+                      <td className='p-4 border-b border-blue-gray-50'>
+                        <Typography
+                          variant='small'
+                          color='blue-gray'
+                          className='line-clamp-2'
+                        >
                           {appointment.description || 'Không có mô tả'}
                         </Typography>
                       </td>
-                      <td className="p-4 border-b border-blue-gray-50">
-                        <div className={`px-3 py-1 rounded-full text-xs font-medium w-fit ${
-                          appointment.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                          appointment.status === 'Cancelled' ? 'bg-red-100 text-red-800' : 
-                          'bg-blue-100 text-blue-800'
-                        }`}>
-                          {appointment.status === 'Completed' ? 'Đã hoàn thành' :
-                           appointment.status === 'Cancelled' ? 'Đã hủy' : 'Đang chờ'}
+                      <td className='p-4 border-b border-blue-gray-50'>
+                        <div
+                          className={`px-3 py-1 rounded-full text-xs font-medium w-fit ${
+                            appointment.status === 'Completed'
+                              ? 'bg-green-100 text-green-800'
+                              : appointment.status === 'Cancelled'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-blue-100 text-blue-800'
+                          }`}
+                        >
+                          {appointment.status === 'Completed'
+                            ? 'Đã hoàn thành'
+                            : appointment.status === 'Cancelled'
+                            ? 'Đã hủy'
+                            : 'Đang chờ'}
                         </div>
                       </td>
-                      <td className="p-4 border-b border-blue-gray-50">
-                        <div className="flex gap-2">
+                      <td className='p-4 border-b border-blue-gray-50'>
+                        <div className='flex gap-2'>
                           <Link
                             to={`/doctor/appointment/${appointment.appointmentId}`}
-                            className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                            className='px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors'
                           >
                             Chi tiết
                           </Link>
                           {appointment.status === 'Pending' && (
                             <>
                               <Button
-                                size="sm"
-                                color="green"
-                                onClick={() => handleCompleteAppointment(appointment.appointmentId)}
-                                className="px-3 py-1.5 text-xs"
+                                size='sm'
+                                color='green'
+                                onClick={() =>
+                                  handleCompleteAppointment(
+                                    appointment.appointmentId
+                                  )
+                                }
+                                className='px-3 py-1.5 text-xs'
                               >
                                 Hoàn thành
                               </Button>
                               {appointment.meetingLink && (
                                 <a
                                   href={appointment.meetingLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="px-3 py-1.5 text-xs font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  className='px-3 py-1.5 text-xs font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors'
                                 >
                                   Join Meeting
                                 </a>
@@ -337,7 +426,7 @@ const DoctorSchedule = () => {
                 })}
                 {getFilteredAppointments().length === 0 && (
                   <tr>
-                    <td colSpan="8" className="p-4 text-center text-gray-500">
+                    <td colSpan='8' className='p-4 text-center text-gray-500'>
                       Không có cuộc hẹn nào trong ngày này
                     </td>
                   </tr>

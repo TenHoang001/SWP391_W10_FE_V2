@@ -21,11 +21,9 @@ const BookingDoctor = () => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedChild, setSelectedChild] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [scheduleId, setScheduleId] = useState(null);
-  
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -37,8 +35,6 @@ const BookingDoctor = () => {
     loadChildren();
     loadDoctorSchedule();
   }, []);
-
-
 
   useEffect(() => {
     if (selectedDoctor && selectedDate) {
@@ -100,7 +96,7 @@ const BookingDoctor = () => {
         scheduleId: scheduleId,
         userId: parseInt(userId),
         childId: parseInt(selectedChild),
-        slotTime: selectedSlot + "",
+        slotTime: selectedSlot + '',
         description: '',
       };
 
@@ -122,8 +118,19 @@ const BookingDoctor = () => {
       <div className='flex justify-end mb-4'>
         <Link to='/customer/bookingHistory'>
           <Button className='flex items-center gap-2' color='blue'>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              strokeWidth={1.5}
+              stroke='currentColor'
+              className='w-5 h-5'
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                d='M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
+              />
             </svg>
             Lịch sử đặt lịch
           </Button>
@@ -176,9 +183,17 @@ const BookingDoctor = () => {
                 variant={selectedSlot === slot.slotTime ? 'filled' : 'outlined'}
                 onClick={() => setSelectedSlot(slot.slotId)}
               >
-                {slot.startTime} - {slot.endTime}
+                {slot.startTime} - {slot.endTime}{' '}
               </Button>
             ))}
+          </div>
+          <div>
+            {availableSlots.length === 0 && selectedDoctor && selectedDate && (
+              <p className='text-center font-semibold'>
+                Bác sĩ không có lịch trong ngày{' '}
+                {format(selectedDate, 'dd-MM-yyyy')}
+              </p>
+            )}
           </div>
         </div>
 
