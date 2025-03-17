@@ -7,9 +7,11 @@ import LayoutDoctor from './layout/LayoutDoctor';
 import RequestAdvisory from './pages/doctor/RequestAdvisory';
 import AddNewChild from './pages/customer/AddNewChild';
 import BookingDoctor from './pages/customer/BookingDoctor';
+import ListDoctor from './pages/customer/ListDoctor';
 import CustomerConsultationHistory from './pages/customer/CustomerConsultationHistory';
 import CustomerChildRecord from './pages/customer/CustomerChildRecord';
 import CustomerAddNewChildIndex from './pages/customer/CustomerAddNewChildIndex';
+
 import GuestLogin from './pages/guest/GuestLogin';
 import GuestRegister from './pages/guest/GuestRegister';
 import BookingHistory from './pages/customer/BookingHistory';
@@ -23,8 +25,12 @@ import DoctorScheduleManagement from './pages/admin/DoctorScheduleManagement';
 import AddDoctor from './pages/admin/AddDoctor';
 import UpdateDoctor from './pages/admin/UpdateDoctor';
 import AppointmentDetail from './pages/doctor/AppointmentDetail';
+import CustomerProfile from './pages/customer/CustomerProfile';
+import DoctorProfile from './pages/doctor/DoctorProfile';
 import CustomerGrowthChart from './pages/customer/CustomerGrowthChart';
-import ListDoctor from './pages/customer/ListDoctor';
+import BlogManagement from './pages/shared/BlogManagement';
+import BlogList from './pages/shared/BlogList';
+import ManageUser from './pages/admin/ManageUser';
 
 function App() {
   return (
@@ -35,17 +41,19 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path='/login' element={<GuestLogin />} />
             <Route path='/register' element={<GuestRegister />} />
+            <Route path='/blogs' element={<BlogList />} />
           </Route>
 
           <Route path='/customer' element={<LayoutCustomer />}>
             <Route index element={<HomePageCus />} />
+            <Route path='blogs' element={<BlogList />} />
+            <Route path='profile' element={<CustomerProfile />} />
             <Route path='addNewChild' element={<AddNewChild />} />
             <Route
               path='/customer/children/edit/:childId'
               element={<UpdateChild />}
             />
             <Route path='listDoctor' element={<ListDoctor />} />
-
             <Route path='bookingDoctor' element={<BookingDoctor />} />
             <Route path='bookingHistory' element={<BookingHistory />} />
             <Route path='consultationChat' element={<ConsultationChat />} />
@@ -79,6 +87,9 @@ function App() {
           <Route path='/doctor' element={<LayoutDoctor />}>
             <Route index element={<RequestAdvisory />} />
       
+            <Route path='profile' element={<DoctorProfile />} />
+            <Route path='blogs' element={<BlogManagement />} />
+           
             <Route path='/doctor/schedule' element={<DoctorSchedule />} />
             <Route
               path='appointment/:appointmentId'
@@ -92,6 +103,7 @@ function App() {
 
           <Route path='/admin' element={<LayoutAdmin />}>
             <Route index element={<Navigate to='/admin/doctors' replace />} />
+            <Route path='blogs' element={<BlogManagement />} />
             <Route path='doctors' element={<DoctorManagement />} />
             <Route path='doctors/add' element={<AddDoctor />} />
             <Route path='doctors/update/:doctorId' element={<UpdateDoctor />} />
@@ -99,6 +111,7 @@ function App() {
               path='doctors/:doctorId/schedule'
               element={<DoctorScheduleManagement />}
             />
+            <Route path='users' element={<ManageUser />} />
           </Route>
         </Routes>
       </BrowserRouter>

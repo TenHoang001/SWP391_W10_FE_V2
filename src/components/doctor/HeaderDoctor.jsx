@@ -54,7 +54,7 @@ const HeaderDoctor = () => {
           Danh sách tư vấn
         </Link>
         <Link 
-          to={'/doctor/blog'} 
+          to={'blogs'} 
           className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-blue-50 hover:text-blue-600 ${isActiveLink('/doctor/blog')}`}
         >
           <BookOpen className='h-5 w-5' />

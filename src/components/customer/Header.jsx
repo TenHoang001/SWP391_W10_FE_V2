@@ -42,6 +42,9 @@ const Header = () => {
           <Link to={'bookingDoctor'} className='transition hover:text-blue-500'>
             Đặt Lịch tư vấn
           </Link>
+          <Link to={'blogs'} className='transition hover:text-blue-500'>
+            Blog
+          </Link>
         </nav>
 
         {/* User Icon with Popup - Desktop */}
