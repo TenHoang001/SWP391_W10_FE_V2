@@ -29,7 +29,6 @@ const CustomerGrowthChart = () => {
   });
   const [loading, setLoading] = useState(true);
   const { childId } = useParams();
-  const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const [gender, setGender] = useState('Male');
   const [childName, setChildName] = useState('');
@@ -175,7 +174,6 @@ const CustomerGrowthChart = () => {
 
           <div className='bg-blue-50 p-4 rounded-lg mb-4 flex flex-col gap-2'>
             <p className='text-sm text-blue-700'>
-              Số lần đo: {growthRecords.length} lần
               {growthRecords.length > 0 && (
                 <>
                   <br />

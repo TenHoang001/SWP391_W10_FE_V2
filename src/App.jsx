@@ -31,6 +31,8 @@ import CustomerGrowthChart from './pages/customer/CustomerGrowthChart';
 import BlogManagement from './pages/shared/BlogManagement';
 import BlogList from './pages/shared/BlogList';
 import ManageUser from './pages/admin/ManageUser';
+import PaymentSuccess from './pages/guest/PaymentSuccess';
+import PaymentCancel from './pages/guest/PaymentCancel';
 
 function App() {
   return (
@@ -42,6 +44,8 @@ function App() {
             <Route path='/login' element={<GuestLogin />} />
             <Route path='/register' element={<GuestRegister />} />
             <Route path='/blogs' element={<BlogList />} />
+            <Route path='/payment/success' element={<PaymentSuccess />} />
+            <Route path='/payment/cancel' element={<PaymentCancel />} />
           </Route>
 
           <Route path='/customer' element={<LayoutCustomer />}>

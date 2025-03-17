@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import hinh1 from '../../assets/hinh1.png';
 import hinh2 from '../../assets/hinh2.png';
+import axios from 'axios';
 
 import {
   ArrowRight,
@@ -13,6 +14,7 @@ import {
   Check,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { CreatePaymentAPI } from '../../api/Payment';
 
 const HomePage = () => {
   const [user, setUser] = useState([]);
@@ -41,6 +43,26 @@ const HomePage = () => {
       default:
     }
   }, []);
+
+  const handleRegisterMembership = async (membershipId) => {
+    try {
+      const response = await CreatePaymentAPI({
+        membershipId: membershipId,
+        userId: useObject?.userId,
+        returnUrl: `${window.location.origin}/payment/success`,
+        cancelUrl: `${window.location.origin}/payment/cancel`,
+      });
+
+      console.log(responses.data);
+
+      if (response.data?.paymentUrl) {
+        window.location.href = response.data.paymentUrl;
+      }
+    } catch (error) {
+      console.error('Payment creation failed:', error);
+      alert('Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại sau.');
+    }
+  };
 
   return (
     <div className='mt-2'>
@@ -136,7 +158,10 @@ const HomePage = () => {
                 Theo dõi chế độ ăn uống
               </p>
             </div>
-            <button className='w-full rounded-lg bg-blue-500 px-4 py-3 text-white'>
+            <button
+              onClick={() => handleRegisterMembership(1)}
+              className='w-full rounded-lg bg-blue-500 px-4 py-3 text-white'
+            >
               Đăng ký ngay
             </button>
           </div>
@@ -169,7 +194,10 @@ const HomePage = () => {
                 Hỗ trợ ưu tiên 24/7
               </p>
             </div>
-            <button className='w-full rounded-lg bg-white px-4 py-3 text-blue-500'>
+            <button
+              onClick={() => handleRegisterMembership(2)}
+              className='w-full rounded-lg bg-white px-4 py-3 text-blue-500'
+            >
               Đăng ký ngay
             </button>
           </div>

@@ -86,7 +86,7 @@ const CustomerChildRecord = () => {
               >
                 <button className='flex items-center gap-2 rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600'>
                   <BarChart3 className='h-4 w-4' />
-                  Biểu đồ tăng trưởng {records.gender} 1
+                  Biểu đồ tăng trưởng {records.gender} 
                 </button>
               </Link>
             </div>

@@ -388,7 +388,7 @@ const DoctorSchedule = () => {
                       <td className='p-4 border-b border-blue-gray-50'>
                         <div className='flex gap-2'>
                           <Link
-                            to={`/doctor/appointment/${appointment.appointmentId}`}
+                            to={`/customer/children/${appointment.childId}/growth-chart`}
                             className='px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors'
                           >
                             Chi tiết
