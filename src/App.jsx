@@ -33,6 +33,7 @@ import BlogList from './pages/shared/BlogList';
 import ManageUser from './pages/admin/ManageUser';
 import PaymentSuccess from './pages/guest/PaymentSuccess';
 import PaymentCancel from './pages/guest/PaymentCancel';
+import BlogDetail from './pages/shared/BlogDetail';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
             <Route path='/blogs' element={<BlogList />} />
             <Route path='/payment/success' element={<PaymentSuccess />} />
             <Route path='/payment/cancel' element={<PaymentCancel />} />
+            <Route path='/blog/:blogId' element={<BlogDetail />} />
           </Route>
 
           <Route path='/customer' element={<LayoutCustomer />}>
@@ -86,14 +88,15 @@ function App() {
               path='/customer/consultationChat/:requestId'
               element={<ConsultationChat />}
             />
+            <Route path='/customer/blog/:blogId' element={<BlogDetail />} />
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>
             <Route index element={<RequestAdvisory />} />
-      
+
             <Route path='profile' element={<DoctorProfile />} />
             <Route path='blogs' element={<BlogManagement />} />
-           
+
             <Route path='/doctor/schedule' element={<DoctorSchedule />} />
             <Route
               path='appointment/:appointmentId'
