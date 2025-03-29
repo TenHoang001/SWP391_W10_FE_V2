@@ -1,7 +1,7 @@
 import bg_3 from '../../assets/bg_3.png';
 import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Plus, Search, RefreshCcw, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Search, RefreshCcw, CheckCircle, XCircle, Receipt } from 'lucide-react';
 import { Alert, Button } from '@material-tailwind/react';
 import { GetChildrenByUserIdAPI } from '../../api/ChildrenAPI';
 import { CreateConsultationRequestAPI } from '../../api/ConsultationAPI';
@@ -247,12 +247,14 @@ const HomePageCus = () => {
         <div className='p-10 text-center'>
           <div className='flex flex-col items-center justify-center gap-6 pb-6 md:flex-row'>
             <h2 className='text-2xl font-bold'>Yêu cầu tham vấn</h2>
-            <Link
-              to='/customer/consultationHistory'
-              className='flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600'
-            >
-              <RefreshCcw /> Lịch sử tham vấn
-            </Link>
+            <div className='flex gap-4'>
+              <Link
+                to='/customer/consultationHistory'
+                className='flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600'
+              >
+                <RefreshCcw /> Lịch sử tham vấn
+              </Link>
+            </div>
           </div>
           <div className='mx-auto max-w-lg rounded-lg bg-white p-6 shadow-lg'>
             {alert.show && (

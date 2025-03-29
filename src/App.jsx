@@ -11,6 +11,8 @@ import ListDoctor from './pages/customer/ListDoctor';
 import CustomerConsultationHistory from './pages/customer/CustomerConsultationHistory';
 import CustomerChildRecord from './pages/customer/CustomerChildRecord';
 import CustomerAddNewChildIndex from './pages/customer/CustomerAddNewChildIndex';
+import MembershipPage from './pages/customer/MembershipPage';
+import TransactionHistory from './pages/customer/TransactionHistory';
 
 import GuestLogin from './pages/guest/GuestLogin';
 import GuestRegister from './pages/guest/GuestRegister';
@@ -33,6 +35,7 @@ import BlogList from './pages/shared/BlogList';
 import ManageUser from './pages/admin/ManageUser';
 import PaymentSuccess from './pages/guest/PaymentSuccess';
 import PaymentCancel from './pages/guest/PaymentCancel';
+import PriceManagement from './pages/admin/PriceManagement';
 
 function App() {
   return (
@@ -53,6 +56,8 @@ function App() {
             <Route path='blogs' element={<BlogList />} />
             <Route path='profile' element={<CustomerProfile />} />
             <Route path='addNewChild' element={<AddNewChild />} />
+            <Route path='membership' element={<MembershipPage />} />
+            <Route path='transactions' element={<TransactionHistory />} />
             <Route
               path='/customer/children/edit/:childId'
               element={<UpdateChild />}
@@ -90,10 +95,10 @@ function App() {
 
           <Route path='/doctor' element={<LayoutDoctor />}>
             <Route index element={<RequestAdvisory />} />
-      
+
             <Route path='profile' element={<DoctorProfile />} />
             <Route path='blogs' element={<BlogManagement />} />
-           
+
             <Route path='/doctor/schedule' element={<DoctorSchedule />} />
             <Route
               path='appointment/:appointmentId'
@@ -116,6 +121,10 @@ function App() {
               element={<DoctorScheduleManagement />}
             />
             <Route path='users' element={<ManageUser />} />
+            <Route
+              path='/admin/membership price'
+              element={<PriceManagement />}
+            />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -50,6 +50,9 @@ const GuestLogin = () => {
           case 'User':
             navigate('/customer', { replace: true });
             break;
+          case 'Member':
+            navigate('/customer', { replace: true });
+            break;
           default:
             setNotification(true);
             setMsg('Không có quyền truy cập');

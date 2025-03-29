@@ -3,11 +3,10 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   UserRound,
   Users,
-  Calendar,
-  Settings,
   LogOut,
   User,
   BookOpen,
+  CurrencyIcon,
 } from 'lucide-react';
 import Logo from '../../assets/logo.png';
 
@@ -73,6 +72,15 @@ const HeaderAdmin = () => {
         >
           <BookOpen className='h-5 w-5' />
           Quản lý bài viết
+        </Link>
+        <Link
+          to='/admin/membership price'
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all hover:bg-blue-50 hover:text-blue-600 ${isActiveLink(
+            '/admin/membership price'
+          )}`}
+        >
+          <CurrencyIcon className='h-5 w-5' />
+          Quản lý giá gói
         </Link>
       </nav>
 
