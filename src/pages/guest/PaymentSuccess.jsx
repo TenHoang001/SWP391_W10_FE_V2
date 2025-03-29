@@ -8,22 +8,18 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState('checking'); // checking, success, failed
   const [message, setMessage] = useState('');
+  const [time, setTime] = useState(3);
   const orderId = searchParams.get('orderId');
 
+  console.log(time);
   useEffect(() => {
     const checkPaymentStatus = async () => {
-      if (!orderId) {
-        setStatus('failed');
-        setMessage('Không tìm thấy thông tin đơn hàng');
-        return;
-      }
-
       try {
         const response = await CheckPaymentStatusAPI(orderId);
-        if (response?.data?.status === 'success') {
+        if (response?.data?.success === true) {
           setStatus('success');
+          decrementTime();
           setMessage('Thanh toán thành công!');
-          // Redirect to membership page after 3 seconds
           setTimeout(() => {
             navigate('/customer/membership');
           }, 3000);
@@ -41,49 +37,56 @@ const PaymentSuccess = () => {
     checkPaymentStatus();
   }, [orderId, navigate]);
 
+  const decrementTime = () => {
+    const rs = setInterval(() => {
+      setTime((time) => {
+        if (time === 1) {
+          clearInterval(rs);
+          return 1;
+        }
+        return time - 1;
+      });
+    }, 1000);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
-        <div className="text-center">
+    <div className='min-h-screen flex items-center justify-center bg-gray-50'>
+      <div className='max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg'>
+        <div className='text-center'>
           {status === 'checking' && (
             <>
-              <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-500" />
-              <h2 className="mt-6 text-2xl font-bold text-gray-900">
+              <Loader2 className='mx-auto h-12 w-12 animate-spin text-blue-500' />
+              <h2 className='mt-6 text-2xl font-bold text-gray-900'>
                 Đang kiểm tra thanh toán...
               </h2>
-              <p className="mt-2 text-gray-600">
-                Vui lòng đợi trong giây lát
-              </p>
+              <p className='mt-2 text-gray-600'>Vui lòng đợi trong giây lát</p>
             </>
           )}
 
           {status === 'success' && (
             <>
-              <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
-              <h2 className="mt-6 text-2xl font-bold text-gray-900">
+              <CheckCircle className='mx-auto h-12 w-12 text-green-500' />
+              <h2 className='mt-6 text-2xl font-bold text-gray-900'>
                 Thanh toán thành công!
               </h2>
-              <p className="mt-2 text-gray-600">
-                {message}
-              </p>
-              <p className="mt-2 text-sm text-gray-500">
-                Bạn sẽ được chuyển hướng về trang gói thành viên sau 3 giây...
+              <p className='mt-2 text-gray-600'>{message}</p>
+              <p className='mt-2 text-sm text-gray-500'>
+                Bạn sẽ được chuyển hướng về trang gói thành viên sau {time}
+                giây...
               </p>
             </>
           )}
 
           {status === 'failed' && (
             <>
-              <XCircle className="mx-auto h-12 w-12 text-red-500" />
-              <h2 className="mt-6 text-2xl font-bold text-gray-900">
+              <XCircle className='mx-auto h-12 w-12 text-red-500' />
+              <h2 className='mt-6 text-2xl font-bold text-gray-900'>
                 Thanh toán thất bại
               </h2>
-              <p className="mt-2 text-gray-600">
-                {message}
-              </p>
+              <p className='mt-2 text-gray-600'>{message}</p>
               <button
                 onClick={() => navigate('/customer/membership')}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className='mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
               >
                 Quay lại trang gói thành viên
               </button>
@@ -95,4 +98,4 @@ const PaymentSuccess = () => {
   );
 };
 
-export default PaymentSuccess; 
+export default PaymentSuccess;

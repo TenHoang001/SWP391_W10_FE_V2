@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Pencil, Calendar, BanIcon, KeyRound } from 'lucide-react';
+import {
+  Plus,
+  Pencil,
+  Calendar,
+  BanIcon,
+  KeyRound,
+  HistoryIcon,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { GetAllDoctorsAPI } from '../../api/DoctorAPI';
 import { Alert, Tooltip } from '@material-tailwind/react';
@@ -111,16 +118,28 @@ const DoctorManagement = () => {
                 </td>
                 <td className='px-6 py-4 text-right flex items-center justify-end'>
                   <Link
+                    to={`/admin/consultationManager/${doctor.userId}`}
+                    className='text-green-600 hover:text-green-900 mr-4'
+                  >
+                    <Tooltip content='lịch sử chat'>
+                      <HistoryIcon className='h-5 w-5' />
+                    </Tooltip>
+                  </Link>
+                  <Link
                     to={`/admin/doctors/${doctor.userId}/schedule`}
                     className='text-green-600 hover:text-green-900 mr-4'
                   >
-                    <Calendar className='h-5 w-5' />
+                    <Tooltip content='quản lý lịch làm việc'>
+                      <Calendar className='h-5 w-5' />
+                    </Tooltip>
                   </Link>
                   <Link
                     to={`/admin/doctors/update/${doctor.userId}`}
                     className='text-blue-600 hover:text-blue-900 mr-4'
                   >
-                    <Pencil className='h-5 w-5' />
+                    <Tooltip content='Chỉnh sữa thông tin'>
+                      <Pencil className='h-5 w-5' />
+                    </Tooltip>
                   </Link>
                   {doctor.status ? (
                     <Tooltip content='khóa tài khoản'>

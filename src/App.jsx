@@ -36,6 +36,7 @@ import ManageUser from './pages/admin/ManageUser';
 import PaymentSuccess from './pages/guest/PaymentSuccess';
 import PaymentCancel from './pages/guest/PaymentCancel';
 import PriceManagement from './pages/admin/PriceManagement';
+import ConsultationChatManager from './pages/admin/ConsultationChatManager';
 
 function App() {
   return (
@@ -47,8 +48,6 @@ function App() {
             <Route path='/login' element={<GuestLogin />} />
             <Route path='/register' element={<GuestRegister />} />
             <Route path='/blogs' element={<BlogList />} />
-            <Route path='/payment/success' element={<PaymentSuccess />} />
-            <Route path='/payment/cancel' element={<PaymentCancel />} />
           </Route>
 
           <Route path='/customer' element={<LayoutCustomer />}>
@@ -91,6 +90,8 @@ function App() {
               path='/customer/consultationChat/:requestId'
               element={<ConsultationChat />}
             />
+            <Route path='/customer/payment/success' element={<PaymentSuccess />} />
+            <Route path='/customer/payment/cancel' element={<PaymentCancel />} />
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>
@@ -124,6 +125,10 @@ function App() {
             <Route
               path='/admin/membership price'
               element={<PriceManagement />}
+            />
+            <Route
+              path='/admin/consultationManager/:id'
+              element={<ConsultationChatManager />}
             />
           </Route>
         </Routes>
