@@ -52,10 +52,7 @@ const CustomerConsultationHistory = () => {
             childData[childId] = response.data;
           }
         } catch (error) {
-          console.error(
-            `Error fetching details for childId ${childId}:`,
-            error
-          );
+         console.log("lỗi khi lấy dữ liệu:" + error);
         }
       }
     }

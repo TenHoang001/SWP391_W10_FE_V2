@@ -6,7 +6,7 @@ import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [status, setStatus] = useState('checking'); // checking, success, failed
+  const [status, setStatus] = useState('false');
   const [message, setMessage] = useState('');
   const [time, setTime] = useState(3);
   const orderId = searchParams.get('orderId');
@@ -53,16 +53,6 @@ const PaymentSuccess = () => {
     <div className='min-h-screen flex items-center justify-center bg-gray-50'>
       <div className='max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg'>
         <div className='text-center'>
-          {status === 'checking' && (
-            <>
-              <Loader2 className='mx-auto h-12 w-12 animate-spin text-blue-500' />
-              <h2 className='mt-6 text-2xl font-bold text-gray-900'>
-                Đang kiểm tra thanh toán...
-              </h2>
-              <p className='mt-2 text-gray-600'>Vui lòng đợi trong giây lát</p>
-            </>
-          )}
-
           {status === 'success' && (
             <>
               <CheckCircle className='mx-auto h-12 w-12 text-green-500' />

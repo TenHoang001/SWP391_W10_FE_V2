@@ -8,7 +8,7 @@ import {
   GetAppointmentsByDoctorIdAPI,
   CompleteAppointmentAPI,
 } from '../../api/AppointmentAPI';
-import { format, startOfWeek } from 'date-fns';
+import { endOfWeek, format, startOfWeek } from 'date-fns';
 import { Link } from 'react-router-dom';
 
 const DoctorSchedule = () => {
@@ -62,11 +62,11 @@ const DoctorSchedule = () => {
     '16:00 - 16:45',
   ];
 
-  const getAppointmentForSlot = (date, slotTime) => {
-    return appointments.find(
-      (app) => app.appointmentDate === date && app.slotTime === slotTime
-    );
-  };
+  // const getAppointmentForSlot = (date, slotTime) => {
+  //   return appointments.find(
+  //     (app) => app.appointmentDate === date && app.slotTime === slotTime
+  //   );
+  // };
 
   const getWeekDays = (currentDate) => {
     const start = startOfWeek(currentDate, { weekStartsOn: 1 });
@@ -83,7 +83,6 @@ const DoctorSchedule = () => {
     const scheduleForDay = weekSchedule?.schedules?.find(
       (schedule) => schedule.workDate === dateStr
     );
-
     const slots = [
       '08:00',
       '09:00',
@@ -101,18 +100,20 @@ const DoctorSchedule = () => {
       const slot = scheduleForDay.availableSlots.find(
         (s) => s.slotTime === time
       );
+
       if (!slot) {
         return { exists: false, isAvailable: false };
       }
 
-      const appointment = getAppointmentForSlot(dateStr, time);
+      console.log(slot);
       return {
         exists: true,
         isAvailable: slot.isAvailable,
-        appointment: appointment,
+        slotTime: slot.slotId,
+        status: slot.status,
+        day: scheduleForDay.workDate,
       };
     });
-
     return {
       date: dateStr,
       slots: slots,
@@ -120,15 +121,14 @@ const DoctorSchedule = () => {
   });
 
   const getSlotColor = (slot) => {
-    if (!slot.exists) return 'bg-gray-50';
-    if (slot.appointment) return 'bg-yellow-100';
-    return slot.isAvailable ? 'bg-green-500' : 'bg-red-100';
+    console.log("slot", slot);
+    if (!slot.exists) return 'bg-gray-50 border-gray-100 border-[2px] border-solid';
+    return slot.isAvailable ? 'bg-green-300 border-gray-100 border-[2px] border-solid' : slot.status === "Available" ? 'bg-red-100 border-gray-100 border-[2px] border-solid' : "bg-cyan-100 border-gray-100 border-[2px] border-solid";
   };
 
   const getSlotText = (slot) => {
     if (!slot.exists) return '';
-    if (slot.appointment) return `Cuộc hẹn với ${slot.appointment.childName}`;
-    return slot.isAvailable ? 'Chưa có cuộc hẹn' : 'Đã có cuộc hẹn';
+    return slot.isAvailable ? 'Chưa có cuộc hẹn' :  slot.status === "Available" ? 'Đã có cuộc hẹn' : "hoàn thành";
   };
 
   const handleCompleteAppointment = async (appointmentId) => {
@@ -142,20 +142,29 @@ const DoctorSchedule = () => {
 
   const getFilteredAppointments = () => {
     const selectedDate = format(date, 'yyyy-MM-dd');
-    return appointments.filter(
-      (appointment) => appointment.appointmentDate === selectedDate
-    );
+
+    const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
+    const end = endOfWeek(selectedDate, "yyyy-MM-dd");
+    return appointments.filter((appointment) => {
+      const appointmentDate = new Date(appointment.appointmentDate);
+      return (
+        appointmentDate >= start &&
+        appointmentDate <= end
+      );
+    });
   };
 
   return (
     <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
       <h1 className='text-2xl font-bold text-center mb-6'>Lịch làm việc</h1>
+
       <input
         type='date'
         value={format(new Date(date), 'yyyy-MM-dd')}
         onChange={(e) => setDate(new Date(e.target.value))}
         className='border-2 my-2 border-gray-300 rounded-md p-2'
       />
+
       <Card className='overflow-hidden rounded-lg shadow'>
         <div className='overflow-x-auto'>
           <table className='w-full min-w-max table-auto text-left'>
@@ -204,32 +213,21 @@ const DoctorSchedule = () => {
                           slot
                         )} cursor-pointer hover:opacity-80 transition-opacity`}
                       >
-                        {slot.appointment ? (
-                          <Link
-                            to={`/doctor/appointment/${slot.appointment.appointmentId}`}
-                            className='block w-full h-full'
-                          >
-                            <Typography
-                              variant='small'
-                              color='blue-gray'
-                              className='font-normal'
-                            >
-                              {getSlotText(slot)}
-                            </Typography>
-                          </Link>
-                        ) : (
-                          <Typography
-                            variant='small'
-                            color={
-                              slot.exists && slot.isAvailable
-                                ? 'white'
-                                : 'blue-gray'
+                        <Link
+                          to={
+                            slot.isAvailable
+                              ? ''
+                              : `/doctor/appointment/details?date=${slot.day}&slotId=${slot.slotTime}`
+                          }
+                        >
+                          <p
+                            className={
+                              slot.isAvailable ? 'text-white' : slot.status === "Available" ? 'text-red-400' : "text-cyan-400"
                             }
-                            className='font-normal'
                           >
                             {getSlotText(slot)}
-                          </Typography>
-                        )}
+                          </p>
+                        </Link>
                       </td>
                     ))}
                   </tr>
@@ -330,6 +328,7 @@ const DoctorSchedule = () => {
                   const defaultSlot = defaultSlots.find(
                     (slot) => slot.slotId.toString() === appointment.slotTime
                   );
+
                   return (
                     <tr key={appointment.appointmentId}>
                       <td className='p-4 border-b border-blue-gray-50'>
@@ -388,10 +387,10 @@ const DoctorSchedule = () => {
                       <td className='p-4 border-b border-blue-gray-50'>
                         <div className='flex gap-2'>
                           <Link
-                            to={`/customer/children/${appointment.childId}/growth-chart`}
+                            to={`/doctor/children/growth-chart?childId=${appointment.childId}&parentId=${appointment.userId}`}
                             className='px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors'
                           >
-                            Chi tiết
+                            Xem biểu đồ
                           </Link>
                           {appointment.status === 'Pending' && (
                             <>

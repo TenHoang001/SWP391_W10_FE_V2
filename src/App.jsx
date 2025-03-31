@@ -37,6 +37,8 @@ import PaymentSuccess from './pages/guest/PaymentSuccess';
 import PaymentCancel from './pages/guest/PaymentCancel';
 import PriceManagement from './pages/admin/PriceManagement';
 import ConsultationChatManager from './pages/admin/ConsultationChatManager';
+import DoctorChildGrowthChart from './pages/doctor/DoctorChildGrowthChart';
+import DoctorAppointmentDetailsInfo from './pages/doctor/DoctorAppointmentDetailsInfo';
 
 function App() {
   return (
@@ -90,8 +92,14 @@ function App() {
               path='/customer/consultationChat/:requestId'
               element={<ConsultationChat />}
             />
-            <Route path='/customer/payment/success' element={<PaymentSuccess />} />
-            <Route path='/customer/payment/cancel' element={<PaymentCancel />} />
+            <Route
+              path='/customer/payment/success'
+              element={<PaymentSuccess />}
+            />
+            <Route
+              path='/customer/payment/cancel'
+              element={<PaymentCancel />}
+            />
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>
@@ -108,6 +116,14 @@ function App() {
             <Route
               path='/doctor/consultationChat/:requestId'
               element={<ConsultationChat />}
+            />
+            <Route
+              path='/doctor/children/growth-chart'
+              element={<DoctorChildGrowthChart />}
+            />
+            <Route
+              path='/doctor/appointment/details'
+              element={<DoctorAppointmentDetailsInfo />}
             />
           </Route>
 

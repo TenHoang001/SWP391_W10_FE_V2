@@ -137,7 +137,7 @@ const BookingHistory = () => {
                   </td>
                   <td className='p-4 border-b border-blue-gray-50'>
                     <Typography variant='small' color='blue-gray'>
-                      {`Slot ${appointment.slotTime}`}
+                      {`${appointment.appointmentTime}`}
                     </Typography>
                   </td>
                   <td className='p-4 border-b border-blue-gray-50'>
@@ -158,19 +158,32 @@ const BookingHistory = () => {
                       value={appointment.status}
                     />
                   </td>
-                  <td className='p-4 border-b border-blue-gray-50'>
-                    {appointment.meetingLink && (
-                      <a
-                        href={appointment.meetingLink}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='flex items-center gap-2 text-blue-500 hover:text-blue-700'
+                  {appointment.status === 'Completed' ? (
+                    <td>
+                      <p
+                        href=''
+                        className='flex items-center gap-2 text-gray-500 hover:text-gray-700'
                       >
                         <VideoIcon className='h-4 w-4' />
                         <Typography variant='small'>Tham gia Meet</Typography>
-                      </a>
-                    )}
-                  </td>
+                      </p>
+                    </td>
+                  ) : (
+                    <td className='p-4 border-b border-blue-gray-50'>
+                      {appointment.meetingLink && (
+                        <a
+                          href={appointment.meetingLink}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='flex items-center gap-2 text-blue-500 hover:text-blue-700'
+                        >
+                          <VideoIcon className='h-4 w-4' />
+                          <Typography variant='small'>Tham gia Meet</Typography>
+                        </a>
+                      )}
+                    </td>
+                  )}
+
                   <td className='p-4 border-b border-blue-gray-50'>
                     {appointment.status === 'Pending' && (
                       <button
