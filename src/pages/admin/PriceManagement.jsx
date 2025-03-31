@@ -10,6 +10,8 @@ import {
   DialogFooter,
   Button,
 } from '@material-tailwind/react';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 
 const PriceManagement = () => {
   const [membership, setMembership] = useState([]);
@@ -31,17 +33,47 @@ const PriceManagement = () => {
     setPrice(price);
   };
 
-  const handleChangePrice = async (e) => {
-    e.preventDefault();
-    console.log(membershipId, parseInt(price));
-    const response = await changePriceMembership(membershipId, parseInt(price));
-    if (response.success) {
-      HandleGetAllMembership();
-      setTimeout(() => {
-        setOpenPopupChangePrice(false);
-      }, 600);
-    }
-  };
+
+  const formik = useFormik({
+    initialValues: {
+      price: 2000,
+    },
+    validationSchema: yup.object({
+      price: yup.number().required('Giá gói là bắt buộc').min(2000, 'Gía gói phải lớn hơn hoặc bằng 2000VND'),
+    }),
+    onSubmit: async (values) => {
+      try {
+        const response = await changePriceMembership(membershipId, parseInt(values.price));
+        if (response.success) {
+          HandleGetAllMembership();
+          setTimeout(() => {
+            setOpenPopupChangePrice(false);
+          }, 600);
+          setTimeout(() => {
+            setNotification({
+              show: true,
+              message: 'Thay đổi giá gói thành công',
+              type: 'success',
+            });
+          }, 3000);
+        } else {
+          setNotification({
+            show: true,
+            message: 'Thay đổi giá gói thất bại',
+            type: 'error',
+          });
+        }
+      } catch (error) {
+        setNotification({
+          show: true,
+          message: 'Lỗi khi thay đổi giá gói',
+          type: 'error',
+        });
+      }
+    },
+  });
+
+
 
   const formatCurrency = (money) => {
     return new Intl.NumberFormat('vi', {
@@ -102,13 +134,14 @@ const PriceManagement = () => {
         </table>
       </div>
       <Dialog open={openPopupChangePrice} handler={handleOpenPopUpChangePrice}>
-        <form onSubmit={handleChangePrice}>
+        <form onSubmit={formik.handleSubmit}>
           <DialogHeader>Thay đổi giá gói</DialogHeader>
           <DialogBody>
             <input
               type='text'
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              name='price'
+              value={formik.values.price}
+              onChange={formik.handleChange}
               placeholder={formatCurrency(200000)}
               className='px-5 py-2 w-full border-[2px] border-solid border-gray-400 rounded-md focus:bg-gray-100'
             />

@@ -5,7 +5,8 @@ import {
   GetGrowthRecordsByChildIdAPI,
   DeleteGrowthRecordAPI,
 } from '../../api/GrowthRecordAPI';
-import { Alert } from '@material-tailwind/react';
+import { Alert, Card, CardBody, CardHeader } from '@material-tailwind/react';
+import { AnimatePresence, easeInOut, motion } from 'framer-motion';
 
 const CustomerChildRecord = () => {
   const [records, setRecords] = useState([]);
@@ -15,6 +16,8 @@ const CustomerChildRecord = () => {
     message: '',
     type: 'success',
   });
+  const [popupFilter, setPopupFilter] = useState(false);
+  const [filter, setFilter] = useState([]);
 
   useEffect(() => {
     loadGrowthRecords();
@@ -24,6 +27,7 @@ const CustomerChildRecord = () => {
     try {
       const response = await GetGrowthRecordsByChildIdAPI(childId);
       setRecords(response.data);
+      setFilter(response.data);
     } catch (error) {
       showNotification('Lỗi khi tải dữ liệu', 'error');
     }
@@ -54,6 +58,32 @@ const CustomerChildRecord = () => {
     );
   };
 
+  const filterDate = (value) => {
+    const sortRecord = [...records];
+    if (value === 'increment') {
+      sortRecord.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    } else if (value === 'decrement') {
+      sortRecord.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (value === 'height_increment') {
+      sortRecord.sort((a, b) => a.height - b.height);
+    } else if (value === 'height_decrement') {
+      sortRecord.sort((a, b) => b.height - b.height);
+    } else if (value === 'weight_increment') {
+      sortRecord.sort((a, b) => a.weight - b.weight);
+    } else if (value === 'weight_decrement') {
+      sortRecord.sort((a, b) => b.weight - a.weight);
+    } else if (value === 'head_increment') {
+      sortRecord.sort((a, b) => a.headCircumference - b.headCircumference);
+    } else if (value === 'head_decrement') {
+      sortRecord.sort((a, b) => b.headCircumference - a.headCircumference);
+    } else if (value === 'head_increment') {
+      sortRecord.sort((a, b) => a.bmi - b.bmi);
+    } else if (value === 'bmi_decrement') {
+      sortRecord.sort((a, b) => b.bmi - a.bmi);
+    }
+    setFilter(sortRecord);
+  };
+
   return (
     <div>
       <div className='min-h-screen bg-gray-200 px-4 py-6'>
@@ -70,10 +100,92 @@ const CustomerChildRecord = () => {
           <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
             <h2 className='text-lg font-semibold'>Chỉ số cơ thể</h2>
             <div className='flex flex-wrap gap-2'>
-              <button className='flex items-center gap-2 rounded border border-gray-400 px-3 py-1'>
+              <button
+                onClick={() => setPopupFilter(!popupFilter)}
+                className='flex items-center gap-2 rounded border border-gray-400 px-3 py-1'
+              >
                 <Filter className='h-4 w-4' />
                 Filter
               </button>
+              <AnimatePresence>
+                {popupFilter && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 37, x: 5 }}
+                    exit={{ opacity: 0, y: 30 }}
+                    transition={{ duration: 0.2, ease: 'easeInOut' }}
+                    className=' transition-all ease-in-out bg-blue-gray-50/95  rounded-md  absolute z-50'
+                  >
+                    <div className='flex flex-col py-1 px-0.5 gap-1'>
+                      <button
+                        onClick={() => filterDate('increment')}
+                        className='text-black hover:text-white hover:bg-blue-700/25 px-2 py-2 rounded-sm'
+                      >
+                        Ngày tăng dần
+                      </button>
+                      <button
+                        onClick={() => filterDate('decrement')}
+                        className='text-black hover:text-white hover:bg-blue-700/25 px-2 py-2 rounded-sm'
+                      >
+                        Ngày giảm dần
+                      </button>
+                      <div className='w-full h-[0.25px] rounded-full bg-blue-700/25'></div>
+                      <button
+                        onClick={() => filterDate('height_increment')}
+                        className='text-black hover:text-white hover:bg-blue-700/25 px-2 py-2 rounded-sm'
+                      >
+                        Chiều cao tăng dần
+                      </button>
+                      <button
+                        onClick={() => filterDate('height_decrement')}
+                        className='text-black hover:text-white hover:bg-blue-700/25 px-2 py-2 rounded-sm'
+                      >
+                        Chiều cao giảm dần
+                      </button>
+                      <div className='w-full h-[0.25px] rounded-full bg-blue-700/25'></div>
+                      <button
+                        onClick={() => filterDate('weight_increment')}
+                        className='text-black hover:text-white hover:bg-blue-700/25 px-2 py-2 rounded-sm'
+                      >
+                        Cân nặng tăng dần
+                      </button>
+                      <button
+                        onClick={() => filterDate('weight_decrement')}
+                        className='text-black hover:text-white hover:bg-blue-700/25 px-2 py-2 rounded-sm'
+                      >
+                        Cân nặng giảm dần
+                      </button>
+                      <div className='w-full h-[0.25px] rounded-full bg-blue-700/25'></div>
+                      <button
+                        onClick={() => filterDate('head_increment')}
+                        className='text-black hover:text-white hover:bg-blue-700/25 px-2 py-2 rounded-sm'
+                      >
+                        Vòng đầu tăng dần
+                      </button>
+                      <button
+                        onClick={() => filterDate('head_decrement')}
+                        className='text-black hover:text-white hover:bg-blue-700/25 px-2 py-2 rounded-sm'
+                      >
+                        Vòng đầu giảm dần
+                      </button>
+                      <div className='w-full h-[0.25px] rounded-full bg-blue-700/25'></div>
+                      <button
+                        onClick={() => filterDate('bmi_increment')}
+                        className='text-black hover:text-white hover:bg-blue-700/25 px-2 py-2 rounded-sm'
+                      >
+                        Bmi tăng dần
+                      </button>
+                      <button
+                        onClick={() => filterDate('bmi_decrement')}
+                        className='text-black hover:text-white hover:bg-blue-700/25 px-2 py-2 rounded-sm'
+                      >
+                        Bmi giảm dần
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <Link to={`/customer/addChildIndex/${childId}`}>
                 <button className='flex items-center gap-2 rounded bg-blue-500 px-3 py-1 text-white'>
                   <Plus className='h-4 w-4' />
@@ -86,7 +198,7 @@ const CustomerChildRecord = () => {
               >
                 <button className='flex items-center gap-2 rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600'>
                   <BarChart3 className='h-4 w-4' />
-                  Biểu đồ tăng trưởng {records.gender} 
+                  Biểu đồ tăng trưởng {records.gender}
                 </button>
               </Link>
             </div>
@@ -106,7 +218,7 @@ const CustomerChildRecord = () => {
                 </tr>
               </thead>
               <tbody>
-                {records.map((record) => (
+                {filter.map((record) => (
                   <tr
                     key={record.id}
                     className='border-b border-gray-200 odd:bg-white even:bg-gray-50'

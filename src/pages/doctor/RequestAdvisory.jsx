@@ -70,7 +70,6 @@ const RequestAdvisory = () => {
     const matchSearch = consultation?.childName
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-
     let matchStatus = activeTab === 'all' || consultation.status === activeTab;
 
     // switch (activeTab) {

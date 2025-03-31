@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
+  Alert,
 } from '@material-tailwind/react';
 import { Link } from 'react-router';
 import { CreateAppointmentAPI } from '../../api/AppointmentAPI';
@@ -29,7 +30,11 @@ const BookingDoctor = () => {
   const [scheduleId, setScheduleId] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState({
+    message: '',
+    show: false,
+    type: 'success',
+  });
 
   const userId = localStorage.getItem('userId');
 
@@ -51,7 +56,7 @@ const BookingDoctor = () => {
       setDoctors(response.data);
       console.log(response.data);
     } catch (error) {
-      setError('Lỗi khi tải danh sách bác sĩ');
+      showNotification(error.response.data.message, 'error');
     }
   };
 
@@ -61,7 +66,7 @@ const BookingDoctor = () => {
       setChildren(response.data);
       console.log(response.data);
     } catch (error) {
-      setError('Lỗi khi tải danh sách trẻ');
+      showNotification(error.response.data.message, 'error');
     }
   };
 
@@ -84,13 +89,13 @@ const BookingDoctor = () => {
         setAvailableSlots([]);
       }
     } catch (error) {
-      setError('Lỗi khi tải lịch bác sĩ');
+      // showNotification(error.response.data.message, 'error');
     }
   };
 
   const handleBooking = async () => {
     if (!selectedDoctor || !selectedChild || !selectedSlot || !scheduleId) {
-      setError('Vui lòng chọn đầy đủ thông tin');
+      showNotification('Vui lòng chọn đầy đủ thông tin', 'error');
       return;
     }
     try {
@@ -107,18 +112,34 @@ const BookingDoctor = () => {
       if (response?.status) {
         setIsOpen(true);
       } else {
-        setError('Có lỗi xảy ra khi đặt lịch');
+        showNotification('Có lỗi xảy ra khi đặt lịch', 'error');
       }
     } catch (error) {
-      alert(error.response.data.message)
+      showNotification(error.response.data.message, 'error');
       console.log(1);
     } finally {
       setLoading(false);
     }
   };
 
+  const showNotification = (message, type = 'success') => {
+    setError({ show: true, message, type });
+    setTimeout(
+      () => setError({ show: false, message: '', type: 'success' }),
+      3000
+    );
+  };
+
   return (
-    <div className='max-w-6xl mx-auto px-4 py-8'>
+    <div className='max-w-full mx-auto px-4 py-8'>
+      {error.show && (
+        <Alert
+          className='p-2 rounded-lg text-white fixed top-4  w-auto right-1'
+          color={error.type === 'error' ? "red" : "green"}
+        >
+          {error.message}
+        </Alert>
+      )}
       <div className='flex justify-end mb-4'>
         <Link to='/customer/bookingHistory'>
           <Button className='flex items-center gap-2' color='blue'>
@@ -202,8 +223,6 @@ const BookingDoctor = () => {
             )}
           </div>
         </div>
-
-        {/* {error && <div className='text-red-500 text-center'>{error}</div>} */}
 
         <Button className='w-full' onClick={handleBooking} disabled={loading}>
           {loading ? 'Đang xử lý...' : 'Xác nhận đặt lịch'}

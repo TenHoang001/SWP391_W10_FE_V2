@@ -73,7 +73,6 @@ const Header = () => {
             <UserRound className='h-6 w-6' />
           </button>
 
-          {/* Desktop Popup Menu */}
           {showUserPopup && (
             <div className='absolute top-full right-0 mt-2 w-48 rounded-lg bg-white shadow-lg border border-gray-200 z-50'>
               <Link
@@ -115,7 +114,6 @@ const Header = () => {
           )}
         </div>
 
-        {/* Hamburger Menu Button */}
         <button
           className='text-2xl md:hidden'
           onClick={() => setIsOpen(!isOpen)}
@@ -124,7 +122,6 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       {isOpen && (
         <div className='mt-3 space-y-3 text-lg md:hidden'>
           <Link
