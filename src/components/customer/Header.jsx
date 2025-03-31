@@ -2,7 +2,16 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../../assets/logo.png';
 // import { FaUserAstronaut } from 'react-icons/fa';
-import { UserRound, LogOut, User, Heart, X, Menu, Package, Receipt } from 'lucide-react';
+import {
+  UserRound,
+  LogOut,
+  User,
+  Heart,
+  X,
+  Menu,
+  Package,
+  Receipt,
+} from 'lucide-react';
 // import { FiMenu, FiX } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
@@ -10,6 +19,9 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showUserPopup, setShowUserPopup] = useState(false);
   const navigate = useNavigate();
+  const fullName = localStorage.getItem('fullName');
+  const userName = localStorage.getItem('userName');
+  const role = localStorage.getItem('role');
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -50,8 +62,10 @@ const Header = () => {
           </Link>
         </nav>
 
-        {/* User Icon with Popup - Desktop */}
-        <div className='hidden md:flex relative'>
+        <div className='md:gap-2 items-center hidden md:flex relative'>
+          <span>
+            <p>Xin Chào <span className='font-semibold'> {`${fullName}`}</span></p>
+          </span>
           <button
             className='rounded-full border border-blue-500 p-2 text-blue-500 hover:bg-blue-100'
             onClick={() => setShowUserPopup(!showUserPopup)}

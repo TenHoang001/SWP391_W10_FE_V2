@@ -37,6 +37,7 @@ import PaymentSuccess from './pages/guest/PaymentSuccess';
 import PaymentCancel from './pages/guest/PaymentCancel';
 import PriceManagement from './pages/admin/PriceManagement';
 import ConsultationChatManager from './pages/admin/ConsultationChatManager';
+import BlogDetail from './pages/shared/BlogDetail';
 import DoctorChildGrowthChart from './pages/doctor/DoctorChildGrowthChart';
 import DoctorAppointmentDetailsInfo from './pages/doctor/DoctorAppointmentDetailsInfo';
 
@@ -50,6 +51,7 @@ function App() {
             <Route path='/login' element={<GuestLogin />} />
             <Route path='/register' element={<GuestRegister />} />
             <Route path='/blogs' element={<BlogList />} />
+            <Route path='/blog/:blogId' element={<BlogDetail />} />
           </Route>
 
           <Route path='/customer' element={<LayoutCustomer />}>
@@ -92,14 +94,9 @@ function App() {
               path='/customer/consultationChat/:requestId'
               element={<ConsultationChat />}
             />
-            <Route
-              path='/customer/payment/success'
-              element={<PaymentSuccess />}
-            />
-            <Route
-              path='/customer/payment/cancel'
-              element={<PaymentCancel />}
-            />
+            <Route path='/customer/blog/:blogId' element={<BlogDetail />} />
+            <Route path='/customer/payment/success' element={<PaymentSuccess />} />
+            <Route path='/customer/payment/cancel' element={<PaymentCancel />} />
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>

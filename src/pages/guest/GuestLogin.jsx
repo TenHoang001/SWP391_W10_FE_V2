@@ -39,6 +39,8 @@ const GuestLogin = () => {
         localStorage.setItem('userId', JSON.stringify(response.data.userId));
         localStorage.setItem('token', JSON.stringify(response.data.token));
         localStorage.setItem('role', response.data.role);
+        localStorage.setItem('fullName', response.data.fullName);
+        localStorage.setItem('userName', response.data.username);
 
         switch (response.data.role) {
           case 'Doctor':

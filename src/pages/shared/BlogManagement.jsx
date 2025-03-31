@@ -120,24 +120,29 @@ const BlogManagement = () => {
               />
             )}
             <p className='text-sm text-gray-500'>Tác giả: {blog.authorName}</p>
-            {(userRole === 'Admin' || userId === blog.authorId) && (
-              <div className='flex gap-3 mt-3'>
+            <div className='mt-4 flex gap-2'>
+              {blog.authorId === userId && (
                 <Button
-                  color='green'
                   onClick={() => handleEdit(blog)}
-                  className='flex gap-2'
+                  color='green'
+                  className='flex gap-2 bg-transparent text-green-500 border-[2px] border-green-300 hover:bg-green-300 hover:text-white transition-all ease-in-out duration-300'
                 >
-                  <Pencil className='h-5 w-5' /> Chỉnh sửa
+                  <Pencil className='h-5 w-5' />
+                  Chỉnh sửa
                 </Button>
+              )}
+
+              {(userRole === 'Admin' || blog.authorId === userId) && (
                 <Button
-                  color='red'
                   onClick={() => handleDelete(blog.blogId)}
-                  className='flex gap-2'
+                  color='red'
+                  className='flex gap-2 bg-transparent text-red-500 border-[2px] border-red-300 hover:bg-red-300 hover:text-white transition-all ease-in-out duration-300'
                 >
-                  <Trash2 className='h-5 w-5' /> Xóa
+                  <Trash2 className='h-5 w-5' />
+                  Xóa
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         ))}
       </div>

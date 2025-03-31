@@ -8,7 +8,7 @@ import {
   Alert,
 } from '@material-tailwind/react';
 import {} from 'lucide-react';
-import { format } from 'date-fns';
+import { format, isAfter, subYears, isValid } from 'date-fns';
 import { CreateChildAPI } from '../../api/ChildrenAPI';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,9 +24,44 @@ const AddNewChild = () => {
   });
   const navigate = useNavigate();
 
+  const validateName = (name) => {
+    const nameRegex = /^[A-Za-zÀ-Ỹà-ỹ\s]+$/;
+    return nameRegex.test(name);
+  };
+
+  const validateDate = (birthDate) => {
+    const selectedDate = new Date(birthDate);
+    const today = new Date();
+    const minDate = subYears(today, 18);
+
+    if (!isValid(selectedDate)) {
+      return false;
+    }
+
+    if (isAfter(selectedDate, today)) {
+      return false;
+    }
+
+    if (isAfter(minDate, selectedDate)) {
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async () => {
     if (!fullName || !date || !gender) {
       showNotification('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
+      return;
+    }
+
+    if (!validateName(fullName)) {
+      showNotification('Tên không được chứa số và các kí tự đặc biệt', 'error');
+      return;
+    }
+
+    if (!validateDate(date)) {
+      showNotification('Ngày sinh không hợp lệ', 'error');
       return;
     }
 
