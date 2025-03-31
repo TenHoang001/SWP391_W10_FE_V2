@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../../assets/logo.png';
 // import { FaUserAstronaut } from 'react-icons/fa';
-import { UserRound, LogOut, User, Heart, X, Menu } from 'lucide-react';
+import { UserRound, LogOut, User, Heart, X, Menu, Package, Receipt } from 'lucide-react';
 // import { FiMenu, FiX } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
@@ -36,7 +36,10 @@ const Header = () => {
           <Link to={'/customer'} className='transition hover:text-blue-500'>
             Trang chủ
           </Link>
-          <Link to={'/customer/listDoctor'} className='transition hover:text-blue-500'>
+          <Link
+            to={'/customer/listDoctor'}
+            className='transition hover:text-blue-500'
+          >
             Danh sách bác sĩ
           </Link>
           <Link to={'bookingDoctor'} className='transition hover:text-blue-500'>
@@ -72,6 +75,20 @@ const Header = () => {
               >
                 <Heart className='h-4 w-4' />
                 Lịch hẹn của tôi
+              </Link>
+              <Link
+                to='/customer/membership'
+                className='flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+              >
+                <Package className='h-4 w-4' />
+                Gói thành viên
+              </Link>
+              <Link
+                to='/customer/transactions'
+                className='flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+              >
+                <Receipt className='h-4 w-4' />
+                Lịch sử giao dịch
               </Link>
               <button
                 onClick={handleLogout}

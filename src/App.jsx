@@ -11,6 +11,8 @@ import ListDoctor from './pages/customer/ListDoctor';
 import CustomerConsultationHistory from './pages/customer/CustomerConsultationHistory';
 import CustomerChildRecord from './pages/customer/CustomerChildRecord';
 import CustomerAddNewChildIndex from './pages/customer/CustomerAddNewChildIndex';
+import MembershipPage from './pages/customer/MembershipPage';
+import TransactionHistory from './pages/customer/TransactionHistory';
 
 import GuestLogin from './pages/guest/GuestLogin';
 import GuestRegister from './pages/guest/GuestRegister';
@@ -33,6 +35,8 @@ import BlogList from './pages/shared/BlogList';
 import ManageUser from './pages/admin/ManageUser';
 import PaymentSuccess from './pages/guest/PaymentSuccess';
 import PaymentCancel from './pages/guest/PaymentCancel';
+import PriceManagement from './pages/admin/PriceManagement';
+import ConsultationChatManager from './pages/admin/ConsultationChatManager';
 import BlogDetail from './pages/shared/BlogDetail';
 
 function App() {
@@ -55,6 +59,8 @@ function App() {
             <Route path='blogs' element={<BlogList />} />
             <Route path='profile' element={<CustomerProfile />} />
             <Route path='addNewChild' element={<AddNewChild />} />
+            <Route path='membership' element={<MembershipPage />} />
+            <Route path='transactions' element={<TransactionHistory />} />
             <Route
               path='/customer/children/edit/:childId'
               element={<UpdateChild />}
@@ -89,6 +95,8 @@ function App() {
               element={<ConsultationChat />}
             />
             <Route path='/customer/blog/:blogId' element={<BlogDetail />} />
+            <Route path='/customer/payment/success' element={<PaymentSuccess />} />
+            <Route path='/customer/payment/cancel' element={<PaymentCancel />} />
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>
@@ -119,6 +127,14 @@ function App() {
               element={<DoctorScheduleManagement />}
             />
             <Route path='users' element={<ManageUser />} />
+            <Route
+              path='/admin/membership price'
+              element={<PriceManagement />}
+            />
+            <Route
+              path='/admin/consultationManager/:id'
+              element={<ConsultationChatManager />}
+            />
           </Route>
         </Routes>
       </BrowserRouter>

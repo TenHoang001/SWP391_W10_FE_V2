@@ -14,13 +14,16 @@ import { GetAllDoctorsAPI } from '../../api/DoctorAPI';
 import { GetChildrenByUserIdAPI } from '../../api/ChildrenAPI';
 import { GetDoctorWeekScheduleAPI } from '../../api/DoctorScheduleAPI';
 import { format } from 'date-fns';
+import DatePicker from 'react-datepicker';
 
 const BookingDoctor = () => {
   const [doctors, setDoctors] = useState([]);
   const [children, setChildren] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedChild, setSelectedChild] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [selectedDate, setSelectedDate] = useState(
+    format(new Date(), 'yyyy-MM-dd')
+  );
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [scheduleId, setScheduleId] = useState(null);
@@ -107,7 +110,8 @@ const BookingDoctor = () => {
         setError('Có lỗi xảy ra khi đặt lịch');
       }
     } catch (error) {
-      setError('Có lỗi xảy ra khi đặt lịch');
+      alert(error.response.data.message)
+      console.log(1);
     } finally {
       setLoading(false);
     }
@@ -169,7 +173,9 @@ const BookingDoctor = () => {
           <input
             type='date'
             value={selectedDate}
-            onChange={(e) => setSelectedDate(format(e.target.value, 'yyyy-MM-dd'))}
+            onChange={(e) =>
+              setSelectedDate(format(e.target.value, 'yyyy-MM-dd'))
+            }
             className='w-full p-2 border rounded'
           />
         </div>

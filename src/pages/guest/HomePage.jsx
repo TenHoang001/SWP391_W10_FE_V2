@@ -12,12 +12,14 @@ import {
   BriefcaseMedical,
   Bell,
   Check,
+  X,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { CreatePaymentAPI } from '../../api/Payment';
 
 const HomePage = () => {
   const [user, setUser] = useState([]);
+  const [showDialog, setShowDialog] = useState(false);
   const userInfo = localStorage.getItem('user');
   const useObject = JSON.parse(userInfo);
   const navigate = useNavigate();
@@ -37,7 +39,7 @@ const HomePage = () => {
       case 'Admin':
         navigate('/admin', { replace: true });
         break;
-      case 'Customer':
+      case 'User':
         navigate('/customer', { replace: true });
         break;
       default:
@@ -45,15 +47,20 @@ const HomePage = () => {
   }, []);
 
   const handleRegisterMembership = async (membershipId) => {
+    if (!userInfo) {
+      setShowDialog(true);
+      return;
+    }
+
     try {
       const response = await CreatePaymentAPI({
         membershipId: membershipId,
-        userId: useObject?.userId,
+        userId: 21,
         returnUrl: `${window.location.origin}/payment/success`,
         cancelUrl: `${window.location.origin}/payment/cancel`,
       });
 
-      console.log(responses.data);
+      console.log(response);
 
       if (response.data?.paymentUrl) {
         window.location.href = response.data.paymentUrl;
@@ -204,7 +211,7 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* BLOG CHIA SẼ KINH NGHIỆM */}
+      {/* BLOG CHIA SẺ KINH NGHIỆM */}
       <div className='p-10'>
         <p className='p-10 text-center text-2xl font-bold'>
           Blog chia sẽ kinh nghiệm
@@ -280,6 +287,53 @@ const HomePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Dialog */}
+      {showDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="relative w-96 rounded-lg bg-white p-6 shadow-xl">
+            <button
+              onClick={() => setShowDialog(false)}
+              className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+            >
+              <X size={20} />
+            </button>
+            <h3 className="mb-4 text-xl font-bold">Thông báo</h3>
+            <p className="mb-4 text-gray-600">
+              Bạn cần đăng nhập để mua gói thành viên. Vui lòng đăng nhập hoặc đăng ký tài khoản.
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowDialog(false)}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={() => {
+                  setShowDialog(false);
+                  navigate('/login');
+                }}
+                className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+              >
+                Đăng nhập
+              </button>
+            </div>
+            <p className="mt-4 text-center text-sm text-gray-500">
+              Đã có tài khoản?{' '}
+              <button
+                onClick={() => {
+                  setShowDialog(false);
+                  navigate('/customer/membership');
+                }}
+                className="text-blue-500 hover:text-blue-600"
+              >
+                Xem gói thành viên
+              </button>
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -173,18 +173,6 @@ const CustomerGrowthChart = () => {
           </div>
 
           <div className='bg-blue-50 p-4 rounded-lg mb-4 flex flex-col gap-2'>
-            <p className='text-sm text-blue-700'>
-              {growthRecords.length > 0 && (
-                <>
-                  <br />
-                  Từ tháng {Math.floor(growthRecords[0].ageInDays / 30)} đến
-                  tháng{' '}
-                  {Math.floor(
-                    growthRecords[growthRecords.length - 1].ageInDays / 30
-                  )}
-                </>
-              )}
-            </p>
             <div>
               <h1 className='text-lg font-bold mb-2'>Khuyến nghị</h1>
               <div className='space-y-2 text-blue-700'>
@@ -203,8 +191,8 @@ const CustomerGrowthChart = () => {
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           {/* Biểu đồ chiều cao */}
-          <div className='bg-white rounded-lg p-6 shadow'>
-            <div className='flex justify-between items-center mb-4'>
+          <div className='bg-white rounded-lg p-6 pb-16 shadow'>
+            <div className='flex justify-between items-center mb-14'>
               <h3 className='text-lg font-semibold mb-4'>Chiều cao</h3>
               <h6 className={setColor('height')}>
                 {record.assessments.heightStatus}
@@ -224,7 +212,13 @@ const CustomerGrowthChart = () => {
                     label={{ value: 'cm', angle: -90, position: 'insideLeft' }}
                   />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Legend 
+                    verticalAlign='bottom' 
+                    height={36}
+                    wrapperStyle={{
+                      top: '300px'
+                    }}
+                  />
 
                   <Line
                     type='monotone'
@@ -280,7 +274,7 @@ const CustomerGrowthChart = () => {
                     type='monotone'
                     dataKey='actual'
                     name='Chiều cao thực tế'
-                    strokeWidth={0}
+                    strokeWidth={2}
                     dot={{ r: 6, fill: '#ff7300' }}
                     connectNulls
                   />
@@ -290,8 +284,8 @@ const CustomerGrowthChart = () => {
           </div>
 
           {/* Biểu đồ cân nặng */}
-          <div className='bg-white rounded-lg p-6 shadow'>
-            <div className='flex justify-between items-center mb-4'>
+          <div className='bg-white rounded-lg p-6 pb-16 shadow'>
+            <div className='flex justify-between items-center mb-14'>
               <h3 className='text-lg font-semibold mb-4'>Cân nặng</h3>
               <h6 className={setColor('weight')}>
                 {record.assessments.weightStatus}
@@ -311,7 +305,13 @@ const CustomerGrowthChart = () => {
                     label={{ value: 'kg', angle: -90, position: 'insideLeft' }}
                   />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Legend 
+                    verticalAlign='bottom' 
+                    height={36}
+                    wrapperStyle={{
+                      top: '300px'
+                    }}
+                  />
 
                   <Line
                     type='monotone'
@@ -367,7 +367,7 @@ const CustomerGrowthChart = () => {
                     type='monotone'
                     dataKey='actual'
                     name='Cân nặng thực tế'
-                    strokeWidth={0}
+                    strokeWidth={2}
                     dot={{ r: 6, fill: '#ff7300' }}
                     connectNulls
                   />
@@ -377,8 +377,8 @@ const CustomerGrowthChart = () => {
           </div>
 
           {/* Biểu đồ BMI */}
-          <div className='bg-white rounded-lg p-6 shadow'>
-            <div className='flex justify-between items-center mb-4'>
+          <div className='bg-white rounded-lg p-6 pb-16 shadow'>
+            <div className='flex justify-between items-center mb-14'>
               <h3 className='text-lg font-semibold mb-4'>BMI</h3>
               <h6 className={setColor('bmi')}>
                 {record.assessments.bmiStatus}
@@ -400,7 +400,13 @@ const CustomerGrowthChart = () => {
                     }}
                   />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Legend  
+                    verticalAlign='bottom' 
+                    height={36}
+                    wrapperStyle={{
+                      top: '300px'
+                    }}
+                  />
 
                   <Line
                     type='monotone'
@@ -456,7 +462,7 @@ const CustomerGrowthChart = () => {
                     type='monotone'
                     dataKey='actual'
                     name='BMI thực tế'
-                    strokeWidth={0}
+                    strokeWidth={2}
                     dot={{ r: 6, fill: '#ff7300' }}
                     connectNulls
                   />
@@ -466,8 +472,8 @@ const CustomerGrowthChart = () => {
           </div>
 
           {/* Biểu đồ vòng đầu */}
-          <div className='bg-white rounded-lg p-6 shadow'>
-            <div className='flex justify-between items-center mb-4'>
+          <div className='bg-white rounded-lg p-6 pb-16 shadow'>
+            <div className='flex justify-between items-center mb-14'>
               <h3 className='text-lg font-semibold mb-4'>Vòng đầu</h3>
               <h6 className={setColor('headCircumference')}>
                 {record.assessments.headCircumferenceStatus}
@@ -490,7 +496,13 @@ const CustomerGrowthChart = () => {
                     label={{ value: 'cm', angle: -90, position: 'insideLeft' }}
                   />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Legend
+                    verticalAlign='bottom' 
+                    height={36}
+                    wrapperStyle={{
+                      top: '300px'
+                    }}        
+                  />
 
                   <Line
                     type='monotone'
@@ -546,7 +558,7 @@ const CustomerGrowthChart = () => {
                     type='monotone'
                     dataKey='actual'
                     name='Vòng đầu thực tế'
-                    strokeWidth={0}
+                    strokeWidth={2}
                     dot={{ r: 6, fill: '#ff7300' }}
                     connectNulls
                   />

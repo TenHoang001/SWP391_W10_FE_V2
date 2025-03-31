@@ -2,6 +2,7 @@ import AxiosAPI from './AxiosAPI';
 
 const END_POINT = {
   CONSULTATION: '/Consultation',
+  GET_RESPONSE_BY_DOCTOR_ID: (id) => `/Consultation/doctor/${id}/responses`,
 };
 
 export const CreateConsultationRequestAPI = async (data) => {
@@ -90,5 +91,10 @@ export const CompleteConsultationRequestAPI = async (
     `${END_POINT.CONSULTATION}/request/${requestId}/complete`,
     isSatisfied
   );
+  return response;
+};
+
+export const getResponseByDoctorID = async (id) => {
+  const response = await AxiosAPI.get(`${END_POINT.GET_RESPONSE_BY_DOCTOR_ID(id)}`);
   return response;
 };
