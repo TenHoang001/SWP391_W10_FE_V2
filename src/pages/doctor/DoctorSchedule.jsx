@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Typography, Button } from '@material-tailwind/react';
+import { Card, Typography, Button, Tooltip } from '@material-tailwind/react';
 import {
   GetDoctorWeekScheduleAPI,
   GetDefaultSlotsAPI,
@@ -8,8 +8,20 @@ import {
   GetAppointmentsByDoctorIdAPI,
   CompleteAppointmentAPI,
 } from '../../api/AppointmentAPI';
-import { endOfWeek, format, startOfWeek } from 'date-fns';
+import {
+  addMinutes,
+  endOfWeek,
+  format,
+  formatDate,
+  isAfter,
+  isBefore,
+  set,
+  parse,
+  startOfWeek,
+  subMinutes,
+} from 'date-fns';
 import { Link } from 'react-router-dom';
+import { GetGrowthRecordsByChildIdAPI } from '../../api/GrowthRecordAPI';
 
 const DoctorSchedule = () => {
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -17,12 +29,30 @@ const DoctorSchedule = () => {
   const [weekSchedule, setWeekSchedule] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [defaultSlots, setDefaultSlots] = useState([]);
+  const [growthRecord, setGrowthRecord] = useState([]);
 
   useEffect(() => {
     loadWeekSchedule();
     loadAppointments();
     loadDefaultSlots();
   }, [date]);
+
+  useEffect(() => {
+    const loadAllGrowthRecords = async () => {
+      const childIds = appointments.map((a) => a.childId);
+      const allRecords = {};
+      for (const id of childIds) {
+        const rs = await GetGrowthRecordsByChildIdAPI(id);
+        allRecords[id] = rs.data;
+      }
+      console.log(allRecords);
+      setGrowthRecord(allRecords);
+    };
+
+    if (appointments.length > 0) {
+      loadAllGrowthRecords();
+    }
+  }, [appointments]);
 
   const loadWeekSchedule = async () => {
     const response = await GetDoctorWeekScheduleAPI(
@@ -40,6 +70,7 @@ const DoctorSchedule = () => {
       console.error('Error loading appointments:', error);
     }
   };
+
 
   const loadDefaultSlots = async () => {
     try {
@@ -105,7 +136,6 @@ const DoctorSchedule = () => {
         return { exists: false, isAvailable: false };
       }
 
-      console.log(slot);
       return {
         exists: true,
         isAvailable: slot.isAvailable,
@@ -121,7 +151,6 @@ const DoctorSchedule = () => {
   });
 
   const getSlotColor = (slot) => {
-    console.log('slot', slot);
     if (!slot.exists)
       return 'bg-gray-50 border-gray-100 border-[2px] border-solid';
     return slot.isAvailable
@@ -151,7 +180,6 @@ const DoctorSchedule = () => {
 
   const getFilteredAppointments = () => {
     const selectedDate = format(date, 'yyyy-MM-dd');
-
     const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
     const end = endOfWeek(selectedDate, 'yyyy-MM-dd');
     return appointments.filter((appointment) => {
@@ -160,6 +188,20 @@ const DoctorSchedule = () => {
     });
   };
 
+  const isCurrentTime = (dateStr, timeStr) => {
+    const startDateTime = parse(
+      `${dateStr} ${timeStr}`,
+      'yyyy-MM-dd HH:mm',
+      new Date()
+    );
+    const openTime = subMinutes(startDateTime, 10);
+    const closeTime = addMinutes(startDateTime, 55);
+    const now = new Date();
+    console.log(openTime);
+    console.log(closeTime);
+    console.log(isAfter(now, openTime) + ' - ' + isBefore(now, closeTime));
+    return isAfter(now, openTime) && isBefore(now, closeTime);
+  };
   return (
     <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
       <h1 className='text-2xl font-bold text-center mb-6'>Lịch làm việc</h1>
@@ -387,21 +429,28 @@ const DoctorSchedule = () => {
                               : 'bg-blue-100 text-blue-800'
                           }`}
                         >
-                          {appointment.status === 'Completed'
-                            ? 'Đã hoàn thành'
-                            : appointment.status === 'Cancelled'
-                            ? 'Đã hủy'
-                            : 'Đang chờ'}
+                          {appointment.status}
                         </div>
                       </td>
                       <td className='p-4 border-b border-blue-gray-50'>
                         <div className='flex gap-2'>
-                          <Link
-                            to={`/doctor/children/growth-chart?childId=${appointment.childId}&parentId=${appointment.userId}`}
-                            className='px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors'
-                          >
-                            Xem biểu đồ
-                          </Link>
+                          {growthRecord[appointment.childId]?.length > 0 ? (
+                            <Link
+                              to={`/doctor/children/growth-chart?childId=${appointment.childId}&parentId=${appointment.userId}`}
+                              className='px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors'
+                            >
+                              Xem biểu đồ
+                            </Link>
+                          ) : (
+                            <Tooltip
+                              content={'biểu đồ hiện ko có dữ liệu để theo dõi'}
+                            >
+                              <Link className='px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 hover:bg-blue-100 rounded-lg transition-colors'>
+                                Xem biểu đồ
+                              </Link>
+                            </Tooltip>
+                          )}
+
                           {appointment.status === 'Pending' && (
                             <>
                               <Button
@@ -416,7 +465,11 @@ const DoctorSchedule = () => {
                               >
                                 Hoàn thành
                               </Button>
-                              {appointment.meetingLink && (
+                              {appointment.meetingLink &&
+                              isCurrentTime(
+                                appointment.appointmentDate,
+                                defaultSlot?.startTime
+                              ) ? (
                                 <a
                                   href={appointment.meetingLink}
                                   target='_blank'
@@ -425,6 +478,16 @@ const DoctorSchedule = () => {
                                 >
                                   Join Meeting
                                 </a>
+                              ) : (
+                                <Tooltip content='Chưa đến giờ tư vấn hoặc đã qúa hạn'>
+                                  <a
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    className='px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors'
+                                  >
+                                    Join Meeting
+                                  </a>
+                                </Tooltip>
                               )}
                             </>
                           )}

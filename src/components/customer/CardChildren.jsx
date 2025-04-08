@@ -1,14 +1,15 @@
 import { Eye, NotebookPen } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import baby from "../../assets/baby.png"
 
 const CardChildren = ({ fullName, birthDate, gender, bloodType, childId }) => {
   return (
     <div className='rounded-lg border border-gray-300 p-4 shadow-md'>
       <div className='flex items-center gap-4'>
         <img
-          className='h-16 w-16 rounded-full'
-          src='https://images.unsplash.com/photo-1738071545459-e19435ae37e0?q=80&w=200&h=200&fit=crop'
+          className='h-10 w-10 rounded-full'
+          src={baby}
           alt={fullName}
         />
         <div>

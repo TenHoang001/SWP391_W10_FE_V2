@@ -12,7 +12,6 @@ import { GetAllDoctorsAPI } from '../../api/DoctorAPI';
 import { Alert, Tooltip } from '@material-tailwind/react';
 import { UpdateUserStatusAPI } from '../../api/UserAPI';
 
-
 const DoctorManagement = () => {
   const [doctors, setDoctors] = useState([]);
   const [alert, setAlert] = useState({
@@ -111,7 +110,13 @@ const DoctorManagement = () => {
           <tbody className='divide-y divide-gray-200'>
             {doctors.map((doctor) => (
               <tr key={doctor.userId}>
-                <td className='px-6 py-4'>{doctor.fullName}</td>
+                <td className='px-6 py-4'>
+                  <Tooltip content="thông tin chi tiết">
+                    <Link to={`/admin/doctorDetails/${doctor.userId}`}>
+                      {doctor.fullName}
+                    </Link>
+                  </Tooltip>
+                </td>
                 <td className='px-6 py-4'>{doctor.email}</td>
                 <td className='px-6 py-4'>{doctor.phoneNumber}</td>
                 <td className='px-6 py-4'>{doctor.specialization}</td>

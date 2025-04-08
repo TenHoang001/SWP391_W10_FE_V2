@@ -12,7 +12,7 @@ import {
 const DoctorCard = ({ doctor }) => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(!open);
-
+  
   return (
     <div className='bg-white p-4 rounded-lg shadow-lg flex flex-col items-center text-center'>
       <img
@@ -96,6 +96,8 @@ export default function ListDoctor() {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  console.log(doctors);
 
   useEffect(() => {
     const fetchDoctors = async () => {

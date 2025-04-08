@@ -58,7 +58,13 @@ const AddDoctor = () => {
       address: yup.string().required('Địa chỉ là bắt buộc'),
       specialization: yup.string().required('Chuyên khoa là bắt buộc'),
       qualification: yup.string().required('Bằng cấp là bắt buộc'),
-      licenseNumber: yup.string().required('Số giấy phép là bắt buộc').matches("^[đĐêÊÔôa-zA-Z0-9]{3,10}/[a-zA-Z0-9ĐđÊêÔô]{1,10}-[a-zA-Z0-99ĐđÊêÔô]{1,10}$", "giấy phép hành nghề có dạng EX: 05446/HCM-GPHĐ"),
+      licenseNumber: yup
+        .string()
+        .required('Số giấy phép là bắt buộc')
+        .matches(
+          /^[a-zA-Z0-9ĐđÊêÔôÐđ]{3,10}\/[a-zA-Z0-9ĐđÊêÔôÐđ]{1,10}-[a-zA-Z0-9ĐđÊêÔôÐđ]{1,10}$/,
+          'giấy phép hành nghề có dạng EX: 05446/HCM-GPHĐ'
+        ),
       experience: yup
         .number()
         .min(0, 'Số năm kinh nghiệm không hợp lệ')
@@ -283,10 +289,10 @@ const AddDoctor = () => {
                 className='mt-1 block w-full px-4 py-2.5 rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 text-sm'
               >
                 <option value=''>Chọn bằng cấp</option>
-                <option value='cao_dang'>Cao đẳng</option>
-                <option value='dai_hoc'>Đại học</option>
-                <option value='thac_si'>Thạc sĩ</option>
-                <option value='tien_si'>Tiến sĩ</option>
+                <option value='Cao đẳng'>Cao đẳng</option>
+                <option value='Đại học'>Đại học</option>
+                <option value='Thạc sĩ'>Thạc sĩ</option>
+                <option value='Tiến sĩ'>Tiến sĩ</option>
               </select>
               {formik.errors.qualification && (
                 <p className='text-red-500 text-sm mt-1'>

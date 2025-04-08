@@ -78,8 +78,8 @@ const Header = () => {
                 <img src={vuong_niem} className='absolute top-[-7px] w-[1rem] h-[1rem] right-[-11px]' />
               </div>
             ) : (
-              <div className='rounded-full h-10 w-10 flex justify-center align-middle items-center border border-blue-500 p-2 text-blue-500 hover:bg-blue-100'>
-                <UserRound className='h-6 w-6 ' />
+              <div className='rounded-full h-8 w-8 flex justify-center align-middle items-center border border-blue-500 p-2 text-blue-500 hover:bg-blue-100'>
+                <UserRound className='h-4 w-4' />
               </div>
             )}
           </button>

@@ -199,16 +199,19 @@ const HomePageCus = () => {
 
           {view && view === 'card' ? (
             <div className='grid grid-cols-1 gap-6 pt-10 sm:grid-cols-2 lg:grid-cols-3'>
-              {filteredChildren.map((child) => (
-                <CardChildren
-                  key={child.childId}
-                  childId={child.childId}
-                  birthDate={formatDate(child.birthDate)}
-                  fullName={child.fullName}
-                  gender={child.gender === 'Male' ? 'Nam' : 'Nữ'}
-                  bloodType={child.bloodType}
-                />
-              ))}
+              {filteredChildren.map(
+                (child) =>
+                  child.status && (
+                    <CardChildren
+                      key={child.childId}
+                      childId={child.childId}
+                      birthDate={formatDate(child.birthDate)}
+                      fullName={child.fullName}
+                      gender={child.gender === 'Male' ? 'Nam' : 'Nữ'}
+                      bloodType={child.bloodType}
+                    />
+                  )
+              )}
             </div>
           ) : (
             <div className='overflow-x-auto mx-15 my-10'>
@@ -234,17 +237,20 @@ const HomePageCus = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredChildren.map((child, index) => (
-                    <TableChildren
-                      key={child.childId}
-                      stt={index + 1}
-                      childId={child.childId}
-                      birthDate={formatDate(child.birthDate)}
-                      fullName={child.fullName}
-                      gender={child.gender === 'Male' ? 'Nam' : 'Nữ'}
-                      bloodType={child.bloodType}
-                    />
-                  ))}
+                  {filteredChildren.map(
+                    (child, index) =>
+                      child.status && (
+                        <TableChildren
+                          key={child.childId}
+                          stt={index + 1}
+                          childId={child.childId}
+                          birthDate={formatDate(child.birthDate)}
+                          fullName={child.fullName}
+                          gender={child.gender === 'Male' ? 'Nam' : 'Nữ'}
+                          bloodType={child.bloodType}
+                        />
+                      )
+                  )}
                 </tbody>
               </table>
             </div>

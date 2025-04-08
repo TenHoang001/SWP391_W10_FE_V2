@@ -40,6 +40,7 @@ import ConsultationChatManager from './pages/admin/ConsultationChatManager';
 import BlogDetail from './pages/shared/BlogDetail';
 import DoctorChildGrowthChart from './pages/doctor/DoctorChildGrowthChart';
 import DoctorAppointmentDetailsInfo from './pages/doctor/DoctorAppointmentDetailsInfo';
+import DoctorDetails from './pages/admin/DoctorDetails';
 
 function App() {
   return (
@@ -95,8 +96,14 @@ function App() {
               element={<ConsultationChat />}
             />
             <Route path='/customer/blog/:blogId' element={<BlogDetail />} />
-            <Route path='/customer/payment/success' element={<PaymentSuccess />} />
-            <Route path='/customer/payment/cancel' element={<PaymentCancel />} />
+            <Route
+              path='/customer/payment/success'
+              element={<PaymentSuccess />}
+            />
+            <Route
+              path='/customer/payment/cancel'
+              element={<PaymentCancel />}
+            />
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>
@@ -142,6 +149,10 @@ function App() {
             <Route
               path='/admin/consultationManager/:id'
               element={<ConsultationChatManager />}
+            />
+            <Route
+              path='/admin/doctorDetails/:id'
+              element={<DoctorDetails />}
             />
           </Route>
         </Routes>

@@ -12,7 +12,8 @@ import {
   CancelAppointmentAPI,
   GetAppointmentsByUserIdAPI,
 } from '../../api/AppointmentAPI';
-import { format } from 'date-fns';
+import { format, formatDate, subMinutes } from 'date-fns';
+import { parse, addMinutes, isAfter, isBefore } from 'date-fns';
 import { Delete, VideoIcon } from 'lucide-react';
 
 const BookingHistory = () => {
@@ -72,6 +73,21 @@ const BookingHistory = () => {
     setTimeout(() => {
       setNotification({ message: '', type: 'success', show: false });
     }, 1000);
+  };
+
+  const isCurrentTime = (dateStr, timeStr) => {
+    const startDateTime = parse(
+      `${dateStr} ${timeStr}`,
+      'yyyy-MM-dd HH:mm',
+      new Date()
+    );
+    const openTime = subMinutes(startDateTime, 10);
+    const closeTime = addMinutes(startDateTime, 55);
+    const now = new Date();
+    console.log(openTime);
+    console.log(closeTime);
+    console.log(isAfter(now, openTime) + ' - ' + isBefore(now, closeTime));
+    return isAfter(now, openTime) && isBefore(now, closeTime);
   };
 
   return (
@@ -196,12 +212,16 @@ const BookingHistory = () => {
                         className='flex items-center gap-2 text-gray-500 hover:text-gray-700'
                       >
                         <VideoIcon className='h-4 w-4' />
-                        <Typography variant='small'>Tham gia Meet</Typography>
+                        <Typography variant='small'>---</Typography>
                       </p>
                     </td>
                   ) : (
                     <td className='p-4 border-b border-blue-gray-50'>
-                      {appointment.meetingLink && (
+                      {appointment.meetingLink &&
+                      isCurrentTime(
+                        appointment.appointmentDate,
+                        appointment.appointmentTime
+                      ) ? (
                         <a
                           href={appointment.meetingLink}
                           target='_blank'
@@ -211,6 +231,17 @@ const BookingHistory = () => {
                           <VideoIcon className='h-4 w-4' />
                           <Typography variant='small'>Tham gia Meet</Typography>
                         </a>
+                      ) : (
+                        <Tooltip content='Chưa đến hoặc quá hạn tư vấn'>
+                          <a
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='flex items-center gap-2 text-gray-500 hover:text-gray-700'
+                          >
+                            <VideoIcon className='h-4 w-4' />
+                            <Typography variant='small'>---</Typography>
+                          </a>
+                        </Tooltip>
                       )}
                     </td>
                   )}

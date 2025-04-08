@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { CompleteAppointmentAPI, GetAppointmentsByDoctorIdAPI } from '../../api/AppointmentAPI';
+import {
+  CompleteAppointmentAPI,
+  GetAppointmentsByDoctorIdAPI,
+} from '../../api/AppointmentAPI';
 import { useSearchParams, Link } from 'react-router-dom';
-import { format } from 'date-fns';
+import { format, formatDate } from 'date-fns';
+import { GetGrowthRecordsByChildIdAPI } from '../../api/GrowthRecordAPI';
+import { Tooltip } from '@material-tailwind/react';
 
 const DoctorAppointmentDetailsInfo = () => {
   const [searchParams] = useSearchParams();
@@ -9,7 +14,7 @@ const DoctorAppointmentDetailsInfo = () => {
   const id = localStorage.getItem('userId');
   const dateParams = searchParams.get('date');
   const slotId = searchParams.get('slotId');
-
+  const [growthRecord, setGrowthRecord] = useState([]);
   useEffect(() => {
     getAppointmentByDoctorId();
   }, []);
@@ -28,6 +33,17 @@ const DoctorAppointmentDetailsInfo = () => {
   };
 
   const appointmentDetails = filterAppointment()[0];
+
+  useEffect(() => {
+    if (appointmentDetails) {
+      getGrowthRecords();
+    }
+  }, [appointmentDetails]);
+
+  const getGrowthRecords = async () => {
+    const rs = await GetGrowthRecordsByChildIdAPI(appointmentDetails.childId);
+    setGrowthRecord(rs.data);
+  };
 
   if (!appointmentDetails) {
     return (
@@ -79,6 +95,7 @@ const DoctorAppointmentDetailsInfo = () => {
               <h4 className='text-2xl font-bold text-gray-800 mb-2'>
                 Chi tiết cuộc hẹn
               </h4>
+              {}
               <p className='text-sm text-gray-600'>
                 Mã cuộc hẹn: #{appointmentDetails.appointmentId}
               </p>
@@ -125,7 +142,9 @@ const DoctorAppointmentDetailsInfo = () => {
 
         <div className='mb-6'>
           <p className='text-sm text-gray-600 mb-1'>Link meet</p>
-          {appointmentDetails.status === 'Pending' ? (
+          {appointmentDetails.status === 'Pending' &&
+          appointmentDetails.appointmentDate ===
+            formatDate(new Date(), 'yyyy-MM-dd').toString() ? (
             <a
               href={appointmentDetails.meetingLink}
               className='text-lg font-semibold text-blue-600 hover:text-blue-800 break-all'
@@ -135,7 +154,7 @@ const DoctorAppointmentDetailsInfo = () => {
               {appointmentDetails.meetingLink || '-'}
             </a>
           ) : (
-            <p className='text-gray-600'>Đã hoàn thành cuộc hẹn</p>
+            <p className='text-gray-600'>Chưa đến hoặc quá hạn tư vấn</p>
           )}
         </div>
 
@@ -147,28 +166,41 @@ const DoctorAppointmentDetailsInfo = () => {
         </div>
 
         <div className='flex flex-col sm:flex-row gap-4'>
-          <Link
-            to={`/doctor/children/growth-chart?childId=${appointmentDetails.childId}&parentId=${appointmentDetails.userId}`}
-            className='flex-1'
-          >
-            <button className='w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors'>
-              Xem biểu đồ tăng trưởng
-            </button>
-          </Link>
+          {growthRecord?.length > 0 ? (
+            <Link
+              to={`/doctor/children/growth-chart?childId=${appointmentDetails.childId}&parentId=${appointmentDetails.userId}`}
+              className='flex-1'
+            >
+              <button className='w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors'>
+                Xem biểu đồ tăng trưởng
+              </button>
+            </Link>
+          ) : (
+            <Tooltip content="Chưa có dữ liệu để hiển thị biểu đồ">
+              <Link className='flex-1'>
+                <button className='w-full bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors'>
+                  Xem biểu đồ tăng trưởng
+                </button>
+              </Link>
+            </Tooltip>
+          )}
+
           {appointmentDetails.status === 'Pending' && (
             <>
-              {appointmentDetails.meetingLink && (
-                <a
-                  href={appointmentDetails.meetingLink}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='flex-1'
-                >
-                  <button className='w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-lg transition-colors'>
-                    Join Meeting
-                  </button>
-                </a>
-              )}
+              {appointmentDetails.meetingLink &&
+                appointmentDetails.appointmentDate ===
+                  formatDate(new Date(), 'yyyy-MM-dd').toString() && (
+                  <a
+                    href={appointmentDetails.meetingLink}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='flex-1'
+                  >
+                    <button className='w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-lg transition-colors'>
+                      Join Meeting
+                    </button>
+                  </a>
+                )}
               <button
                 onClick={() =>
                   handleCompleteAppointment(appointmentDetails.appointmentId)

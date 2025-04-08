@@ -12,7 +12,7 @@ import {
   GetConsultationRequestByIdAPI,
   SendConsultationResponseAPI_Doctor,
   SendConsultationQuestionAPI_Customer,
-  CompleteConsultationRequestAPI
+  CompleteConsultationRequestAPI,
 } from '../../api/ConsultationAPI';
 
 // const COMMENTS_PER_PAGE = 10;
@@ -30,13 +30,21 @@ const ConsultationChat = () => {
     fetchConsultation();
   }, [requestId]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchConsultation();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const handleCompleteConsultation = async () => {
     try {
       const response = await CompleteConsultationRequestAPI(requestId);
 
       if (response.status === 200) {
         alert('Tham vấn đã hoàn thành!');
-        setConsultation((prev) => ({ ...prev, status: 'Completed' })); 
+        setConsultation((prev) => ({ ...prev, status: 'Completed' }));
       }
     } catch (error) {
       console.error('Lỗi hoàn thành tham vấn:', error);
@@ -47,14 +55,14 @@ const ConsultationChat = () => {
   const fetchConsultation = async () => {
     try {
       const response = await GetConsultationRequestByIdAPI(requestId);
-      
+
       if (response.status === 200) {
-        const sortedResponses = response.data.consultationResponses.sort((a, b) => 
-          new Date(b.createdAt) - new Date(a.createdAt)
+        const sortedResponses = response.data.consultationResponses.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
         setConsultation({
           ...response.data,
-          consultationResponses: sortedResponses
+          consultationResponses: sortedResponses,
         });
       }
     } catch (error) {
@@ -84,7 +92,7 @@ const ConsultationChat = () => {
 
       if (response.status === 200) {
         setNewMessage('');
-        // setCurrentPage(1); 
+        // setCurrentPage(1);
         fetchConsultation();
       }
     } catch (error) {
@@ -107,7 +115,6 @@ const ConsultationChat = () => {
       </div>
     );
   }
-  console.log(consultation);
 
   return (
     <div className='max-w-3xl mx-auto p-4'>

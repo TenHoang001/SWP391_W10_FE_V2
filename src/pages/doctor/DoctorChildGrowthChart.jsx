@@ -44,9 +44,7 @@ const DoctorChildGrowthChart = () => {
         const childGender = childResponse.data?.gender || 'Male';
         setGender(childGender);
         setChildName(childResponse.data?.fullName || '');
-
         const months = Array.from({ length: 24 }, (_, i) => i);
-
         const [heightData, weightData, bmiData, headData] = await Promise.all([
           Promise.all(
             months.map((month) =>
@@ -191,7 +189,6 @@ const DoctorChildGrowthChart = () => {
         </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          {/* Biểu đồ chiều cao */}
           <div className='bg-white rounded-lg p-6 pb-16 shadow'>
             <div className='flex justify-between items-center mb-14'>
               <h3 className='text-lg font-semibold mb-4'>Chiều cao</h3>

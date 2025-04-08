@@ -36,7 +36,7 @@ export const UpdateChildAPI = async (childId, userId, data) => {
 
 export const DeleteChildAPI = async (childId, userId) => {
   const response = await AxiosAPI.delete(
-    `${END_POINT.CHILDREN}/${childId}/user/${userId}`
+    `${END_POINT.CHILDREN}/softDelete${childId}/user/${userId}`
   );
   return response;
 };
