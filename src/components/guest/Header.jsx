@@ -27,9 +27,6 @@ const Header = () => {
           <Link to={'blogs'} className='transition hover:text-blue-500'>
             Blog
           </Link>
-          <Link to={'/'} className='transition hover:text-blue-500'>
-            Câu hỏi thường gặp
-          </Link>
         </nav>
 
         {/* Buttons */}

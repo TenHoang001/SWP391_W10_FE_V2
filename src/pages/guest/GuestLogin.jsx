@@ -111,7 +111,7 @@ const GuestLogin = () => {
                 </label>
                 <input
                   name="username"
-                  placeholder='your@email.com'
+                  placeholder='thaibach'
                   value={formik.values.username}
                   onChange={formik.handleChange}
                   className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'

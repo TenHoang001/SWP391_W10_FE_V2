@@ -1,7 +1,14 @@
 import bg_3 from '../../assets/bg_3.png';
 import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Plus, Search, RefreshCcw, CheckCircle, XCircle, Receipt } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  RefreshCcw,
+  CheckCircle,
+  XCircle,
+  Receipt,
+} from 'lucide-react';
 import { Alert, Button } from '@material-tailwind/react';
 import { GetChildrenByUserIdAPI } from '../../api/ChildrenAPI';
 import { CreateConsultationRequestAPI } from '../../api/ConsultationAPI';
@@ -333,9 +340,17 @@ const HomePageCus = () => {
                   console.error(error);
                   setAlert({
                     show: true,
-                    message: 'Có lỗi xảy ra khi gửi yêu cầu',
+                    message: `${error.response.data.message}`,
                     type: 'error',
                   });
+
+                  // setTimeout(() => {
+                  //   setAlert({
+                  //     show: false,
+                  //     message: '',
+                  //     type: 'success',
+                  //   });
+                  // }, 1500);
                 }
               }}
             >

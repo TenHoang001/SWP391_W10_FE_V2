@@ -1,13 +1,43 @@
 import { useNavigate } from 'react-router-dom';
 import { CreatePaymentAPI } from '../../api/Payment';
 import { Check } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { getAllMembership } from '../../api/MenbershipAPI';
+import { Alert } from '@material-tailwind/react';
 
 const MembershipPage = () => {
   const navigate = useNavigate();
   const userInfo = localStorage.getItem('userId');
   const userId = JSON.parse(userInfo);
+  const [membership, setMembership] = useState([]);
+  const [notification, setNotification] = useState({
+    show: false,
+    message: '',
+    type: 'success',
+  });
 
-  console.log(userId);
+  useEffect(() => {
+    HandleGetAllMembership();
+  }, []);
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', type: 'success' });
+    }, 3000);
+  };
+
+  const HandleGetAllMembership = async () => {
+    const response = await getAllMembership();
+    setMembership(response);
+  };
+
+  const formatCurrency = (money) => {
+    return new Intl.NumberFormat('vi', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(money);
+  };
 
   const handleRegisterMembership = async (membershipId) => {
     try {
@@ -24,19 +54,31 @@ const MembershipPage = () => {
       }
     } catch (error) {
       console.error('Payment creation failed:', error);
-      alert(error.response.data.message);
+      showNotification(
+        error.response?.data?.message || 'Có lỗi xảy ra',
+        'error'
+      );
     }
   };
 
   return (
     <div className='container mx-auto px-4 py-8'>
+      {notification.show && (
+        <Alert
+          className='fixed w-auto right-2 top-4 z-50'
+          color={notification.type === 'success' ? 'green' : 'red'}
+        >
+          {notification.message}
+        </Alert>
+      )}
       <h1 className='mb-8 text-center text-3xl font-bold'>Gói Thành Viên</h1>
 
       <div className='grid grid-cols-1 gap-8 md:grid-cols-2'>
         <div className='rounded-xl border border-gray-300 p-6 shadow-lg'>
           <h2 className='mb-4 text-2xl font-bold'>Gói Standard</h2>
           <p className='mb-6 text-3xl font-bold text-blue-600'>
-            599.000 <span className='text-lg text-gray-600'>/năm</span>
+            {formatCurrency(membership[0]?.price)}{' '}
+            <span className='text-lg text-gray-600'>/năm</span>
           </p>
 
           <ul className='mb-8 space-y-3'>
@@ -73,7 +115,8 @@ const MembershipPage = () => {
         <div className='rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 p-6 text-white shadow-lg'>
           <h2 className='mb-4 text-2xl font-bold'>Gói VIP</h2>
           <p className='mb-6 text-3xl font-bold'>
-            999.000 <span className='text-lg text-white/80'>/năm</span>
+            {formatCurrency(membership[1]?.price)}{' '}
+            <span className='text-lg text-white/80'>/năm</span>
           </p>
 
           <ul className='mb-8 space-y-3'>
@@ -100,7 +143,7 @@ const MembershipPage = () => {
           </ul>
 
           <button
-            onClick={() => handleRegisterMembership(5)}
+            onClick={() => handleRegisterMembership(8)}
             className='w-full rounded-lg bg-white px-6 py-3 text-blue-600 transition hover:bg-gray-100'
           >
             Đăng Ký Ngay

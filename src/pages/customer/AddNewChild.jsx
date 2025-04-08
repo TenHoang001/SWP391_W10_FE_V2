@@ -85,7 +85,7 @@ const AddNewChild = () => {
         navigate('/customer', { replace: true });
       }, 2000);
     } catch (error) {
-      showNotification('Có lỗi xảy ra khi tạo thông tin trẻ', 'error');
+      showNotification('Bạn cần đăng ký thành viên để thêm trẻ', 'error');
     }
   };
 

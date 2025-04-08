@@ -135,7 +135,7 @@ const BookingDoctor = () => {
       {error.show && (
         <Alert
           className='p-2 rounded-lg text-white fixed top-4  w-auto right-1'
-          color={error.type === 'error' ? "red" : "green"}
+          color={error.type === 'error' ? 'red' : 'green'}
         >
           {error.message}
         </Alert>

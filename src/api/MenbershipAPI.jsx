@@ -8,6 +8,11 @@ export const getAllMembership = async () => {
   return response.data.data;
 };
 
+export const getByIdMembership = async (id) => {
+  const response = await AxiosAPI.get(`${END_POINTS.MEMBERSHIP}/${id}`);
+  return response.data;
+};
+
 export const changePriceMembership = async (id, data) => {
   const response = await AxiosAPI.put(END_POINTS.CHANGE_PRICE(id), data);
   return response.data;

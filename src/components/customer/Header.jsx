@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../../assets/logo.png';
-// import { FaUserAstronaut } from 'react-icons/fa';
+import vuong_niem from '../../assets/vuong_niem.svg';
+
 import {
   UserRound,
   LogOut,
@@ -11,6 +12,7 @@ import {
   Menu,
   Package,
   Receipt,
+  UserPlus2,
 } from 'lucide-react';
 // import { FiMenu, FiX } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
@@ -43,7 +45,6 @@ const Header = () => {
           <p className='text-xl font-bold'>GrowthTrack</p>
         </div>
 
-        {/* Menu Desktop */}
         <nav className='hidden gap-6 text-lg md:flex'>
           <Link to={'/customer'} className='transition hover:text-blue-500'>
             Trang chủ
@@ -64,13 +65,23 @@ const Header = () => {
 
         <div className='md:gap-2 items-center hidden md:flex relative'>
           <span>
-            <p>Xin Chào <span className='font-semibold'> {`${fullName}`}</span></p>
+            <p>
+              Xin Chào <span className='font-semibold'> {`${fullName}`}</span>
+            </p>
           </span>
-          <button
-            className='rounded-full border border-blue-500 p-2 text-blue-500 hover:bg-blue-100'
-            onClick={() => setShowUserPopup(!showUserPopup)}
-          >
-            <UserRound className='h-6 w-6' />
+          <button className='' onClick={() => setShowUserPopup(!showUserPopup)}>
+            {role === 'Member' ? (
+              <div className='relative border-[1px] border-t-yellow-200 border-r-yellow-400 border-b-orange-100 border-l-orange-100 bg-gradient-to-b from-yellow-200 to-orange-200  border-solid p-[2px] rounded-3xl'>
+                <div className='rounded-full bg-blue-100 h-8 w-8 flex justify-center align-middle items-center hover:bg-yellow-100 text-yellow-400 border-yellow-400 border-solid border-[1px]'>
+                  <UserPlus2 className='h-4 w-4 text-white text-3xl' />
+                </div>
+                <img src={vuong_niem} className='absolute top-[-7px] w-[1rem] h-[1rem] right-[-11px]' />
+              </div>
+            ) : (
+              <div className='rounded-full h-10 w-10 flex justify-center align-middle items-center border border-blue-500 p-2 text-blue-500 hover:bg-blue-100'>
+                <UserRound className='h-6 w-6 ' />
+              </div>
+            )}
           </button>
 
           {showUserPopup && (

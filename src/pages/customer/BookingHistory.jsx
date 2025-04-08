@@ -6,6 +6,7 @@ import {
   Chip,
   button,
   Tooltip,
+  Alert,
 } from '@material-tailwind/react';
 import {
   CancelAppointmentAPI,
@@ -18,7 +19,11 @@ const BookingHistory = () => {
   const [appointments, setAppointments] = useState([]);
   const [error, setError] = useState(null);
   const userId = localStorage.getItem('userId');
-
+  const [notification, setNotification] = useState({
+    message: '',
+    type: 'success',
+    show: false,
+  });
   useEffect(() => {
     loadAppointments();
   }, []);
@@ -46,14 +51,39 @@ const BookingHistory = () => {
   };
 
   const handleDeleteAppointment = async (id) => {
-    if (id && window.confirm('Bạn muốn lịch hẹn phải không')) {
-      await CancelAppointmentAPI(id);
-      loadAppointments();
+    try {
+      if (
+        id &&
+        window.confirm(
+          'Bạn muốn lịch hẹn phải không - (sao khi hủy lịch hẹn, 7 ngày sao bạn mới được phép đặt lịch)'
+        )
+      ) {
+        await CancelAppointmentAPI(id);
+        loadAppointments();
+      }
+    } catch (error) {
+      console.log(error.response.data.message);
+      handleNotification(error.response.data.message, 'error');
     }
+  };
+
+  const handleNotification = (message, type = 'success') => {
+    setNotification({ message, show: true, type });
+    setTimeout(() => {
+      setNotification({ message: '', type: 'success', show: false });
+    }, 1000);
   };
 
   return (
     <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+      {notification.show && (
+        <Alert
+          className='p-2 fixed top-4 w-auto right-2'
+          color={notification.type === 'success' ? 'green' : 'red'}
+        >
+          {notification.message}
+        </Alert>
+      )}
       <h1 className='text-2xl font-bold mb-6'>Lịch sử đặt lịch tư vấn</h1>
 
       <Card className='overflow-hidden'>
@@ -158,7 +188,8 @@ const BookingHistory = () => {
                       value={appointment.status}
                     />
                   </td>
-                  {appointment.status === 'Completed' ? (
+                  {appointment.status === 'Completed' ||
+                  appointment.status === 'Cancelled' ? (
                     <td>
                       <p
                         href=''
@@ -192,7 +223,7 @@ const BookingHistory = () => {
                           handleDeleteAppointment(appointment.appointmentId)
                         }
                       >
-                        <Tooltip content='xóa'>
+                        <Tooltip content='Hủy lịch hẹn'>
                           <Delete />
                         </Tooltip>
                       </button>

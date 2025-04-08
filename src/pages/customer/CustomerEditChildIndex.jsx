@@ -5,69 +5,65 @@ import {
   UpdateGrowthRecordAPI,
   GetGrowthRecordByIdAPI,
 } from '../../api/GrowthRecordAPI';
+import { Alert } from '@material-tailwind/react';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 
 const CustomerEditChildIndex = () => {
   const navigate = useNavigate();
   const { childId, recordId } = useParams();
-  const [formData, setFormData] = useState({
-    height: '',
-    weight: '',
-    headCircumference: '',
-    note: '',
-  });
-  const [showAlert, setShowAlert] = useState({
-    show: false,
-    message: '',
-    type: 'success',
+  const [msg, setMsg] = useState('');
+
+  const formik = useFormik({
+    initialValues: {
+      height: '',
+      weight: '',
+      headCircumference: '',
+      note: '',
+    },
+    validationSchema: yup.object({
+      height: yup
+        .number()
+        .min(30, 'Chiều cao phải từ 30cm đến 200cm')
+        .max(200, 'Chiều cao phải từ 30cm đến 200cm')
+        .required('Chiều cao là bắt buộc'),
+      weight: yup
+        .number()
+        .min(2, 'Cân nặng phải từ 2kg đến 100kg')
+        .max(100, 'Cân nặng phải từ 2kg đến 100kg')
+        .required('Cân nặng là bắt buộc'),
+      headCircumference: yup
+        .number()
+        .min(30, 'Chu vi đầu phải từ 30cm đến 100cm')
+        .max(100, 'Chu vi đầu phải từ 30cm đến 100cm')
+        .required('Chu vi đầu là bắt buộc'),
+      note: yup.string(),
+    }),
+    onSubmit: async (values) => {
+      try {
+        await UpdateGrowthRecordAPI(recordId, values);
+        navigate(`/customer/children/${childId}`);
+      } catch (error) {
+        setMsg(error.response.data.message);
+      }
+    },
   });
 
   useEffect(() => {
     const loadGrowthRecord = async () => {
       try {
         const response = await GetGrowthRecordByIdAPI(recordId);
-        setFormData(response.data);
+        formik.setValues(response.data);
       } catch (error) {
-        showNotification('Có lỗi xảy ra khi tải chỉ số', 'error');
+        setMsg('Có lỗi xảy ra khi tải chỉ số');
       }
     };
     loadGrowthRecord();
   }, [recordId]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await UpdateGrowthRecordAPI(recordId, formData);
-      navigate(`/customer/children/${childId}`);
-    } catch (error) {
-      showNotification('Có lỗi xảy ra khi cập nhật chỉ số', 'error');
-    }
-  };
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const showNotification = (message, type = 'success') => {
-    setShowAlert({ show: true, message, type });
-    setTimeout(
-      () => setShowAlert({ show: false, message: '', type: 'success' }),
-      3000
-    );
-  };
   return (
     <div>
-      {showAlert.show && (
-        <Alert
-          variant='gradient'
-          color={showAlert.type === 'success' ? 'green' : 'red'}
-          className='mb-4 fixed w-auto top-5 right-0 z-50'
-        >
-          {showAlert.message}
-        </Alert>
-      )}
+      {msg && <Alert className='w-auto fixed right-2 top-4' color='red'>{msg}</Alert>}
       <div className='min-h-screen bg-gray-200 py-[2em]'>
         <div className='mx-auto max-w-md rounded-lg border border-gray-100 bg-white p-6 shadow-md'>
           <h2 className='text-lg font-semibold'>Cập nhật chỉ số cơ thể</h2>
@@ -75,7 +71,7 @@ const CustomerEditChildIndex = () => {
             Chỉnh sửa thông tin chỉ số cơ thể
           </p>
 
-          <form onSubmit={handleSubmit} className='mt-4 space-y-4'>
+          <form onSubmit={formik.handleSubmit} className='mt-4 space-y-4'>
             <div>
               <label className='block text-sm font-medium text-gray-700'>
                 Chiều cao (cm)
@@ -85,16 +81,18 @@ const CustomerEditChildIndex = () => {
                   type='number'
                   step='0.1'
                   name='height'
-                  value={formData.height}
-                  onChange={handleChange}
+                  value={formik.values.height}
+                  onChange={formik.handleChange}
                   placeholder='Nhập chiều cao'
                   className='w-full rounded-md border-gray-300 px-3 py-2'
-                  required
                 />
                 <span className='absolute inset-y-0 right-3 flex items-center text-gray-400'>
                   cm
                 </span>
               </div>
+              {formik.errors.height && (
+                <p className='text-red-500 text-xs mt-1'>{formik.errors.height}</p>
+              )}
             </div>
 
             <div>
@@ -106,16 +104,18 @@ const CustomerEditChildIndex = () => {
                   type='number'
                   step='0.1'
                   name='weight'
-                  value={formData.weight}
-                  onChange={handleChange}
+                  value={formik.values.weight}
+                  onChange={formik.handleChange}
                   placeholder='Nhập cân nặng'
                   className='w-full rounded-md border-gray-300 px-3 py-2'
-                  required
                 />
                 <span className='absolute inset-y-0 right-3 flex items-center text-gray-400'>
                   kg
                 </span>
               </div>
+              {formik.errors.weight && (
+                <p className='text-red-500 text-xs mt-1'>{formik.errors.weight}</p>
+              )}
             </div>
 
             <div>
@@ -127,16 +127,18 @@ const CustomerEditChildIndex = () => {
                   type='number'
                   step='0.1'
                   name='headCircumference'
-                  value={formData.headCircumference}
-                  onChange={handleChange}
+                  value={formik.values.headCircumference}
+                  onChange={formik.handleChange}
                   placeholder='Nhập vòng đầu'
                   className='w-full rounded-md border-gray-300 px-3 py-2'
-                  required
                 />
                 <span className='absolute inset-y-0 right-3 flex items-center text-gray-400'>
                   cm
                 </span>
               </div>
+              {formik.errors.headCircumference && (
+                <p className='text-red-500 text-xs mt-1'>{formik.errors.headCircumference}</p>
+              )}
             </div>
 
             <div>
@@ -145,12 +147,15 @@ const CustomerEditChildIndex = () => {
               </label>
               <textarea
                 name='note'
-                value={formData.note}
-                onChange={handleChange}
+                value={formik.values.note}
+                onChange={formik.handleChange}
                 placeholder='Nhập ghi chú (nếu có)'
                 className='w-full rounded-md border-gray-300 px-3 py-2'
                 rows={3}
               />
+              {formik.errors.note && (
+                <p className='text-red-500 text-xs mt-1'>{formik.errors.note}</p>
+              )}
             </div>
 
             <div className='flex space-x-3'>

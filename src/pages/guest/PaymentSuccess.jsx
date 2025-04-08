@@ -18,11 +18,9 @@ const PaymentSuccess = () => {
         const response = await CheckPaymentStatusAPI(orderId);
         if (response?.data?.success === true) {
           setStatus('success');
-          decrementTime();
+          // decrementTime();
+          localStorage.setItem('role', 'Member');
           setMessage('Thanh toán thành công!');
-          setTimeout(() => {
-            navigate('/customer/membership');
-          }, 3000);
         } else {
           setStatus('failed');
           setMessage('Thanh toán thất bại. Vui lòng thử lại.');
@@ -37,17 +35,17 @@ const PaymentSuccess = () => {
     checkPaymentStatus();
   }, [orderId, navigate]);
 
-  const decrementTime = () => {
-    const rs = setInterval(() => {
-      setTime((time) => {
-        if (time === 1) {
-          clearInterval(rs);
-          return 1;
-        }
-        return time - 1;
-      });
-    }, 1000);
-  };
+  // const decrementTime = () => {
+  //   const rs = setInterval(() => {
+  //     setTime((time) => {
+  //       if (time === 1) {
+  //         clearInterval(rs);
+  //         return 1;
+  //       }
+  //       return time - 1;
+  //     });
+  //   }, 1000);
+  // };
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gray-50'>
@@ -60,10 +58,12 @@ const PaymentSuccess = () => {
                 Thanh toán thành công!
               </h2>
               <p className='mt-2 text-gray-600'>{message}</p>
-              <p className='mt-2 text-sm text-gray-500'>
-                Bạn sẽ được chuyển hướng về trang gói thành viên sau {time}
-                giây...
-              </p>
+              <button
+                onClick={() => navigate('/customer')}
+                className='mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
+              >
+                Quay lại trang chủ
+              </button>
             </>
           )}
 

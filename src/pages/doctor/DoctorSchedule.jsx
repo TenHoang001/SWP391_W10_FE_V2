@@ -121,14 +121,23 @@ const DoctorSchedule = () => {
   });
 
   const getSlotColor = (slot) => {
-    console.log("slot", slot);
-    if (!slot.exists) return 'bg-gray-50 border-gray-100 border-[2px] border-solid';
-    return slot.isAvailable ? 'bg-green-300 border-gray-100 border-[2px] border-solid' : slot.status === "Available" ? 'bg-red-100 border-gray-100 border-[2px] border-solid' : "bg-cyan-100 border-gray-100 border-[2px] border-solid";
+    console.log('slot', slot);
+    if (!slot.exists)
+      return 'bg-gray-50 border-gray-100 border-[2px] border-solid';
+    return slot.isAvailable
+      ? 'bg-green-300 border-gray-100 border-[2px] border-solid'
+      : slot.status === 'Pending'
+      ? 'bg-red-100 border-gray-100 border-[2px] border-solid'
+      : 'bg-cyan-100 border-gray-100 border-[2px] border-solid';
   };
 
   const getSlotText = (slot) => {
     if (!slot.exists) return '';
-    return slot.isAvailable ? 'Chưa có cuộc hẹn' :  slot.status === "Available" ? 'Đã có cuộc hẹn' : "hoàn thành";
+    return slot.isAvailable
+      ? 'Chưa có cuộc hẹn'
+      : slot.status === 'Pending'
+      ? 'Đã có cuộc hẹn'
+      : 'hoàn thành';
   };
 
   const handleCompleteAppointment = async (appointmentId) => {
@@ -144,13 +153,10 @@ const DoctorSchedule = () => {
     const selectedDate = format(date, 'yyyy-MM-dd');
 
     const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
-    const end = endOfWeek(selectedDate, "yyyy-MM-dd");
+    const end = endOfWeek(selectedDate, 'yyyy-MM-dd');
     return appointments.filter((appointment) => {
       const appointmentDate = new Date(appointment.appointmentDate);
-      return (
-        appointmentDate >= start &&
-        appointmentDate <= end
-      );
+      return appointmentDate >= start && appointmentDate <= end;
     });
   };
 
@@ -222,7 +228,11 @@ const DoctorSchedule = () => {
                         >
                           <p
                             className={
-                              slot.isAvailable ? 'text-white' : slot.status === "Available" ? 'text-red-400' : "text-cyan-400"
+                              slot.isAvailable
+                                ? 'text-white'
+                                : slot.status === 'Pending'
+                                ? 'text-red-400'
+                                : 'text-cyan-400'
                             }
                           >
                             {getSlotText(slot)}

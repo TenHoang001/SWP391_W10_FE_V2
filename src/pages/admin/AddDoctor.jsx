@@ -58,7 +58,7 @@ const AddDoctor = () => {
       address: yup.string().required('Địa chỉ là bắt buộc'),
       specialization: yup.string().required('Chuyên khoa là bắt buộc'),
       qualification: yup.string().required('Bằng cấp là bắt buộc'),
-      licenseNumber: yup.string().required('Số giấy phép là bắt buộc'),
+      licenseNumber: yup.string().required('Số giấy phép là bắt buộc').matches("^[đĐêÊÔôa-zA-Z0-9]{3,10}/[a-zA-Z0-9ĐđÊêÔô]{1,10}-[a-zA-Z0-99ĐđÊêÔô]{1,10}$", "giấy phép hành nghề có dạng EX: 05446/HCM-GPHĐ"),
       experience: yup
         .number()
         .min(0, 'Số năm kinh nghiệm không hợp lệ')
@@ -75,7 +75,7 @@ const AddDoctor = () => {
           setTimeout(() => navigate('/admin/doctors'), 2000);
         }
       } catch (error) {
-        showNotification('Lỗi khi thêm bác sĩ', 'error');
+        showNotification(error.response.data.message, 'error');
       }
     },
   });
@@ -297,7 +297,7 @@ const AddDoctor = () => {
 
             <div className='bg-gray-50/50 p-4 rounded-xl hover:bg-gray-50 transition-all duration-300'>
               <label className='block text-sm font-semibold text-gray-700 mb-1.5'>
-                Số giấy phép
+                Số giấy phép hành nghề
               </label>
               <input
                 type='text'
@@ -316,7 +316,7 @@ const AddDoctor = () => {
 
             <div className='bg-gray-50/50 p-4 rounded-xl hover:bg-gray-50 transition-all duration-300'>
               <label className='block text-sm font-semibold text-gray-700 mb-1.5'>
-                Kinh nghiệm (năm)
+                Kinh nghiệm thực tế (năm)
               </label>
               <input
                 type='number'

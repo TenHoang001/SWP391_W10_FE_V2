@@ -16,8 +16,10 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { CreatePaymentAPI } from '../../api/Payment';
+import { getAllMembership } from '../../api/MenbershipAPI';
 
 const HomePage = () => {
+  const [membership, setMembership] = useState([]);
   const [user, setUser] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
   const userInfo = localStorage.getItem('user');
@@ -26,7 +28,13 @@ const HomePage = () => {
 
   useEffect(() => {
     setUser(useObject);
+    HandleGetAllMembership();
   }, []);
+
+  const HandleGetAllMembership = async () => {
+    const response = await getAllMembership();
+    setMembership(response);
+  };
 
   const userRole = useObject?.role;
   console.log(userRole);
@@ -69,6 +77,13 @@ const HomePage = () => {
       console.error('Payment creation failed:', error);
       alert('Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại sau.');
     }
+  };
+
+  const formatCurrency = (money) => {
+    return new Intl.NumberFormat('vi', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(money);
   };
 
   return (
@@ -146,7 +161,10 @@ const HomePage = () => {
             <div className='space-y-[1em]'>
               <p className='text-2xl font-bold'>Gói standard</p>
               <p>
-                <b className='text-2xl text-blue-500'>599.000</b>/năm
+                <b className='text-2xl text-blue-500'>
+                  {formatCurrency(membership[0]?.price)}
+                </b>
+                /năm
               </p>
               <p className='flex items-center gap-2'>
                 <Check className='text-green-500' />
@@ -164,6 +182,10 @@ const HomePage = () => {
                 <Check className='text-green-500' />
                 Theo dõi chế độ ăn uống
               </p>
+              <li className='flex items-center gap-2'>
+                <Check className='text-green-500' />
+                <span>Xem biểu đồ và những lời khuyên hữu ích</span>
+              </li>
             </div>
             <button
               onClick={() => handleRegisterMembership(1)}
@@ -174,11 +196,14 @@ const HomePage = () => {
           </div>
 
           {/* GÓI VIP */}
-          <div className='space-y-7 rounded-2xl border bg-gradient-to-r from-purple-700 via-purple-500 to-blue-500 px-[3em] pt-[2em] pb-[3em] text-xl text-white shadow-xl'>
+          <div className='space-y-9 rounded-2xl border bg-gradient-to-r from-purple-700 via-purple-500 to-blue-500 px-[3em] pt-[2em] pb-[3em] text-xl text-white shadow-xl'>
             <div className='space-y-3'>
               <p className='text-2xl font-bold'>Gói Vip</p>
               <p>
-                <b className='text-2xl'>999.000</b>/năm
+                <b className='text-2xl'>
+                  {formatCurrency(membership[1]?.price)}
+                </b>
+                /năm
               </p>
               <p className='flex items-center gap-2'>
                 <Check className='text-green-500' />
@@ -290,22 +315,23 @@ const HomePage = () => {
 
       {/* Dialog */}
       {showDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="relative w-96 rounded-lg bg-white p-6 shadow-xl">
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
+          <div className='relative w-96 rounded-lg bg-white p-6 shadow-xl'>
             <button
               onClick={() => setShowDialog(false)}
-              className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+              className='absolute right-4 top-4 text-gray-500 hover:text-gray-700'
             >
               <X size={20} />
             </button>
-            <h3 className="mb-4 text-xl font-bold">Thông báo</h3>
-            <p className="mb-4 text-gray-600">
-              Bạn cần đăng nhập để mua gói thành viên. Vui lòng đăng nhập hoặc đăng ký tài khoản.
+            <h3 className='mb-4 text-xl font-bold'>Thông báo</h3>
+            <p className='mb-4 text-gray-600'>
+              Bạn cần đăng nhập để mua gói thành viên. Vui lòng đăng nhập hoặc
+              đăng ký tài khoản.
             </p>
-            <div className="flex justify-end gap-4">
+            <div className='flex justify-end gap-4'>
               <button
                 onClick={() => setShowDialog(false)}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100"
+                className='rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100'
               >
                 Hủy
               </button>
@@ -314,19 +340,19 @@ const HomePage = () => {
                   setShowDialog(false);
                   navigate('/login');
                 }}
-                className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                className='rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600'
               >
                 Đăng nhập
               </button>
             </div>
-            <p className="mt-4 text-center text-sm text-gray-500">
+            <p className='mt-4 text-center text-sm text-gray-500'>
               Đã có tài khoản?{' '}
               <button
                 onClick={() => {
                   setShowDialog(false);
                   navigate('/customer/membership');
                 }}
-                className="text-blue-500 hover:text-blue-600"
+                className='text-blue-500 hover:text-blue-600'
               >
                 Xem gói thành viên
               </button>

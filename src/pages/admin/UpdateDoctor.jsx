@@ -36,7 +36,7 @@ const UpdateDoctor = () => {
       address: yup.string().required("Địa chỉ là bắt buộc"),
       specialization: yup.string().required("Chuyên khoa là bắt buộc"),
       qualification: yup.string().required("Bằng cấp là bắt buộc"),
-      licenseNumber: yup.string().required("Số giấy phép là bắt buộc"),
+      licenseNumber: yup.string().required('Số giấy phép là bắt buộc').matches("^[đĐêÊÔôa-zA-Z0-9]{3,10}/[a-zA-Z0-9ĐđÊêÔô]{1,10}-[a-zA-Z0-99ĐđÊêÔô]{1,10}$", "giấy phép hành nghề có dạng EX: 05446/HCM-GPHĐ"),
       experience: yup
         .number()
         .min(0, "Số năm kinh nghiệm không hợp lệ")
@@ -50,7 +50,7 @@ const UpdateDoctor = () => {
           setTimeout(() => navigate('/admin/doctors'), 2000);
         }
       } catch (error) {
-        showNotification('Lỗi khi cập nhật bác sĩ', 'error');
+        showNotification(error.response.data.message, 'error');
       }
     },
   });
