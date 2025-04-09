@@ -25,6 +25,7 @@ const BookingDoctor = () => {
   const [selectedDate, setSelectedDate] = useState(
     format(new Date(), 'yyyy-MM-dd')
   );
+  const [description, setDescription] = useState('');
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [scheduleId, setScheduleId] = useState(null);
@@ -78,7 +79,7 @@ const BookingDoctor = () => {
       );
       const schedule = response.data.schedules.find(
         (s) => s.workDate === format(selectedDate, 'yyyy-MM-dd')
-      ); //loại bỏ ngày không làm việc
+      ); 
 
       if (schedule) {
         setScheduleId(schedule.scheduleId); //lấy id lịch bác sĩ
@@ -105,7 +106,7 @@ const BookingDoctor = () => {
         userId: parseInt(userId),
         childId: parseInt(selectedChild),
         slotTime: selectedSlot + '',
-        description: '',
+        description: description,
       };
 
       const response = await CreateAppointmentAPI(appointmentData);
@@ -202,6 +203,16 @@ const BookingDoctor = () => {
         </div>
 
         <div>
+          <label className='block mb-2'>Mô tả vấn đề</label>
+          <textarea 
+            type='text'
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className='w-full p-2 border rounded resize-none h-[120px]'
+          />
+        </div>
+
+        <div>
           <label className='block mb-2'>Chọn giờ</label>
           <div className='grid grid-cols-4 gap-4'>
             {availableSlots.map((slot) => (
@@ -210,7 +221,7 @@ const BookingDoctor = () => {
                 variant={selectedSlot === slot.slotTime ? 'filled' : 'outlined'}
                 onClick={() => setSelectedSlot(slot.slotId)}
               >
-                {slot.startTime} - {slot.endTime}{' '}
+                {slot.startTime} - {slot.endTime}
               </Button>
             ))}
           </div>

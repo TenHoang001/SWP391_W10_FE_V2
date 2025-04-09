@@ -9,8 +9,11 @@ import {
   Shield,
   CheckCircle,
   XCircle,
+  KeyIcon,
 } from 'lucide-react';
 import { UpdateUserProfileAPI } from '../../api/UserAPI';
+import { activeMembership } from '../../api/MenbershipAPI';
+import { formatDate } from 'date-fns';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
@@ -22,6 +25,13 @@ const UserProfile = () => {
     type: 'success',
   });
   const navigate = useNavigate();
+  const role = localStorage.getItem('role');
+  const [active, setActive] = useState([]);
+  const userId = localStorage.getItem('userId');
+
+  useEffect(() => {
+    getActive();
+  }, []);
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -33,6 +43,13 @@ const UserProfile = () => {
       navigate('/login');
     }
   }, [navigate]);
+
+  const getActive = async () => {
+    const rs = await activeMembership(userId);
+    setActive(rs);
+  };
+
+  console.log(active);
 
   const showNotification = (message, type = 'success') => {
     setShowAlert({ show: true, message, type });
@@ -54,10 +71,7 @@ const UserProfile = () => {
 
   const handleUpdateProfile = async () => {
     if (!validateName(editedUser.fullName)) {
-      showNotification(
-        'Tên không hợp lệ!',
-        'error'
-      );
+      showNotification('Tên không hợp lệ!', 'error');
       return;
     }
 
@@ -182,6 +196,19 @@ const UserProfile = () => {
               <span className='text-gray-900'>{user.address}</span>
             )}
           </div>
+
+          {role === 'Member' && (
+            <div className='flex items-center gap-3 border-b pb-2'>
+              <KeyIcon className='h-5 w-5 text-blue-500' />
+              <span className='text-gray-700 font-semibold'>
+                Thời hạn {active?.membershipName}:
+              </span>
+              <span className='text-gray-700 font-semibold'>
+                {active?.startDate?.split('T')[0]} -{' '}
+                {active?.endDate?.split('T')[0]}
+              </span>
+            </div>
+          )}
 
           <div className='flex items-center gap-3 border-b pb-2'>
             <Shield className='h-5 w-5 text-blue-500' />

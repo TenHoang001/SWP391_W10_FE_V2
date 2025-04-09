@@ -6,8 +6,9 @@ const END_POINT = {
   GET_BY_DOCTOR: (doctorId) => `Appointment/GetAppoinmentByDoctor/${doctorId}`,
   GET_BY_ID: (appointmentId) => `Appointment/GetAppoinmentBy/${appointmentId}`,
   CREATE: 'Appointment/User create the appoinment',
-  CANCEL: (appointmentId) => `Appointment/${appointmentId}/User cancel the appoinment`,
-  COMPLETE: (appointmentId) => `Appointment/${appointmentId}/Change status to completed`
+  CANCEL: (appointmentId) =>
+    `Appointment/${appointmentId}/User cancel the appoinment`,
+  COMPLETE: (appointmentId, data) => `Appointment/${appointmentId}/Complete`,
 };
 
 // Lấy tất cả appointments
@@ -38,8 +39,8 @@ export const GetAppointmentByIdAPI = async (appointmentId) => {
   return response;
 };
 
-export const CompleteAppointmentAPI = async (appointmentId) => {
-  const response = await AxiosAPI.post(END_POINT.COMPLETE(appointmentId));
+export const CompleteAppointmentAPI = async (appointmentId, data) => {
+  const response = await AxiosAPI.post(END_POINT.COMPLETE(appointmentId), data);
   return response;
 };
 
@@ -49,11 +50,15 @@ export const CancelAppointmentAPI = async (appointmentId) => {
 };
 
 // Lấy appointments theo khoảng thời gian
-export const GetAppointmentsByDateRangeAPI = async (userId, startDate, endDate) => {
+export const GetAppointmentsByDateRangeAPI = async (
+  userId,
+  startDate,
+  endDate
+) => {
   const response = await AxiosAPI.get(
     `${END_POINT.GET_BY_USER(userId)}/daterange`,
     {
-      params: { startDate, endDate }
+      params: { startDate, endDate },
     }
   );
   return response;
@@ -65,4 +70,4 @@ export const GetDoctorAppointmentsByDateAPI = async (doctorId, date) => {
     `${END_POINT.GET_BY_DOCTOR(doctorId)}/date/${date}`
   );
   return response;
-}; 
+};

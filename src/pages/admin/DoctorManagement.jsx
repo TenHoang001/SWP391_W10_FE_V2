@@ -99,9 +99,9 @@ const DoctorManagement = () => {
               <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase'>
                 Chuyên khoa
               </th>
-              <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase'>
+              {/* <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase'>
                 Trạng thái
-              </th>
+              </th> */}
               <th className='px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase'>
                 Thao tác
               </th>
@@ -120,9 +120,9 @@ const DoctorManagement = () => {
                 <td className='px-6 py-4'>{doctor.email}</td>
                 <td className='px-6 py-4'>{doctor.phoneNumber}</td>
                 <td className='px-6 py-4'>{doctor.specialization}</td>
-                <td className='px-6 py-4'>
+                {/* <td className='px-6 py-4'>
                   {doctor.status ? 'Hoạt động' : 'Không hoạt động'}
-                </td>
+                </td> */}
                 <td className='px-6 py-4 text-right flex items-center justify-end'>
                   <Link
                     to={`/admin/consultationManager/${doctor.userId}`}
@@ -148,7 +148,7 @@ const DoctorManagement = () => {
                       <Pencil className='h-5 w-5' />
                     </Tooltip>
                   </Link>
-                  {doctor.status ? (
+                  {/* {doctor.status ? (
                     <Tooltip content='khóa tài khoản'>
                       <button
                         onClick={() => handleBanDoctor(doctor.userId, false)}
@@ -166,7 +166,7 @@ const DoctorManagement = () => {
                         <KeyRound className='h-5 w-5' />
                       </button>
                     </Tooltip>
-                  )}
+                  )} */}
                 </td>
               </tr>
             ))}

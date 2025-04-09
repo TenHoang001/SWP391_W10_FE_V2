@@ -7,6 +7,9 @@ import {
   button,
   Tooltip,
   Alert,
+  Dialog,
+  DialogHeader,
+  DialogBody,
 } from '@material-tailwind/react';
 import {
   CancelAppointmentAPI,
@@ -14,12 +17,14 @@ import {
 } from '../../api/AppointmentAPI';
 import { format, formatDate, subMinutes } from 'date-fns';
 import { parse, addMinutes, isAfter, isBefore } from 'date-fns';
-import { Delete, VideoIcon } from 'lucide-react';
+import { Delete, NotebookIcon, VideoIcon } from 'lucide-react';
 
 const BookingHistory = () => {
   const [appointments, setAppointments] = useState([]);
   const [error, setError] = useState(null);
   const userId = localStorage.getItem('userId');
+  const [selectedNote, setSelectedNote] = useState('');
+  const [showNoteDialog, setShowNoteDialog] = useState(false);
   const [notification, setNotification] = useState({
     message: '',
     type: 'success',
@@ -73,6 +78,11 @@ const BookingHistory = () => {
     setTimeout(() => {
       setNotification({ message: '', type: 'success', show: false });
     }, 1000);
+  };
+
+  const handleOpenNote = (note) => {
+    setSelectedNote(note);
+    setShowNoteDialog(true);
   };
 
   const isCurrentTime = (dateStr, timeStr) => {
@@ -149,6 +159,15 @@ const BookingHistory = () => {
                     color='blue-gray'
                     className='font-semibold leading-none opacity-70'
                   >
+                    Mô tả
+                  </Typography>
+                </th>
+                <th className='border-b border-blue-gray-100 bg-blue-gray-50 p-4'>
+                  <Typography
+                    variant='small'
+                    color='blue-gray'
+                    className='font-semibold leading-none opacity-70'
+                  >
                     Trạng thái
                   </Typography>
                 </th>
@@ -197,6 +216,11 @@ const BookingHistory = () => {
                     </Typography>
                   </td>
                   <td className='p-4 border-b border-blue-gray-50'>
+                    <Typography variant='small' color='blue-gray'>
+                      {appointment.description}
+                    </Typography>
+                  </td>
+                  <td className='p-4 border-b border-blue-gray-50'>
                     <Chip
                       size='sm'
                       variant='ghost'
@@ -232,7 +256,7 @@ const BookingHistory = () => {
                           <Typography variant='small'>Tham gia Meet</Typography>
                         </a>
                       ) : (
-                        <Tooltip content='Chưa đến hoặc quá hạn tư vấn'>
+                        <Tooltip content='Qúa hạn hoặc chưa đến giờ tư vấn'>
                           <a
                             target='_blank'
                             rel='noopener noreferrer'
@@ -259,6 +283,16 @@ const BookingHistory = () => {
                         </Tooltip>
                       </button>
                     )}
+                    {appointment.status === 'Completed' && (
+                      <button
+                        className='flex gap-2 text-red-200'
+                        onClick={() => handleOpenNote(appointment.note)}
+                      >
+                        <Tooltip content='ghi chú'>
+                          <NotebookIcon className='h-5 w-5' />
+                        </Tooltip>
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -266,7 +300,12 @@ const BookingHistory = () => {
           </table>
         </div>
       </Card>
-
+      {showNoteDialog && (
+        <Dialog open={showNoteDialog} handler={() => setShowNoteDialog(false)}>
+          <DialogHeader><p>Ghi chú</p> </DialogHeader>
+          <DialogBody>{selectedNote || 'Không có ghi chú'}</DialogBody>
+        </Dialog>
+      )}
       {error && <div className='mt-4 text-center text-red-500'>{error}</div>}
     </div>
   );

@@ -209,8 +209,8 @@ const CustomerChildRecord = () => {
               <thead className='bg-gray-100 text-xs uppercase text-gray-700'>
                 <tr>
                   <th className='px-4 py-3'>Date</th>
-                  <th className='px-4 py-3'>Weight (kg)</th>
                   <th className='px-4 py-3'>Height (cm)</th>
+                  <th className='px-4 py-3'>Weight (kg)</th>
                   <th className='px-4 py-3'>Head Circumference (cm)</th>
                   <th className='px-4 py-3'>BMI</th>
                   <th className='px-4 py-3'>Note</th>
@@ -226,8 +226,8 @@ const CustomerChildRecord = () => {
                     <td className='px-4 py-3'>
                       {record.createdAt.split('T')[0]}
                     </td>
-                    <td className='px-4 py-3'>{record.weight}</td>
                     <td className='px-4 py-3'>{record.height}</td>
+                    <td className='px-4 py-3'>{record.weight}</td>
                     <td className='px-4 py-3'>{record.headCircumference}</td>
                     <td className='px-4 py-3'>{record.bmi}</td>
                     <td className='px-4 py-3'>{record.note || '-'}</td>

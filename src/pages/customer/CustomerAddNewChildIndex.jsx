@@ -1,15 +1,34 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Save, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CreateGrowthRecordAPI } from '../../api/GrowthRecordAPI';
+import {
+  CreateGrowthRecordAPI,
+  GetGrowthRecordsByChildIdAPI,
+  UpdateGrowthRecordAPI,
+} from '../../api/GrowthRecordAPI';
 import { Alert } from '@material-tailwind/react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { format, formatDate } from 'date-fns';
 
 const CustomerAddNewChildIndex = () => {
   const navigate = useNavigate();
   const { childId } = useParams();
   const [msg, setMsg] = useState('');
+  const [records, setRecords] = useState([]);
+
+  useEffect(() => {
+    loadGrowthRecords();
+  }, [childId]);
+
+  const loadGrowthRecords = async () => {
+    try {
+      const response = await GetGrowthRecordsByChildIdAPI(childId);
+      setRecords(response.data);
+    } catch (error) {
+      showNotification('Lỗi khi tải dữ liệu', 'error');
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -36,17 +55,47 @@ const CustomerAddNewChildIndex = () => {
         .min(30, 'Chu vi đầu phải từ 30cm đến 100cm')
         .max(100, 'Chu vi đầu phải từ 30cm đến 100cm')
         .required('Chu vi đầu là bắt buộc'),
-      createdAt: yup.date().required('Ngày đo là bắt buộc'),
+      createdAt: yup
+        .date()
+        .max(
+          new Date(),
+          `Ngày đo không được lớn hơn ngày hôm nay: ${format(
+            new Date(),
+            'dd-MM-yyyy'
+          )}`
+        )
+        .required('Ngày đo là bắt buộc'),
       note: yup.string(),
     }),
     onSubmit: async (values) => {
+      const newDate = new Date(values.createdAt).toISOString().split('T')[0];
+
+      const existedRecord = records.find(
+        (record) => record.createdAt.split('T')[0] === newDate
+      );
       try {
         const dataToSubmit = {
           ...values,
           createdAt: new Date(values.createdAt).toISOString(),
         };
-        await CreateGrowthRecordAPI(dataToSubmit);
-        navigate(`/customer/children/${childId}`);
+        if (existedRecord) {
+          const confirmUpdate = window.confirm(
+            `Đã tồn records vào ngày ${formatDate(
+              existedRecord.createdAt,
+              'dd-MM-yyyy'
+            )}, Bạn có muốn cập nhật không?`
+          );
+          if (confirmUpdate) {
+            delete dataToSubmit.createdAt;
+            await UpdateGrowthRecordAPI(existedRecord.recordId, dataToSubmit);
+            navigate(`/customer/children/${childId}`);
+          } else {
+            return;
+          }
+        } else {
+          await CreateGrowthRecordAPI(dataToSubmit);
+          navigate(`/customer/children/${childId}`);
+        }
       } catch (error) {
         setMsg(error.response.data.message);
       }
@@ -55,7 +104,11 @@ const CustomerAddNewChildIndex = () => {
 
   return (
     <div>
-      {msg && <Alert className='w-auto fixed right-2 top-4' color='red'>{msg}</Alert>}
+      {msg && (
+        <Alert className='w-auto fixed right-2 top-4' color='red'>
+          {msg}
+        </Alert>
+      )}
       <div className='min-h-screen bg-gray-200 py-[2em]'>
         <div className='mx-auto max-w-md rounded-lg border border-gray-100 bg-white p-6 shadow-md'>
           <h2 className='text-lg font-semibold'>Thêm chỉ số cơ thể</h2>
@@ -76,7 +129,9 @@ const CustomerAddNewChildIndex = () => {
                 className='w-full rounded-md border-gray-300 px-3 py-2'
               />
               {formik.errors.createdAt && (
-                <p className='text-red-500 text-xs mt-1'>{formik.errors.createdAt}</p>
+                <p className='text-red-500 text-xs mt-1'>
+                  {formik.errors.createdAt}
+                </p>
               )}
             </div>
 
@@ -99,7 +154,9 @@ const CustomerAddNewChildIndex = () => {
                 </span>
               </div>
               {formik.errors.height && (
-                <p className='text-red-500 text-xs mt-1'>{formik.errors.height}</p>
+                <p className='text-red-500 text-xs mt-1'>
+                  {formik.errors.height}
+                </p>
               )}
             </div>
 
@@ -122,7 +179,9 @@ const CustomerAddNewChildIndex = () => {
                 </span>
               </div>
               {formik.errors.weight && (
-                <p className='text-red-500 text-xs mt-1'>{formik.errors.weight}</p>
+                <p className='text-red-500 text-xs mt-1'>
+                  {formik.errors.weight}
+                </p>
               )}
             </div>
 
@@ -145,7 +204,9 @@ const CustomerAddNewChildIndex = () => {
                 </span>
               </div>
               {formik.errors.headCircumference && (
-                <p className='text-red-500 text-xs mt-1'>{formik.errors.headCircumference}</p>
+                <p className='text-red-500 text-xs mt-1'>
+                  {formik.errors.headCircumference}
+                </p>
               )}
             </div>
 
@@ -162,7 +223,9 @@ const CustomerAddNewChildIndex = () => {
                 rows={3}
               />
               {formik.errors.note && (
-                <p className='text-red-500 text-xs mt-1'>{formik.errors.note}</p>
+                <p className='text-red-500 text-xs mt-1'>
+                  {formik.errors.note}
+                </p>
               )}
             </div>
 

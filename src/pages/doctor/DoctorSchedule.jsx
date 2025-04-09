@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Typography, Button, Tooltip } from '@material-tailwind/react';
+import {
+  Card,
+  Typography,
+  Button,
+  Tooltip,
+  button,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+} from '@material-tailwind/react';
 import {
   GetDoctorWeekScheduleAPI,
   GetDefaultSlotsAPI,
@@ -22,6 +31,7 @@ import {
 } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { GetGrowthRecordsByChildIdAPI } from '../../api/GrowthRecordAPI';
+import { Notebook } from 'lucide-react';
 
 const DoctorSchedule = () => {
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -30,7 +40,8 @@ const DoctorSchedule = () => {
   const [appointments, setAppointments] = useState([]);
   const [defaultSlots, setDefaultSlots] = useState([]);
   const [growthRecord, setGrowthRecord] = useState([]);
-
+  const [selectedNote, setSelectedNote] = useState('');
+  const [showNoteDialog, setShowNoteDialog] = useState(false);
   useEffect(() => {
     loadWeekSchedule();
     loadAppointments();
@@ -70,7 +81,6 @@ const DoctorSchedule = () => {
       console.error('Error loading appointments:', error);
     }
   };
-
 
   const loadDefaultSlots = async () => {
     try {
@@ -202,8 +212,22 @@ const DoctorSchedule = () => {
     console.log(isAfter(now, openTime) + ' - ' + isBefore(now, closeTime));
     return isAfter(now, openTime) && isBefore(now, closeTime);
   };
+
+  const handleOpenNote = (note) => {
+    setSelectedNote(note);
+    setShowNoteDialog(true);
+  };
+
   return (
     <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+      {showNoteDialog && (
+        <Dialog open={showNoteDialog} handler={() => setShowNoteDialog(false)}>
+          <DialogHeader>
+            <p>Ghi chú</p>{' '}
+          </DialogHeader>
+          <DialogBody>{selectedNote || 'Không có ghi chú'}</DialogBody>
+        </Dialog>
+      )}
       <h1 className='text-2xl font-bold text-center mb-6'>Lịch làm việc</h1>
 
       <input
@@ -490,6 +514,15 @@ const DoctorSchedule = () => {
                                 </Tooltip>
                               )}
                             </>
+                          )}
+                          {appointment.status === 'Completed' && (
+                            <button
+                              onClick={() => handleOpenNote(appointment.note)}
+                            >
+                              <Tooltip content='ghi chú'>
+                                <Notebook />
+                              </Tooltip>
+                            </button>
                           )}
                         </div>
                       </td>
