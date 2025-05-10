@@ -24,7 +24,7 @@ const Header = () => {
           <Link to={'/'} className='transition hover:text-blue-500'>
             Trang chủ
           </Link>
-          <Link to={'/'} className='transition hover:text-blue-500'>
+          <Link to={'blogs'} className='transition hover:text-blue-500'>
             Blog
           </Link>
           <Link to={'/'} className='transition hover:text-blue-500'>
@@ -69,10 +69,10 @@ const Header = () => {
           </Link>
           <div className='mt-3 flex flex-col gap-2'>
             <button className='rounded-lg border border-blue-500 px-4 py-2 text-blue-500 transition hover:bg-blue-100'>
-              Đăng nhập
+              <Link to={'/login'}>Đăng nhập</Link>
             </button>
             <button className='rounded-lg bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600'>
-              Đăng ký
+              <Link to={'/register'}>Đăng ký</Link>
             </button>
           </div>
         </div>

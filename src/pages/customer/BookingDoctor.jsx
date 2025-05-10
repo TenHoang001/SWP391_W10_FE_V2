@@ -1,176 +1,228 @@
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Select,
   Option,
-  ButtonGroup,
   Dialog,
   DialogHeader,
   DialogBody,
   DialogFooter,
 } from '@material-tailwind/react';
-import React from 'react';
 import { Link } from 'react-router';
+import { CreateAppointmentAPI } from '../../api/AppointmentAPI';
+import { GetAllDoctorsAPI } from '../../api/DoctorAPI';
+import { GetChildrenByUserIdAPI } from '../../api/ChildrenAPI';
+import { GetDoctorWeekScheduleAPI } from '../../api/DoctorScheduleAPI';
+import { format } from 'date-fns';
+import DatePicker from 'react-datepicker';
 
 const BookingDoctor = () => {
-  const [pickDate, setPickDate] = React.useState(null);
-  const handlePickDate = (day) => {
-    setPickDate(day);
+  const [doctors, setDoctors] = useState([]);
+  const [children, setChildren] = useState([]);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [selectedChild, setSelectedChild] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(
+    format(new Date(), 'yyyy-MM-dd')
+  );
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [scheduleId, setScheduleId] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const userId = localStorage.getItem('userId');
+
+  useEffect(() => {
+    loadDoctors();
+    loadChildren();
+    loadDoctorSchedule();
+  }, []);
+
+  useEffect(() => {
+    if (selectedDoctor && selectedDate) {
+      loadDoctorSchedule();
+    }
+  }, [selectedDoctor, selectedDate]);
+
+  const loadDoctors = async () => {
+    try {
+      const response = await GetAllDoctorsAPI();
+      setDoctors(response.data);
+      console.log(response.data);
+    } catch (error) {
+      setError('Lỗi khi tải danh sách bác sĩ');
+    }
   };
-  const [pickTime, setPickTime] = React.useState(null);
-  const handlePickTime = (day) => {
-    setPickTime(day);
+
+  const loadChildren = async () => {
+    try {
+      const response = await GetChildrenByUserIdAPI(userId);
+      setChildren(response.data);
+      console.log(response.data);
+    } catch (error) {
+      setError('Lỗi khi tải danh sách trẻ');
+    }
   };
-  const [isOpen, setIsOpen] = React.useState(false);
-  const handleOpen = () => {
-    setIsOpen(!isOpen);
+
+  const loadDoctorSchedule = async () => {
+    try {
+      const response = await GetDoctorWeekScheduleAPI(
+        selectedDoctor,
+        format(selectedDate, 'yyyy-MM-dd')
+      );
+      const schedule = response.data.schedules.find(
+        (s) => s.workDate === format(selectedDate, 'yyyy-MM-dd')
+      ); //loại bỏ ngày không làm việc
+
+      if (schedule) {
+        setScheduleId(schedule.scheduleId); //lấy id lịch bác sĩ
+        setAvailableSlots(
+          schedule.availableSlots.filter((slot) => slot.isAvailable) //lấy các slot có thể đặt lịch.
+        );
+      } else {
+        setAvailableSlots([]);
+      }
+    } catch (error) {
+      setError('Lỗi khi tải lịch bác sĩ');
+    }
+  };
+
+  const handleBooking = async () => {
+    if (!selectedDoctor || !selectedChild || !selectedSlot || !scheduleId) {
+      setError('Vui lòng chọn đầy đủ thông tin');
+      return;
+    }
+    try {
+      setLoading(true);
+      const appointmentData = {
+        scheduleId: scheduleId,
+        userId: parseInt(userId),
+        childId: parseInt(selectedChild),
+        slotTime: selectedSlot + '',
+        description: '',
+      };
+
+      const response = await CreateAppointmentAPI(appointmentData);
+      if (response?.status) {
+        setIsOpen(true);
+      } else {
+        setError('Có lỗi xảy ra khi đặt lịch');
+      }
+    } catch (error) {
+      alert(error.response.data.message)
+      console.log(1);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <>
-      <div className='flex m-2 min-h-screen flex-col  bg-gray-100'>
-        <div className='mx-4 mt-10 flex h-[10%] w-full items-center bg-white'>
-          <p className='ml-[10%] text-2xl font-semibold'>
-            Đặt lịch khám bác sĩ trực tuyến
-          </p>
+    <div className='max-w-6xl mx-auto px-4 py-8'>
+      <div className='flex justify-end mb-4'>
+        <Link to='/customer/bookingHistory'>
+          <Button className='flex items-center gap-2' color='blue'>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              strokeWidth={1.5}
+              stroke='currentColor'
+              className='w-5 h-5'
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                d='M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
+              />
+            </svg>
+            Lịch sử đặt lịch
+          </Button>
+        </Link>
+      </div>
+
+      <h1 className='text-2xl font-bold text-center mb-6'>
+        Đặt lịch tư vấn trực tuyến
+      </h1>
+
+      <div className='space-y-6 bg-white p-6 rounded-lg shadow'>
+        <div>
+          <label className='block mb-2'>Chọn bác sĩ</label>
+          <Select onChange={(value) => setSelectedDoctor(value)}>
+            {doctors.map((doctor) => (
+              <Option key={doctor.userId} value={doctor.userId}>
+                {doctor.fullName}
+              </Option>
+            ))}
+          </Select>
         </div>
-        <div className='ml-[70%] mt-[3%] h-[8%] w-[20%]'>
-          <Link to={'../bookingHistory'}>
-            <Button className='size-full' color='light-green'>
-              Lịch sử khám bệnh
-            </Button>
-          </Link>
+
+        <div>
+          <label className='block mb-2'>Chọn trẻ</label>
+          <Select onChange={(value) => setSelectedChild(value)}>
+            {children.map((child) => (
+              <Option key={child.childId} value={child.childId}>
+                {child.fullName}
+              </Option>
+            ))}
+          </Select>
         </div>
-        <div className='ml-[20%] mt-[3%] h-fit w-[70%] rounded-2xl bg-white shadow-xl'>
-          <div className='mx-8 my-5 flex flex-col'>
-            <p className=''>Chọn bác sĩ</p>
-            <div className='mt-[2%] w-[80%]'>
-              <Select label='Select Version'>
-                <Option>Nguyeenx Van A</Option>
-                <Option>Tran Van B</Option>
-                <Option>Dinh Thi C</Option>
-                <Option>Tran Minh D</Option>
-                <Option>Ho Van E</Option>
-              </Select>
-            </div>
-            <div className='mt-[5%]'>
-              <p>Chọn ngày và giờ</p>
-              <ButtonGroup fullWidth variant='outlined' className='mt-[2%]'>
-                {['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7 '].map((day) => (
-                  <Button
-                    key={day}
-                    className={`${
-                      pickDate === day ? 'bg-black text-white' : ''
-                    }`}
-                    onClick={() => {
-                      handlePickDate(day);
-                    }}
-                  >
-                    {day}
-                  </Button>
-                ))}
-              </ButtonGroup>
-              <div className='mt-8 flex w-[100%] justify-around gap-4'>
-                {[
-                  '08:00',
-                  '09:00',
-                  '10:00',
-                  '13:00',
-                  '14:00',
-                  '15:00',
-                  '16:00',
-                ].map((time) => (
-                  <Button
-                    key={time}
-                    className={`${
-                      pickTime === time ? 'bg-black text-white' : ''
-                    } w-[15%]`}
-                    variant='outlined'
-                    onClick={() => {
-                      handlePickTime(time);
-                    }}
-                    disabled={
-                      time === '09:00' || time === '13:00' || time === '14:00'
-                    }
-                  >
-                    {time}
-                  </Button>
-                ))}
-              </div>
-            </div>
-            <div className='mt-16 flex w-[100%] justify-center'>
+
+        <div>
+          <label className='block mb-2'>Chọn ngày</label>
+          <input
+            type='date'
+            value={selectedDate}
+            onChange={(e) =>
+              setSelectedDate(format(e.target.value, 'yyyy-MM-dd'))
+            }
+            className='w-full p-2 border rounded'
+          />
+        </div>
+
+        <div>
+          <label className='block mb-2'>Chọn giờ</label>
+          <div className='grid grid-cols-4 gap-4'>
+            {availableSlots.map((slot) => (
               <Button
-                className='h-[20%] w-[40%] bg-light-blue-600 text-xl'
-                onClick={handleOpen}
+                key={slot.slotId}
+                variant={selectedSlot === slot.slotTime ? 'filled' : 'outlined'}
+                onClick={() => setSelectedSlot(slot.slotId)}
               >
-                Xác nhận đặt lịch
+                {slot.startTime} - {slot.endTime}{' '}
               </Button>
-              <Dialog
-                open={isOpen}
-                handler={handleOpen}
-                className='flex flex-col'
-              >
-                <DialogHeader className='mt-6 flex justify-center'>
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    strokeWidth={1.5}
-                    stroke='currentColor'
-                    className='size-[20%] rounded-full bg-light-green-500 text-white'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      d='M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
-                    />
-                  </svg>
-                </DialogHeader>
-                <DialogBody className='flex flex-col items-center justify-center'>
-                  <p className='text-3xl font-bold text-black'>
-                    Đặt lịch thành công!
-                  </p>
-                  <p className='text-lg text-gray-700'>
-                    Cám ơn bạn đã đặt lịch hẹn
-                  </p>
-                </DialogBody>
-                <DialogFooter className='flex flex-col items-center justify-center gap-6'>
-                  <Link
-                    to={'../bookingHistory'}
-                    className='flex w-full justify-center'
-                  >
-                    <Button className='w-[70%] bg-deep-purple-300 py-6 text-black'>
-                      Xem lịch khám
-                    </Button>
-                  </Link>
-                  <Link to={'/customer'} className='flex w-full justify-center'>
-                    <Button
-                      className='mb-6 flex w-[70%] items-center justify-center bg-white py-4 text-black'
-                      variant='outlined'
-                    >
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        fill='none'
-                        viewBox='0 0 24 24'
-                        strokeWidth={1.5}
-                        stroke='currentColor'
-                        className='size-6'
-                      >
-                        <path
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                          d='m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25'
-                        />
-                      </svg>
-                      Về trang chủ
-                    </Button>
-                  </Link>
-                </DialogFooter>
-              </Dialog>
-            </div>
+            ))}
+          </div>
+          <div>
+            {availableSlots.length === 0 && selectedDoctor && selectedDate && (
+              <p className='text-center font-semibold'>
+                Bác sĩ không có lịch trong ngày{' '}
+                {format(selectedDate, 'dd-MM-yyyy')}
+              </p>
+            )}
           </div>
         </div>
+
+        {/* {error && <div className='text-red-500 text-center'>{error}</div>} */}
+
+        <Button className='w-full' onClick={handleBooking} disabled={loading}>
+          {loading ? 'Đang xử lý...' : 'Xác nhận đặt lịch'}
+        </Button>
       </div>
-    </>
+
+      <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
+        <DialogHeader>Đặt lịch thành công!</DialogHeader>
+        <DialogBody>Cảm ơn bạn đã đặt lịch hẹn</DialogBody>
+        <DialogFooter>
+          <Link to='/customer/bookingHistory'>
+            <Button>Xem lịch khám</Button>
+          </Link>
+          <Link to='/customer'>
+            <Button variant='outlined'>Về trang chủ</Button>
+          </Link>
+        </DialogFooter>
+      </Dialog>
+    </div>
   );
 };
 

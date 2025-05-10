@@ -4,10 +4,12 @@ import Footer from '../components/guest/Footer';
 
 const LayoutCustomer = () => {
   return (
-    <div>
+    <div className='flex flex-col min-h-screen'>
       <Header />
-      <Outlet />
-      <Footer />
+      <div className='flex-grow'>
+        <Outlet />
+      </div>
+      <Footer className='mt-auto' />
     </div>
   );
 };

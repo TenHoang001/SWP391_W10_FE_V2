@@ -1,50 +1,71 @@
-import { BrowserRouter, Route, Routes } from 'react-router';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import LayoutCustomer from './layout/LayoutCustomer';
 import HomePageCus from './pages/customer/HomePage';
 import HomePage from './pages/guest/HomePage';
 import LayoutGuest from './layout/LayoutGuest';
 import LayoutDoctor from './layout/LayoutDoctor';
 import RequestAdvisory from './pages/doctor/RequestAdvisory';
-// import AdvisoryHistory from './pages/customer/AdvisoryHistory';
-// import ResultAdvisory from './pages/customer/ResultAdvisory';
-// import ChildRecords from './pages/customer/ChildRecords';
 import AddNewChild from './pages/customer/AddNewChild';
 import BookingDoctor from './pages/customer/BookingDoctor';
+import ListDoctor from './pages/customer/ListDoctor';
 import CustomerConsultationHistory from './pages/customer/CustomerConsultationHistory';
 import CustomerChildRecord from './pages/customer/CustomerChildRecord';
-import CustomerChartOfChild from './pages/customer/CustomerChartOfChild';
 import CustomerAddNewChildIndex from './pages/customer/CustomerAddNewChildIndex';
+import MembershipPage from './pages/customer/MembershipPage';
+import TransactionHistory from './pages/customer/TransactionHistory';
+
 import GuestLogin from './pages/guest/GuestLogin';
 import GuestRegister from './pages/guest/GuestRegister';
 import BookingHistory from './pages/customer/BookingHistory';
 import UpdateChild from './pages/customer/UpdateChild';
-import ConsultationChat from './pages/customer/CustomerConsultationResult';
-import DoctorConsultation from './pages/doctor/DoctorConsultation';
-
-// import AddRecords from './pages/customer/AddRecords';
-// import ChartOfChild from './pages/customer/ChartOfChild';
-
-// import { Aperture } from 'module';
+import ConsultationChat from './pages/shared/ConsultationChat';
+import LayoutAdmin from './layout/LayoutAdmin';
+import DoctorManagement from './pages/admin/DoctorManagement';
+import CustomerEditChildIndex from './pages/customer/CustomerEditChildIndex';
+import DoctorSchedule from './pages/doctor/DoctorSchedule';
+import DoctorScheduleManagement from './pages/admin/DoctorScheduleManagement';
+import AddDoctor from './pages/admin/AddDoctor';
+import UpdateDoctor from './pages/admin/UpdateDoctor';
+import AppointmentDetail from './pages/doctor/AppointmentDetail';
+import CustomerProfile from './pages/customer/CustomerProfile';
+import DoctorProfile from './pages/doctor/DoctorProfile';
+import CustomerGrowthChart from './pages/customer/CustomerGrowthChart';
+import BlogManagement from './pages/shared/BlogManagement';
+import BlogList from './pages/shared/BlogList';
+import ManageUser from './pages/admin/ManageUser';
+import PaymentSuccess from './pages/guest/PaymentSuccess';
+import PaymentCancel from './pages/guest/PaymentCancel';
+import PriceManagement from './pages/admin/PriceManagement';
+import ConsultationChatManager from './pages/admin/ConsultationChatManager';
+import BlogDetail from './pages/shared/BlogDetail';
 
 function App() {
   return (
     <>
-      {/* <div className='flex flex-row'> */}
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<LayoutGuest />}>
             <Route index element={<HomePage />} />
             <Route path='/login' element={<GuestLogin />} />
             <Route path='/register' element={<GuestRegister />} />
+            <Route path='/blogs' element={<BlogList />} />
+            <Route path='/payment/success' element={<PaymentSuccess />} />
+            <Route path='/payment/cancel' element={<PaymentCancel />} />
+            <Route path='/blog/:blogId' element={<BlogDetail />} />
           </Route>
 
           <Route path='/customer' element={<LayoutCustomer />}>
             <Route index element={<HomePageCus />} />
+            <Route path='blogs' element={<BlogList />} />
+            <Route path='profile' element={<CustomerProfile />} />
             <Route path='addNewChild' element={<AddNewChild />} />
+            <Route path='membership' element={<MembershipPage />} />
+            <Route path='transactions' element={<TransactionHistory />} />
             <Route
               path='/customer/children/edit/:childId'
               element={<UpdateChild />}
             />
+            <Route path='listDoctor' element={<ListDoctor />} />
             <Route path='bookingDoctor' element={<BookingDoctor />} />
             <Route path='bookingHistory' element={<BookingHistory />} />
             <Route path='consultationChat' element={<ConsultationChat />} />
@@ -56,45 +77,67 @@ function App() {
               path='/customer/children/:childId'
               element={<CustomerChildRecord />}
             />
-            <Route path='chartOfChild' element={<CustomerChartOfChild />} />
             <Route
-              path='addChildIndex'
+              path='addChildIndex/:childId'
               element={<CustomerAddNewChildIndex />}
             />
             <Route path='child-records' element={<CustomerChildRecord />} />
-            <Route path='chart-of-child' element={<CustomerChartOfChild />} />
-
-            {/*
-            <Route path='advisory' element={<AdvisoryHistory />} />
-            <Route path='result-advisory' element={<ResultAdvisory />} />
-            <Route path='child-records' element={<ChildRecords />} />
-            <Route path='add-records' element={<AddRecords />} />
-            <Route path='chart' element={<ChartOfChild />} />
-
-            */}
+            <Route
+              path='/customer/editChildIndex/:childId/:recordId'
+              element={<CustomerEditChildIndex />}
+            />
+            <Route
+              path='/customer/children/:childId/growth-chart'
+              element={<CustomerGrowthChart />}
+            />
+            <Route
+              path='/customer/consultationChat/:requestId'
+              element={<ConsultationChat />}
+            />
+            <Route path='/customer/blog/:blogId' element={<BlogDetail />} />
+            <Route path='/customer/payment/success' element={<PaymentSuccess />} />
+            <Route path='/customer/payment/cancel' element={<PaymentCancel />} />
           </Route>
 
           <Route path='/doctor' element={<LayoutDoctor />}>
             <Route index element={<RequestAdvisory />} />
+
+            <Route path='profile' element={<DoctorProfile />} />
+            <Route path='blogs' element={<BlogManagement />} />
+
+            <Route path='/doctor/schedule' element={<DoctorSchedule />} />
             <Route
-              path='/doctor/consultation'
-              element={<DoctorConsultation />}
+              path='appointment/:appointmentId'
+              element={<AppointmentDetail />}
             />
-            {/* <Route
-              path='response-success'
-              element={<ResponseAdvisorySuccess />}
+            <Route
+              path='/doctor/consultationChat/:requestId'
+              element={<ConsultationChat />}
             />
-            <Route path='all-appointments' element={<AllAppointments />} />
-            <Route path='set-calendar' element={<SetCalendar />} />
-            <Route path='request-form' element={<FormRequestAdvisory />} />
-            <Route path='result-advisory' element={<ResultAdvisory />} />
-            <Route path='chart' element={<ChartOfChild />} /> */}
+          </Route>
+
+          <Route path='/admin' element={<LayoutAdmin />}>
+            <Route index element={<Navigate to='/admin/doctors' replace />} />
+            <Route path='blogs' element={<BlogManagement />} />
+            <Route path='doctors' element={<DoctorManagement />} />
+            <Route path='doctors/add' element={<AddDoctor />} />
+            <Route path='doctors/update/:doctorId' element={<UpdateDoctor />} />
+            <Route
+              path='doctors/:doctorId/schedule'
+              element={<DoctorScheduleManagement />}
+            />
+            <Route path='users' element={<ManageUser />} />
+            <Route
+              path='/admin/membership price'
+              element={<PriceManagement />}
+            />
+            <Route
+              path='/admin/consultationManager/:id'
+              element={<ConsultationChatManager />}
+            />
           </Route>
         </Routes>
       </BrowserRouter>
-      {/* <ArrowDownToLine />
-        <div>123</div> */}
-      {/* </div> */}
     </>
   );
 }

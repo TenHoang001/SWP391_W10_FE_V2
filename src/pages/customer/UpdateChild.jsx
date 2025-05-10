@@ -3,27 +3,30 @@ import {
   Input,
   Radio,
   Button,
-  Popover,
-  PopoverHandler,
-  PopoverContent,
   Select,
   Option,
   Alert,
 } from '@material-tailwind/react';
-import { format } from 'date-fns';
-import { DayPicker } from 'react-day-picker';
+import { format, isAfter, subYears, isValid } from 'date-fns';
 import { Trash2 } from 'lucide-react';
-import { UpdateChildAPI, GetChildDetailAPI, DeleteChildAPI } from '../../api/ChildrenAPI';
+import {
+  UpdateChildAPI,
+  GetChildDetailAPI,
+  DeleteChildAPI,
+} from '../../api/ChildrenAPI';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const UpdateChild = () => {
-  const [date, setDate] = React.useState();
+  const [date, setDate] = React.useState(format(new Date(), 'yyyy-MM-dd'));
   const [fullName, setFullName] = React.useState('');
   const [gender, setGender] = React.useState('');
   const [bloodType, setBloodType] = React.useState('A+');
-  const [showAlert, setShowAlert] = React.useState(false);
-  const [alertMessage, setAlertMessage] = React.useState('');
-  const [alertColor, setAlertColor] = React.useState('green');
+  const [showAlert, setShowAlert] = React.useState({
+    show: false,
+    message: '',
+    type: 'success',
+  });
+
   const navigate = useNavigate();
   const { childId } = useParams();
 
@@ -38,7 +41,7 @@ const UpdateChild = () => {
       if (response?.status) {
         const child = response.data;
         setFullName(child.fullName);
-        setDate(new Date(child.birthDate));
+        setDate(format(new Date(child.birthDate), 'yyyy-MM-dd'));
         setGender(child.gender === 'Male' ? 'Nam' : 'Nữ');
         setBloodType(child.bloodType);
       }
@@ -47,9 +50,43 @@ const UpdateChild = () => {
     }
   };
 
+    const validateName = (name) => {
+      const nameRegex = /^[A-Za-zÀ-Ỹà-ỹ\s]+$/;
+      return nameRegex.test(name);
+    };
+
+    const validateDate = (birthDate) => {
+      const selectedDate = new Date(birthDate);
+      const today = new Date();
+      const minDate = subYears(today, 18);
+
+      if (!isValid(selectedDate)) {
+        return false;
+      }
+
+      if (isAfter(selectedDate, today)) {
+        return false;
+      }
+
+      if (isAfter(minDate, selectedDate)) {
+        return false;
+      }
+
+      return true;
+    };
+
   const handleUpdate = async () => {
     if (!fullName || !date || !gender) {
-      alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+      showNotification('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
+      return;
+    }
+    if (!validateName(fullName)) {
+      showNotification('Tên không được chứa số và các kí tự đặc biệt', 'error');
+      return;
+    }
+
+    if (!validateDate(date)) {
+      showNotification('Ngày sinh không hợp lệ', 'error');
       return;
     }
 
@@ -63,22 +100,21 @@ const UpdateChild = () => {
         parentNumber: 'Null',
         bloodType: bloodType,
         allergiesNotes: 'Null',
-        medicalHistory: 'Null'
+        medicalHistory: 'Null',
       };
-      
+
       await UpdateChildAPI(childId, userId, childData);
-      setAlertMessage(`Đã cập nhật thành công thông tin bé ${fullName}`);
-      setAlertColor('green');
-      setShowAlert(true);
-      
+      showNotification(
+        'Đã cập nhật thành công thông tin bé ' + fullName,
+        'success'
+      );
+
       setTimeout(() => {
         navigate('/customer', { replace: true });
       }, 2000);
     } catch (error) {
       console.error('Error updating child:', error);
-      setAlertMessage('Có lỗi xảy ra khi cập nhật thông tin');
-      setAlertColor('red');
-      setShowAlert(true);
+      showNotification('Có lỗi xảy ra khi cập nhật thông tin', 'error');
     }
   };
 
@@ -87,49 +123,59 @@ const UpdateChild = () => {
       try {
         const userId = localStorage.getItem('userId');
         await DeleteChildAPI(childId, userId);
-        setAlertMessage(`Đã xóa thành công thông tin bé ${fullName}`);
-        setAlertColor('green');
-        setShowAlert(true);
-        
+        showNotification(
+          'Đã xóa thành công thông tin bé ' + fullName,
+          'success'
+        );
+
         setTimeout(() => {
           navigate('/customer', { replace: true });
         }, 2000);
       } catch (error) {
-        console.error('Error deleting child:', error);
-        setAlertMessage('Có lỗi xảy ra khi xóa thông tin');
-        setAlertColor('red');
-        setShowAlert(true);
+        showNotification('Có lỗi xảy ra khi xóa thông tin', 'error');
       }
     }
   };
 
+  const showNotification = (message, type = 'success') => {
+    setShowAlert({ show: true, message, type });
+    setTimeout(
+      () => setShowAlert({ show: false, message: '', type: 'success' }),
+      3000
+    );
+  };
+
   return (
-    <div className='m-10 mb-20'>
-      {showAlert && (
+    <div className='m-10 mb-20 pb-20'>
+      {showAlert.show && (
         <Alert
-          open={showAlert}
-          onClose={() => setShowAlert(false)}
+          open={showAlert.show}
+          onClose={() =>
+            setShowAlert({ show: false, message: '', type: 'success' })
+          }
           animate={{
             mount: { y: 0 },
             unmount: { y: 100 },
           }}
-          className="fixed top-4 right-4 z-50 w-auto"
-          color={alertColor}
+          className='fixed top-4 right-4 z-50 w-auto'
+          color={showAlert.type === 'success' ? 'green' : 'red'}
         >
-          {alertMessage}
+          {showAlert.message}
         </Alert>
       )}
 
       <div className='flex h-screen justify-center'>
-        <div className='mt-[8%] h-fit w-1/2 rounded-2xl bg-white shadow-xl'>
-          <div className='mx-8 my-5'>
-            <div className='my-3 text-xl font-semibold'>Cập nhật thông tin trẻ em</div>
+        <div className='md:w-1/2   w-full rounded-2xl bg-white shadow-xl shadow-blue-gray-500'>
+          <div className='mx-8'>
+            <div className='my-3 text-xl font-semibold'>
+              Cập nhật thông tin trẻ em
+            </div>
             <div className='mb-10'>Chỉnh sửa thông tin chi tiết của trẻ</div>
-            
+
             <div>Họ và tên của trẻ</div>
-            <Input 
-              variant='outlined' 
-              label='Nhập họ và tên' 
+            <Input
+              variant='outlined'
+              label='Nhập họ và tên'
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
@@ -137,58 +183,46 @@ const UpdateChild = () => {
 
             <div className='mt-10'>
               <div>Ngày tháng năm sinh</div>
-              <Popover placement='bottom'>
-                <PopoverHandler>
-                  <Input
-                    label='Chọn ngày sinh'
-                    onChange={() => null}
-                    value={date ? format(date, 'PPP') : ''}
-                    required
-                  />
-                </PopoverHandler>
-                <PopoverContent>
-                  <DayPicker
-                    mode='single'
-                    selected={date}
-                    onSelect={setDate}
-                    showOutsideDays
-                    className='w-full border-0'
-                  />
-                </PopoverContent>
-              </Popover>
+              <Input
+                type='Date'
+                label='Chọn ngày sinh'
+                onChange={(e) => setDate(e.target.value)}
+                value={date}
+                required
+              />
             </div>
 
             <div>
               <div className='mt-8'>Nhóm máu</div>
-              <Select 
-                value={bloodType} 
+              <Select
+                value={bloodType}
                 onChange={(value) => setBloodType(value)}
-                label="Chọn nhóm máu"
+                label='Chọn nhóm máu'
               >
-                <Option value="A+">A+</Option>
-                <Option value="A-">A-</Option>
-                <Option value="B+">B+</Option>
-                <Option value="B-">B-</Option>
-                <Option value="AB+">AB+</Option>
-                <Option value="AB-">AB-</Option>
-                <Option value="O+">O+</Option>
-                <Option value="O-">O-</Option>
+                <Option value='A+'>A+</Option>
+                <Option value='A-'>A-</Option>
+                <Option value='B+'>B+</Option>
+                <Option value='B-'>B-</Option>
+                <Option value='AB+'>AB+</Option>
+                <Option value='AB-'>AB-</Option>
+                <Option value='O+'>O+</Option>
+                <Option value='O-'>O-</Option>
               </Select>
             </div>
 
             <div>
               <div className='mt-8'>Giới tính</div>
               <div className='flex gap-10'>
-                <Radio 
-                  name='type' 
-                  label='Nam' 
+                <Radio
+                  name='type'
+                  label='Nam'
                   onChange={() => setGender('Nam')}
                   checked={gender === 'Nam'}
                   required
                 />
-                <Radio 
-                  name='type' 
-                  label='Nữ' 
+                <Radio
+                  name='type'
+                  label='Nữ'
                   onChange={() => setGender('Nữ')}
                   checked={gender === 'Nữ'}
                 />
@@ -223,7 +257,7 @@ const UpdateChild = () => {
                 color='red'
                 onClick={handleDelete}
               >
-                <Trash2 className="size-5" />
+                <Trash2 className='size-5' />
                 Xóa
               </Button>
 
@@ -256,4 +290,4 @@ const UpdateChild = () => {
   );
 };
 
-export default UpdateChild; 
+export default UpdateChild;
